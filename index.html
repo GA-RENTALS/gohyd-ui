@@ -1,0 +1,997 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#12130e">
+  <title>GoHyderabad — Your Weekends, Reimagined</title>
+  <meta name="description" content="GoHyderabad is a Hyderabad-based weekend experiences community. Ride out, play box cricket, find food and culture, explore hidden gems and meet your kind of people.">
+  <meta property="og:site_name" content="GoHyderabad">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="GoHyderabad — Your Weekends, Reimagined">
+  <meta property="og:description" content="Discover a different side of Hyderabad. Ride out, play hard, explore hidden gems, and meet your kind of people.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="apple-touch-icon" href="assets/logo.png">
+  <link rel="preload" as="image" href="assets/img/hero-night-1920.jpg" imagesrcset="assets/img/hero-night-640.jpg 640w, assets/img/hero-night-1200.jpg 1200w, assets/img/hero-night-1920.jpg 1920w" imagesizes="100vw" fetchpriority="high">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Organization","name":"GoHyderabad","description":"Weekend experiences and community in Hyderabad, India.","logo":"assets/logo.png","sameAs":["https://www.instagram.com/gohyderabad/","https://www.instagram.com/goadventure.in/"]}
+  </script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --char: #12130e;
+      --char-2: #1a1c15;
+      --forest: #14201a;
+      --ivory: #f3eee2;
+      --ivory-2: #e9e1cd;
+      --sand: #c9b28b;
+      --sand-deep: #8f7650;
+      --sand-light: #dcc79a;
+      --moss: #53703f;
+      --moss-ink: #435a33;
+      --lime: #e9b44c;
+      --ink: #1a1b15;
+      --text-soft: #b4b2a2;
+      --text-soft-dark: #5a5a4d;
+      --line: rgba(243,238,226,.16);
+      --line-dark: rgba(26,27,21,.18);
+      --sans: "Manrope", "Avenir Next", Avenir, system-ui, sans-serif;
+      --display: "Barlow Condensed", Impact, "Arial Narrow", sans-serif;
+      --serif: "Fraunces", Georgia, serif;
+      --pad: clamp(20px, 5vw, 80px);
+      --max: 1360px;
+      --ease: cubic-bezier(.22, .72, .18, 1);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 84px; background: var(--char); }
+    body { margin: 0; background: var(--char); color: var(--ivory); font: 400 16px/1.65 var(--sans); overflow-x: clip; -webkit-font-smoothing: antialiased; }
+    body.menu-open { overflow: hidden; }
+    a { color: inherit; text-decoration: none; }
+    button { color: inherit; font: inherit; cursor: pointer; }
+    img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    svg { display: block; }
+    h1, h2, h3, p, figure, dl, dd, ul, ol { margin: 0; padding: 0; }
+    ul, ol { list-style: none; }
+    ::selection { background: var(--lime); color: var(--ink); }
+    :focus-visible { outline: 2px solid var(--lime); outline-offset: 4px; }
+    .on-light :focus-visible { outline-color: var(--moss-ink); }
+    .sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+    .skip { position: fixed; left: 16px; top: 12px; z-index: 200; padding: 12px 18px; border-radius: 999px; background: var(--lime); color: var(--ink); font-weight: 800; transform: translateY(-200%); }
+    .skip:focus { transform: none; }
+    .wrap { width: min(100% - var(--pad) * 2, var(--max)); margin-inline: auto; }
+    .pad { padding-block: clamp(72px, 8.5vw, 120px); }
+    .on-light { background: var(--ivory); color: var(--ink); color-scheme: light; }
+
+    /* Type */
+    .eyebrow { display: inline-flex; align-items: center; gap: 12px; font-size: 12px; font-weight: 800; letter-spacing: .18em; line-height: 1.4; text-transform: uppercase; color: var(--sand-light); }
+    .eyebrow::before { content: ""; width: 28px; height: 1px; background: currentColor; }
+    .on-light .eyebrow { color: var(--moss-ink); }
+    .h-section { margin-top: 16px; font: 500 clamp(46px, 6.6vw, 98px)/.92 var(--display); letter-spacing: -.01em; text-transform: uppercase; }
+    .h-section em { font: italic 400 .8em/1 var(--serif); letter-spacing: -.03em; text-transform: none; color: var(--sand-light); }
+    .on-light .h-section em { color: #9a5f33; }
+    .lede { max-width: 540px; margin-top: 20px; color: var(--text-soft); font-size: 16px; line-height: 1.8; }
+    .on-light .lede { color: var(--text-soft-dark); }
+    .section-no { font: 500 15px/1 var(--display); letter-spacing: .1em; color: var(--text-soft); }
+    .on-light .section-no { color: var(--text-soft-dark); }
+
+    /* Buttons */
+    .btn { display: inline-flex; min-height: 54px; align-items: center; justify-content: center; gap: 16px; padding: 0 26px; border: 1px solid transparent; border-radius: 2px; background: var(--lime); color: var(--ink); font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; transition: background .25s, color .25s, border-color .25s, transform .25s var(--ease); }
+    .btn svg { width: 16px; height: 16px; transition: transform .25s var(--ease); }
+    .btn:hover { background: #f5c96a; transform: translateY(-2px); }
+    .btn:hover svg { transform: translateX(4px); }
+    .btn-ghost { background: transparent; border-color: rgba(243,238,226,.5); color: var(--ivory); }
+    .btn-ghost:hover { background: rgba(243,238,226,.1); border-color: var(--ivory); }
+    .btn-dark { background: var(--ink); color: var(--ivory); }
+    .btn-dark:hover { background: #33362a; }
+    .link { display: inline-flex; align-items: center; gap: 10px; padding-block: 8px; color: var(--sand-light); font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    .link svg { width: 16px; height: 16px; transition: transform .25s var(--ease); }
+    .link:hover svg { transform: translate(3px, -3px); }
+    .on-light .link { color: var(--moss-ink); }
+
+    /* Header */
+    .header { position: fixed; z-index: 100; inset: 0 0 auto; border-bottom: 1px solid transparent; transition: background .3s, border-color .3s; }
+    .header.scrolled, body.menu-open .header { background: rgba(18,19,14,.92); border-color: var(--line); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+    .progress { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: var(--lime); transform: scaleX(0); transform-origin: left; }
+    .nav { display: flex; min-height: 78px; align-items: center; justify-content: space-between; gap: 28px; }
+    .brand { display: inline-flex; align-items: center; gap: 12px; }
+    .brand img { width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255,255,255,.3); background: #fff; }
+    .brand b { display: block; font-size: 13px; font-weight: 800; letter-spacing: .12em; line-height: 1.1; text-transform: uppercase; }
+    .brand small { display: block; margin-top: 4px; color: var(--text-soft); font-size: 10px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; }
+    .nav-links { display: flex; align-items: center; gap: clamp(18px, 2.6vw, 38px); margin-left: auto; }
+    .nav-links a { position: relative; padding-block: 10px; color: rgba(243,238,226,.86); font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; transition: color .2s; }
+    .nav-links a::after { content: ""; position: absolute; left: 0; right: 0; bottom: 4px; height: 1px; background: var(--lime); transform: scaleX(0); transform-origin: left; transition: transform .25s var(--ease); }
+    .nav-links a:hover { color: var(--lime); }
+    .nav-links a:hover::after { transform: scaleX(1); }
+    .nav .btn { min-height: 44px; padding-inline: 18px; font-size: 11px; gap: 12px; }
+    .menu-btn { display: none; width: 46px; height: 46px; place-items: center; border: 1px solid var(--line); border-radius: 2px; background: transparent; }
+    .menu-btn svg { width: 20px; height: 20px; }
+
+    /* Hero */
+    .hero { position: relative; display: flex; min-height: 100vh; min-height: 100svh; align-items: center; overflow: hidden; isolation: isolate; background: #0b0c08; }
+    .hero-photo { position: absolute; z-index: -3; top: -6%; bottom: -6%; left: 6%; right: -4%; transform: translate3d(calc(var(--mx, 0) * -14px), calc(var(--sy, 0) * 1px + var(--my, 0) * -9px), 0) scale(1.03); will-change: transform; transition: transform .6s var(--ease); }
+    .hero-photo img { object-position: 50% 42%; }
+    .hero::before { content: ""; position: absolute; z-index: -2; inset: 0; background: linear-gradient(90deg, rgba(10,11,8,.94) 0%, rgba(10,11,8,.8) 28%, rgba(10,11,8,.28) 58%, rgba(10,11,8,.05) 100%), linear-gradient(0deg, rgba(18,19,14,1) 0%, rgba(18,19,14,0) 24%, rgba(10,11,8,0) 76%, rgba(10,11,8,.55) 100%); }
+    .hero::after { content: ""; position: absolute; z-index: -1; inset: 0; opacity: .1; pointer-events: none; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); mix-blend-mode: overlay; }
+    .hero-copy { position: relative; max-width: 700px; padding-top: 60px; padding-bottom: 80px; }
+    .hero-place { display: inline-flex; align-items: center; gap: 10px; color: var(--ivory); font-size: 12px; font-weight: 800; letter-spacing: .22em; text-transform: uppercase; }
+    .hero-place svg { width: 16px; height: 16px; color: var(--sand-light); }
+    .hero h1 { margin-top: 22px; font: 600 clamp(64px, 9.4vw, 142px)/.82 var(--display); letter-spacing: -.02em; text-transform: uppercase; text-shadow: 0 2px 30px rgba(0,0,0,.35); }
+    .hero h1 span { display: block; }
+    .hero h1 span + span { color: var(--lime); }
+    .hero h1 em { font: italic 400 .86em/1 var(--serif); letter-spacing: -.04em; text-transform: none; color: var(--ivory); }
+    .hero-copy > p { max-width: 500px; margin-top: 28px; color: rgba(243,238,226,.88); font-size: clamp(16px, 1.4vw, 18px); line-height: 1.75; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+    .hero-caption { position: absolute; z-index: 3; right: var(--pad); bottom: 92px; width: min(280px, 26vw); padding: 16px 18px; border: 1px solid rgba(243,238,226,.22); background: rgba(14,15,11,.72); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transform: translate3d(calc(var(--mx, 0) * 10px), calc(var(--my, 0) * 6px), 0); transition: transform .5s var(--ease); }
+    .hero-caption b { display: block; font: 500 24px/1 var(--display); letter-spacing: .04em; text-transform: uppercase; }
+    .hero-caption p { margin-top: 6px; color: var(--text-soft); font-size: 12px; line-height: 1.55; }
+    .hero-foot { position: absolute; z-index: 3; left: var(--pad); right: var(--pad); bottom: 26px; display: flex; justify-content: space-between; align-items: center; gap: 16px; color: var(--text-soft); font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+    .scroll-cue { display: inline-flex; align-items: center; gap: 10px; color: var(--ivory); }
+    .scroll-cue svg { width: 16px; height: 16px; color: var(--sand-light); animation: nudge 2.4s ease-in-out infinite; }
+    @keyframes nudge { 0%, 100% { transform: translateY(-2px); } 50% { transform: translateY(3px); } }
+
+    /* Arch edge divider */
+    .arch-edge { position: relative; height: 22px; margin-top: -21px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='22' viewBox='0 0 56 22'%3E%3Cpath d='M0 22 C16 22 22 10 28 0 C34 10 40 22 56 22 Z' fill='%23f3eee2'/%3E%3C/svg%3E") repeat-x bottom / 56px 22px; }
+
+    /* Intro */
+    .intro-grid { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: clamp(40px, 7vw, 110px); }
+    .intro .h-section { font-size: clamp(52px, 7.4vw, 112px); }
+    .intro .lede + .lede { margin-top: 14px; }
+    .intro .link { margin-top: 18px; }
+    .stack { position: relative; padding: 0 0 70px 60px; perspective: 1100px; }
+    .stack-tilt { transform-style: preserve-3d; transition: transform .5s var(--ease); }
+    .stack .ph { position: relative; overflow: hidden; background: #cfc6ae; }
+    .stack-main { aspect-ratio: 4 / 5; box-shadow: 0 30px 60px -28px rgba(30,25,10,.45); }
+    .stack-main img { object-position: 50% 40%; }
+    .stack-side { position: absolute; left: 0; bottom: 0; width: 42%; aspect-ratio: 3 / 4; border: 8px solid var(--ivory); box-shadow: 0 26px 50px -22px rgba(30,25,10,.5); transform: translateZ(50px); }
+    .stack-note { position: absolute; right: -12px; bottom: 28px; padding: 12px 16px; background: var(--ink); color: var(--ivory); font: 500 18px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; transform: translateZ(80px) rotate(-2deg); }
+    .tenets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin-top: clamp(60px, 8vw, 110px); border-top: 1px solid var(--line-dark); }
+    .tenet { padding: 26px 28px 0 0; }
+    .tenet + .tenet { padding-left: 28px; border-left: 1px solid var(--line-dark); }
+    .tenet b { font: 500 34px/1 var(--display); letter-spacing: .03em; text-transform: uppercase; }
+    .tenet p { margin-top: 10px; color: var(--text-soft-dark); font-size: 15px; line-height: 1.7; }
+
+    /* Photo helpers */
+    .ph { position: relative; overflow: hidden; }
+    .ph.img-failed { background: linear-gradient(135deg, #8f7650, #c9b28b); }
+    .ph.img-failed::after { content: attr(data-label); position: absolute; inset: 0; display: grid; place-items: center; padding: 20px; color: var(--ink); font-size: 13px; text-align: center; }
+    .ph.img-failed img { visibility: hidden; }
+    .ptag { position: absolute; z-index: 3; top: 14px; left: 14px; padding: 5px 10px; border-radius: 99px; background: rgba(14,15,11,.72); color: var(--ivory); font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+
+    /* Experiences */
+    .exp-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; margin-bottom: 52px; }
+    .exp-head .lede { margin-top: 0; max-width: 340px; }
+    .exp-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+    .xcard { position: relative; display: flex; flex-direction: column; justify-content: flex-end; min-height: 440px; overflow: hidden; padding: 28px; background: #23251c; isolation: isolate; }
+    .xcard .ph { position: absolute; z-index: -2; inset: 0; }
+    .xcard .ph img { transition: transform 1s var(--ease); }
+    .xcard::before { content: ""; position: absolute; z-index: -1; inset: 0; background: linear-gradient(0deg, rgba(10,11,8,.92) 0%, rgba(10,11,8,.5) 36%, rgba(10,11,8,0) 70%); }
+    .xcard::after { content: ""; position: absolute; z-index: 1; inset: 0; border: 1px solid transparent; pointer-events: none; transition: inset .35s var(--ease), border-color .35s; }
+    .xcard:hover .ph img, .xcard:focus-visible .ph img { transform: scale(1.06); }
+    .xcard:hover::after, .xcard:focus-visible::after { inset: 10px; border-color: rgba(220,199,154,.7); }
+    .xcard .n { color: var(--sand-light); font-size: 12px; font-weight: 800; letter-spacing: .18em; }
+    .xcard h3 { max-width: 480px; margin-top: 10px; font: 500 clamp(36px, 3.8vw, 56px)/.92 var(--display); letter-spacing: .005em; text-transform: uppercase; }
+    .xcard p { max-width: 420px; margin-top: 10px; color: rgba(243,238,226,.84); font-size: 15px; line-height: 1.65; }
+    .xcard .go { display: inline-flex; align-items: center; gap: 12px; margin-top: 18px; font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    .xcard .go svg { width: 28px; height: 28px; padding: 6px; border: 1px solid rgba(243,238,226,.5); border-radius: 50%; color: var(--sand-light); transition: transform .3s var(--ease), background .3s, color .3s; }
+    .xcard:hover .go svg { background: var(--sand-light); color: var(--ink); transform: translateX(4px); }
+    .x1 { grid-column: span 7; min-height: 540px; } .x2 { grid-column: span 5; min-height: 540px; }
+    .x3, .x4, .x5 { grid-column: span 4; min-height: 500px; }
+    .x4 { margin-top: 44px; margin-bottom: -44px; } .x5 { margin-top: 0; }
+    .x6 { grid-column: span 12; min-height: 460px; margin-top: 44px; }
+    .x1 { justify-content: flex-start; padding-top: 64px; } .x1::before { background: linear-gradient(180deg, rgba(10,11,8,.78) 0%, rgba(10,11,8,.38) 38%, rgba(10,11,8,0) 62%); } .x1 .go { margin-top: 16px; } .x1 img { object-position: 50% 100%; } .x2 img { object-position: 40% 50%; } .x3 img { object-position: 50% 45%; }
+    .x4 img { object-position: 38% 50%; } .x5 img { object-position: 50% 62%; } .x6 img { object-position: 50% 62%; }
+
+    /* Events */
+    .events { background: var(--ivory-2); }
+    .ev-head { display: grid; grid-template-columns: 1.1fr .9fr; align-items: end; gap: 50px; }
+    .ev-head .lede { margin-top: 0; }
+    .notice { display: flex; gap: 14px; align-items: flex-start; margin-top: 40px; padding: 18px 20px; border-left: 3px solid var(--moss); background: rgba(83,112,63,.1); color: #2e3524; font-size: 14.5px; line-height: 1.65; }
+    .notice svg { flex: none; width: 20px; height: 20px; margin-top: 2px; color: var(--moss-ink); }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 36px 0 28px; }
+    .chip { min-height: 42px; padding: 0 18px; border: 1px solid var(--line-dark); border-radius: 99px; background: transparent; color: var(--ink); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; transition: background .2s, color .2s, border-color .2s; }
+    .chip:hover { border-color: var(--ink); }
+    .chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--ivory); }
+    .ev-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; perspective: 1400px; }
+    .ecard { display: flex; flex-direction: column; background: var(--ivory); border: 1px solid var(--line-dark); box-shadow: 0 24px 50px -34px rgba(30,25,10,.55); transition: transform .45s var(--ease), box-shadow .45s; transform-style: preserve-3d; }
+    .ecard[hidden] { display: none; }
+    .ecard .ph { aspect-ratio: 4 / 3; background: #d6ccb2; }
+    .ecard .ph img { transition: transform .9s var(--ease); }
+    .ecard:hover .ph img { transform: scale(1.05); }
+    .badge { position: absolute; z-index: 3; top: 14px; right: 14px; padding: 5px 10px; background: var(--ivory); color: var(--ink); font-size: 11.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    .ebody { display: flex; flex: 1; flex-direction: column; padding: 22px 22px 24px; }
+    .ecat { color: var(--moss-ink); font-size: 12px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    .ecard h3 { margin-top: 6px; font: 500 34px/.98 var(--display); letter-spacing: .01em; text-transform: uppercase; }
+    .ecard .blurb { margin-top: 10px; color: var(--text-soft-dark); font-size: 14.5px; line-height: 1.65; }
+    .edl { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line-dark); font-size: 13px; }
+    .edl dt { color: var(--text-soft-dark); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; font-size: 11px; padding-top: 2px; }
+    .edl dd { color: var(--ink); font-weight: 600; }
+    .ecard .link { margin-top: auto; padding-top: 22px; }
+
+    /* Explore (accordion) */
+    .explore { background: var(--forest); }
+    .ex-head { display: grid; grid-template-columns: 1.1fr .9fr; align-items: end; gap: 50px; margin-bottom: 52px; }
+    .ex-head .lede { margin-top: 0; }
+    .places { display: flex; gap: 10px; height: clamp(540px, 74vh, 700px); }
+    .place { position: relative; flex: 1 1 0; min-width: 0; overflow: hidden; background: #26301f; transition: flex-grow .8s var(--ease); }
+    .place.is-active { flex-grow: 7; }
+    .place .ph { position: absolute; inset: 0; }
+    .place img { filter: brightness(.55) saturate(.85); transform: scale(1.06); transition: filter .6s, transform 1.2s var(--ease); }
+    .place.is-active img { filter: none; transform: scale(1); }
+    .place::before { content: ""; position: absolute; z-index: 1; inset: 0; background: linear-gradient(0deg, rgba(8,12,9,.9), rgba(8,12,9,0) 58%); pointer-events: none; }
+    .place-hit { position: absolute; z-index: 4; inset: 0; border: 0; background: transparent; }
+    .place.is-active .place-hit { pointer-events: none; }
+    .place-name { position: absolute; z-index: 3; left: 50%; bottom: 22px; font: 500 24px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; writing-mode: vertical-rl; transform: translateX(-50%) rotate(180deg); transition: opacity .3s; }
+    .place.is-active .place-name { opacity: 0; }
+    .place-body { position: absolute; z-index: 3; left: 0; right: 0; bottom: 0; padding: 30px 32px; opacity: 0; transform: translateY(14px); transition: opacity .5s .15s, transform .6s .15s var(--ease); pointer-events: none; }
+    .place.is-active .place-body { opacity: 1; transform: none; pointer-events: auto; }
+    .place-body .where { color: var(--sand-light); font-size: 12px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
+    .place-body h3 { margin-top: 8px; font: 500 clamp(40px, 4.6vw, 68px)/.9 var(--display); text-transform: uppercase; }
+    .place-body p { max-width: 480px; margin-top: 12px; color: rgba(243,238,226,.88); font-size: 15px; line-height: 1.7; }
+    .credit { margin-top: 14px; color: rgba(243,238,226,.84); font-size: 11.5px; }
+    .credit a { text-decoration: underline; text-underline-offset: 3px; }
+
+    /* Map */
+    .map-title { margin-top: clamp(72px, 8vw, 110px); font: 500 clamp(34px, 4vw, 54px)/.95 var(--display); text-transform: uppercase; }
+    .map-sub { max-width: 520px; margin-top: 12px; color: var(--text-soft); font-size: 15px; }
+    .map-grid { display: grid; grid-template-columns: 330px 1fr; gap: 14px; height: 640px; margin-top: 28px; }
+    .map-list { overflow-y: auto; padding-right: 6px; scrollbar-width: thin; scrollbar-color: rgba(243,238,226,.3) transparent; }
+    .mitem { display: flex; align-items: center; gap: 14px; padding: 10px; border: 1px solid transparent; border-bottom-color: var(--line); transition: background .2s, border-color .2s; }
+    .mitem:hover, .mitem.is-on { background: rgba(243,238,226,.07); border-color: rgba(220,199,154,.5); }
+    .mthumb { flex: none; width: 64px; height: 64px; border-radius: 50%; border: 2px solid rgba(243,238,226,.7); }
+    .mitem b { display: block; font: 500 24px/1 var(--display); letter-spacing: .04em; text-transform: uppercase; }
+    .mitem small { display: block; margin-top: 4px; color: var(--text-soft); font-size: 12.5px; }
+    .map-box { position: relative; z-index: 0; isolation: isolate; overflow: hidden; background: #e4ddc9; border: 1px solid var(--line); }
+    #map { width: 100%; height: 100%; font-family: var(--sans); }
+    .map-fit { position: absolute; z-index: 500; top: 12px; right: 12px; min-height: 40px; padding: 0 14px; border: 0; border-radius: 99px; background: #fff; color: var(--ink); font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; box-shadow: 0 4px 14px rgba(0,0,0,.25); }
+    .map-note { margin-top: 12px; color: var(--text-soft); font-size: 12.5px; }
+    .pin-wrap { background: none; border: 0; }
+    .pin { position: relative; display: block; width: 46px; height: 46px; border: 3px solid #fff; border-radius: 50%; background-color: #cdbf9f; background-size: cover; background-position: center; box-shadow: 0 6px 16px rgba(10,11,8,.4); transition: transform .25s var(--ease); }
+    .pin::after { content: ""; position: absolute; left: 50%; bottom: -8px; width: 12px; height: 12px; background: #fff; transform: translateX(-50%) rotate(45deg); z-index: -1; }
+    .pin-wrap:hover .pin, .pin-wrap.is-on .pin { transform: scale(1.18) translateY(-3px); }
+    .pin-n { position: absolute; top: -8px; right: -8px; display: grid; min-width: 24px; height: 24px; place-items: center; padding: 0 5px; border-radius: 99px; background: #9a5f33; color: #fff; font: 800 12px/1 var(--sans); border: 2px solid #fff; }
+    .leaflet-popup-content-wrapper { padding: 0; overflow: hidden; border-radius: 3px; }
+    .leaflet-popup-content { width: 240px !important; margin: 0; color: var(--ink); font-family: var(--sans); }
+    .pop img { height: 140px; }
+    .pop div { padding: 12px 14px 14px; }
+    .pop b { display: block; font: 500 26px/1 var(--display); letter-spacing: .03em; text-transform: uppercase; }
+    .pop p { margin: 6px 0 8px; color: var(--text-soft-dark); font-size: 13px; line-height: 1.5; }
+    .pop a { color: var(--moss-ink); font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    @media (max-width: 860px) {
+      .map-grid { grid-template-columns: 1fr; height: auto; }
+      .map-box { order: -1; height: 430px; }
+      .map-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; overflow: visible; }
+      .mitem b { font-size: 20px; } .mthumb { width: 52px; height: 52px; }
+    }
+    @media (max-width: 520px) { .map-list { grid-template-columns: 1fr; } }
+
+    /* Community */
+    .journal-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; margin-bottom: 48px; }
+    .journal { display: grid; grid-template-columns: repeat(12, 1fr); grid-auto-rows: 118px; gap: 14px; }
+    .jtile { position: relative; margin: 0; overflow: hidden; background: #d6ccb2; }
+    .jtile img { transition: transform 1s var(--ease); }
+    .jtile:hover img { transform: scale(1.05); }
+    .jtile figcaption { position: absolute; z-index: 2; left: 0; right: 0; bottom: 0; padding: 40px 18px 16px; background: linear-gradient(0deg, rgba(10,11,8,.78), rgba(10,11,8,0)); color: var(--ivory); font-size: 13px; font-weight: 600; line-height: 1.4; }
+    .jtile figcaption b { display: block; margin-bottom: 2px; color: var(--sand-light); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
+    .j1 { grid-column: 1 / 6; grid-row: 1 / 5; } .j2 { grid-column: 6 / 9; grid-row: 1 / 5; } .j3 { grid-column: 9 / 13; grid-row: 1 / 3; }
+    .j4 { grid-column: 9 / 13; grid-row: 3 / 8; } .j5 { grid-column: 1 / 5; grid-row: 5 / 8; } .j6 { grid-column: 5 / 9; grid-row: 5 / 8; }
+    .j1 img { object-position: 50% 50%; } .j2 img { object-position: 52% 50%; } .j3 img { object-position: 50% 60%; }
+    .quote-band { display: flex; align-items: center; justify-content: space-between; gap: 30px; margin-top: 56px; padding-top: 28px; border-top: 1px solid var(--line-dark); }
+    .quote-band p { font: italic 400 clamp(28px, 3.4vw, 46px)/1.1 var(--serif); letter-spacing: -.02em; color: #9a5f33; }
+    .quote-band .links { display: flex; flex-wrap: wrap; gap: 6px 26px; }
+    .note-small { margin-top: 22px; max-width: 760px; color: var(--text-soft-dark); font-size: 13.5px; line-height: 1.7; }
+
+    /* How */
+    .how { background: var(--char-2); }
+    .how-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 30px; margin-bottom: 64px; }
+    .steps { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); }
+    .steps::before { content: ""; position: absolute; top: 26px; left: 0; right: 10%; height: 1px; background: linear-gradient(90deg, var(--sand), rgba(201,178,139,.1)); }
+    .step { position: relative; padding-right: 32px; }
+    .step-n { position: relative; display: grid; width: 52px; height: 52px; place-items: center; border: 1px solid var(--sand); border-radius: 50%; background: var(--char-2); color: var(--sand-light); font: 500 21px/1 var(--display); }
+    .step h3 { margin-top: 26px; font: 500 38px/.95 var(--display); letter-spacing: .015em; text-transform: uppercase; }
+    .step p { max-width: 300px; margin-top: 10px; color: var(--text-soft); font-size: 15px; line-height: 1.75; }
+    .teams { display: flex; align-items: center; justify-content: space-between; gap: 30px; margin-top: 70px; padding-top: 26px; border-top: 1px solid var(--line); }
+    .teams .eyebrow { color: var(--sand); }
+    .teams h3 { margin-top: 8px; font: 500 34px/1 var(--display); letter-spacing: .02em; text-transform: uppercase; }
+    .teams p { max-width: 460px; margin-top: 8px; color: var(--text-soft); font-size: 15px; }
+
+    /* Closing CTA */
+    .closing { position: relative; display: flex; min-height: 640px; align-items: center; overflow: hidden; isolation: isolate; }
+    .closing .ph { position: absolute; z-index: -2; inset: 0; }
+    .closing .ph img { object-position: 50% 55%; }
+    .closing::before { content: ""; position: absolute; z-index: -1; inset: 0; background: linear-gradient(90deg, rgba(10,11,8,.9) 0%, rgba(10,11,8,.62) 50%, rgba(10,11,8,.25) 100%), linear-gradient(0deg, rgba(18,19,14,.8), rgba(18,19,14,0) 40%); }
+    .closing h2 { margin-top: 16px; font: 600 clamp(56px, 8.4vw, 124px)/.84 var(--display); letter-spacing: -.015em; text-transform: uppercase; }
+    .closing h2 em { font: italic 400 .84em/1 var(--serif); letter-spacing: -.03em; text-transform: none; color: var(--lime); }
+    .closing p { max-width: 460px; margin-top: 22px; color: rgba(243,238,226,.88); font-size: 17px; }
+    .closing .btn { margin-top: 30px; }
+    .closing .credit { position: absolute; right: var(--pad); bottom: 16px; margin: 0; }
+
+    /* Footer */
+    .footer { padding-top: 70px; background: var(--char); border-top: 1px solid var(--line); }
+    .foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 48px; }
+    .foot-grid p { max-width: 320px; margin-top: 18px; color: var(--text-soft); font-size: 14.5px; }
+    .foot-grid h2 { margin-bottom: 14px; color: var(--text-soft); font-size: 12px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
+    .foot-links { display: grid; gap: 4px; }
+    .foot-links a { display: inline-block; padding-block: 5px; font-size: 15px; transition: color .2s; }
+    .foot-links a:hover { color: var(--sand-light); }
+    .credits { margin-top: 54px; border-top: 1px solid var(--line); }
+    .credits summary { display: flex; min-height: 56px; align-items: center; justify-content: space-between; gap: 20px; color: var(--text-soft); font-size: 12px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; cursor: pointer; list-style: none; }
+    .credits summary::-webkit-details-marker { display: none; }
+    .credits summary::after { content: "+"; font-size: 20px; font-weight: 400; color: var(--sand-light); }
+    .credits[open] summary::after { content: "–"; }
+    .credits ol { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 40px; padding-bottom: 26px; color: var(--text-soft); font-size: 12.5px; line-height: 1.55; list-style: decimal inside; }
+    .credits a { color: var(--ivory); text-decoration: underline; text-underline-offset: 3px; }
+    .credits .intro-note { grid-column: 1 / -1; list-style: none; }
+    .foot-bottom { display: flex; justify-content: space-between; gap: 16px; padding-block: 24px; border-top: 1px solid var(--line); color: var(--text-soft); font-size: 13px; }
+
+    /* Sticky mobile CTA */
+    .sticky-cta { display: none; }
+    @media (max-width: 860px) {
+      .sticky-cta { display: flex; position: fixed; z-index: 90; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); box-shadow: 0 14px 34px rgba(0,0,0,.45); transform: translateY(160%); transition: transform .4s var(--ease); }
+      .sticky-cta.show { transform: none; }
+      body.menu-open .sticky-cta { display: none; }
+      .footer { padding-bottom: 76px; }
+    }
+
+    /* Reveal */
+    .js-ready [data-reveal] { opacity: 0; transform: translateY(26px); transition: opacity .9s var(--ease), transform .9s var(--ease); transition-delay: calc(var(--d, 0) * 110ms); }
+    .js-ready [data-reveal].is-visible { opacity: 1; transform: none; }
+
+    /* Tablet */
+    @media (max-width: 1080px) {
+      .ev-grid { grid-template-columns: repeat(2, 1fr); }
+      .hero-caption { display: none; }
+      .x4 { margin-top: 0; margin-bottom: 0; } .x6 { margin-top: 0; }
+      .x1, .x2, .x5, .x6 { grid-column: span 12; min-height: 440px; } .x3, .x4 { grid-column: span 6; min-height: 460px; }
+    }
+    @media (max-width: 860px) {
+      .header, .header.scrolled, body.menu-open .header { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(18,19,14,.96); }
+      .nav-links { position: fixed; inset: 78px 0 0; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 0; padding: 24px var(--pad); margin: 0; background: var(--char); transform: translateX(100%); visibility: hidden; transition: transform .4s var(--ease), visibility 0s .4s; }
+      body.menu-open .nav-links { transform: none; visibility: visible; transition: transform .4s var(--ease); }
+      .nav-links a { width: 100%; padding-block: 18px; border-bottom: 1px solid var(--line); font: 500 34px/1 var(--display); letter-spacing: .04em; }
+      .nav-links a::after { display: none; }
+      .menu-btn { display: grid; }
+      .nav .btn { display: none; }
+      .nav { justify-content: space-between; }
+      .hero-photo { left: 0; right: 0; top: 56px; bottom: auto; height: 52%; }
+      .hero-photo img { object-position: 52% 30%; }
+      .hero::before { background: linear-gradient(0deg, rgba(10,11,8,1) 0%, rgba(10,11,8,.96) 40%, rgba(10,11,8,.35) 62%, rgba(10,11,8,.45) 100%); }
+      .hero { align-items: flex-end; }
+      .hero-copy { padding-bottom: 96px; padding-top: 0; }
+      .hero h1 { font-size: clamp(54px, 15.5vw, 84px); }
+      .hero-copy > p { margin-top: 18px; font-size: 15.5px; }
+      .hero-actions { margin-top: 22px; flex-wrap: nowrap; }
+      .hero-actions .btn { padding-inline: 16px; gap: 10px; min-height: 50px; font-size: 11px; }
+      .intro-grid, .ev-head, .ex-head { grid-template-columns: 1fr; gap: 30px; }
+      .intro-grid .stack { order: -1; max-width: 460px; }
+      .tenets { grid-template-columns: 1fr; }
+      .tenet, .tenet + .tenet { padding: 22px 0; border-left: 0; border-bottom: 1px solid var(--line-dark); }
+      .exp-head, .journal-head, .how-head { flex-direction: column; align-items: flex-start; gap: 20px; }
+      .places { display: grid; height: auto; gap: 14px; }
+      .place, .place.is-active { flex: none; aspect-ratio: 4 / 5; min-height: 420px; }
+      .place img { filter: none; transform: none; }
+      .place-hit, .place-name { display: none; }
+      .place-body { opacity: 1; transform: none; padding: 24px 22px; pointer-events: auto; }
+      .journal { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 200px; }
+      .jtile { grid-column: auto !important; grid-row: auto !important; }
+      .j1 { grid-column: 1 / -1 !important; grid-row: span 2 !important; }
+      .j6 { grid-column: 1 / -1 !important; }
+      .quote-band, .teams { flex-direction: column; align-items: flex-start; }
+      .steps { grid-template-columns: 1fr; gap: 40px; } .steps::before { display: none; }
+      .foot-grid { grid-template-columns: 1fr 1fr; } .foot-grid > :first-child { grid-column: 1 / -1; }
+      .credits ol { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .ev-grid { grid-template-columns: 1fr; }
+      .x3, .x4, .x5 { grid-column: span 12; }
+      .xcard { min-height: 420px; padding: 22px; }
+      .x1 { min-height: 520px; padding-top: 60px; }
+      .x1::before { background: linear-gradient(180deg, rgba(10,11,8,.9) 0%, rgba(10,11,8,.62) 42%, rgba(10,11,8,0) 72%); }
+      .stack { padding: 0 0 56px 36px; }
+      .stack-note { right: 0; font-size: 15px; }
+      .journal { grid-auto-rows: 160px; }
+      .foot-bottom { flex-direction: column; }
+      .hero-foot span:first-child { display: none; }
+      .closing .credit { position: static; padding: 0 var(--pad) 16px; }
+      .closing { flex-wrap: wrap; align-content: center; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; transition-delay: 0s !important; }
+      .hero-photo, .hero-caption { transform: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <svg class="sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15M13 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-up-right" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v15m-7-7 7 7 7-7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="10" r="2.3" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 11v5M12 7.6v.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  </svg>
+
+  <header class="header" id="header">
+    <div class="progress" id="progress" aria-hidden="true"></div>
+    <div class="wrap nav">
+      <a class="brand" href="#home" aria-label="GoHyderabad home">
+        <img src="assets/logo.png" width="160" height="160" alt="">
+        <span><b>GoHyderabad</b><small>Meet · Explore · Experience</small></span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main navigation">
+        <a href="#experiences">Experiences</a>
+        <a href="#events">Events</a>
+        <a href="#explore">Explore Hyderabad</a>
+        <a href="#community">Community</a>
+        <a href="#how">How it works</a>
+      </nav>
+      <a class="btn" href="https://www.instagram.com/gohyderabad/" target="_blank" rel="noopener noreferrer">Join the community <svg aria-hidden="true"><use href="#i-up-right"/></svg></a>
+      <button class="menu-btn" id="menu-btn" type="button" aria-label="Open navigation" aria-controls="nav-links" aria-expanded="false"><svg aria-hidden="true" id="menu-icon"><use href="#i-menu"/></svg></button>
+    </div>
+  </header>
+
+  <a class="btn sticky-cta" id="sticky-cta" href="https://www.instagram.com/gohyderabad/" target="_blank" rel="noopener noreferrer">See latest plans <svg aria-hidden="true"><use href="#i-up-right"/></svg></a>
+
+  <main id="main">
+    <!-- HERO -->
+    <section class="hero" id="home" aria-labelledby="hero-title">
+      <div class="hero-photo" id="hero-photo">
+        <div class="ph" style="position:absolute;inset:0" data-label="Charminar at night, Hyderabad"><img src="assets/img/hero-night-1200.jpg" srcset="assets/img/hero-night-640.jpg 640w, assets/img/hero-night-1200.jpg 1200w, assets/img/hero-night-1920.jpg 1920w" sizes="100vw" width="3840" height="2558" alt="Charminar&#x27;s arches and minarets lit warm against the dark night sky, photographed from below with bamboo scaffolding on the minarets" loading="eager" fetchpriority="high" decoding="async"></div>
+      </div>
+      <div class="wrap">
+        <div class="hero-copy">
+          <p class="hero-place"><svg aria-hidden="true"><use href="#i-pin"/></svg>Hyderabad, India</p>
+          <h1 id="hero-title"><span>Your weekends,</span><span><em>re</em>imagined.</span></h1>
+          <p>Discover a different side of Hyderabad. Ride out, play hard, explore hidden gems, and meet your kind of people.</p>
+          <div class="hero-actions">
+            <a class="btn" href="#experiences">Explore experiences <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+            <a class="btn btn-ghost" href="#events">Upcoming events</a>
+          </div>
+        </div>
+      </div>
+      <aside class="hero-caption" aria-label="About the photograph">
+        <b>Charminar</b>
+        <p>Old City, Hyderabad, at night. Raised in 1591 by Muhammad Quli Qutb Shah. Photo: <a href="https://commons.wikimedia.org/wiki/File%3APerspective_view_of_Charminar_at_night_%28June_2019%29.jpg" target="_blank" rel="noopener noreferrer">iMahesh</a> · CC BY-SA 4.0.</p>
+      </aside>
+      <div class="hero-foot"><span>Meet · Explore · Experience</span><a class="scroll-cue" href="#about">Scroll <svg aria-hidden="true"><use href="#i-down"/></svg></a></div>
+    </section>
+    <div class="arch-edge" aria-hidden="true"></div>
+
+    <!-- INTRO -->
+    <section class="intro on-light pad" id="about" aria-labelledby="intro-title">
+      <div class="wrap">
+        <div class="intro-grid">
+          <div data-reveal>
+            <div class="eyebrow">01 · The idea</div>
+            <h2 class="h-section" id="intro-title">The city is<br>your <em>playground.</em></h2>
+            <p class="lede">GoHyderabad brings people together around the things worth getting out for: a road beyond the ring road, a match after work, a table full of new stories.</p>
+            <p class="lede">Hyderabad has always rewarded the curious, from the lanes around the Charminar to the hills beyond the city. We plan the weekend; you bring yourself.</p>
+            <a class="link" href="#experiences">Find your kind of weekend <svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          </div>
+          <div class="stack" data-reveal data-d="1">
+            <div class="stack-tilt" data-tilt="5">
+              <div class="ph stack-main" data-label="Charminar at sunset"><img src="assets/img/charminar-sunset-1200.jpg" srcset="assets/img/charminar-sunset-640.jpg 640w, assets/img/charminar-sunset-1200.jpg 1200w, assets/img/charminar-sunset-1920.jpg 1920w" sizes="(min-width:900px) 40vw, 90vw" width="3840" height="2880" alt="The Charminar at sunset, its four minarets and arches silhouetted against an orange evening sky above a busy street" loading="lazy" decoding="async"></div>
+              <div class="ph stack-side" data-label="Chai at Nimrah Cafe"><img src="assets/img/chai-charminar-1200.jpg" srcset="assets/img/chai-charminar-640.jpg 640w, assets/img/chai-charminar-1200.jpg 1200w, assets/img/chai-charminar-1920.jpg 1920w" sizes="(min-width:900px) 18vw, 40vw" width="3120" height="4160" alt="Cups of chai on a table at Nimrah Cafe with the Charminar rising behind them" loading="lazy" decoding="async"></div>
+              <div class="stack-note">Chai, Charminar, company</div>
+            </div>
+          </div>
+        </div>
+        <div class="tenets" data-reveal>
+          <div class="tenet"><b>Meet</b><p>People who say yes to a good plan, and keep saying it.</p></div>
+          <div class="tenet"><b>Explore</b><p>Corners of the city and its surroundings beyond the usual.</p></div>
+          <div class="tenet"><b>Experience</b><p>Rides, matches, tables and traditions, shared rather than watched.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPERIENCES -->
+    <section class="experiences pad" id="experiences" aria-labelledby="exp-title">
+      <div class="wrap">
+        <div class="exp-head" data-reveal>
+          <div><div class="eyebrow">02 · Choose your pace</div><h2 class="h-section" id="exp-title">One city.<br><em>Many ways out.</em></h2></div>
+          <p class="lede">Go for the rush, the fresh air, the food, or simply the company. Find a plan that feels like you.</p>
+        </div>
+        <div class="exp-grid">
+          <a class="xcard x1" href="#events" data-filter="rides" data-reveal aria-label="Adventure and road trips — see ride plans">
+            <div class="ph" data-label="Motorcyclists on a mountain highway"><img src="assets/img/ride-himalaya-1200.jpg" srcset="assets/img/ride-himalaya-640.jpg 640w, assets/img/ride-himalaya-1200.jpg 1200w, assets/img/ride-himalaya-1920.jpg 1920w" sizes="(min-width:900px) 58vw, 100vw" width="3840" height="2414" alt="Motorcyclists riding a winding mountain highway beneath a deep blue sky and barren Himalayan peaks" loading="lazy" decoding="async"><span class="ptag">Photo · Ladakh</span></div>
+            <span class="n">01</span><h3>Adventure &amp; Road Trips</h3>
+            <p>Leave the ring road behind. Early starts, open highways and the kind of views a weekend deserves.</p>
+            <span class="go">Discover rides <svg aria-hidden="true"><use href="#i-arrow"/></svg></span>
+          </a>
+          <a class="xcard x2" href="#events" data-filter="sports" data-reveal data-d="1" aria-label="Sports and box cricket — see sports plans">
+            <div class="ph" data-label="Friends playing cricket on a grass ground"><img src="assets/img/cricket-morning-1200.jpg" srcset="assets/img/cricket-morning-640.jpg 640w, assets/img/cricket-morning-1200.jpg 1200w, assets/img/cricket-morning-1920.jpg 1920w" sizes="(min-width:900px) 40vw, 100vw" width="3840" height="2737" alt="Young players mid-game on a grass cricket ground, a batter at the stumps and a fielder crouching in the foreground" loading="lazy" decoding="async"><span class="ptag">Photo · India</span></div>
+            <span class="n">02</span><h3>Sports &amp; Box Cricket</h3>
+            <p>Pick a side, grab a bat. Friendly matches where the only pressure is the last over.</p>
+            <span class="go">Discover games <svg aria-hidden="true"><use href="#i-arrow"/></svg></span>
+          </a>
+          <a class="xcard x3" href="#events" data-filter="food" data-reveal aria-label="Food and cafés — see food plans">
+            <div class="ph" data-label="Hyderabadi dum biryani"><img src="assets/img/biryani-1200.jpg" srcset="assets/img/biryani-640.jpg 640w, assets/img/biryani-1200.jpg 1200w, assets/img/biryani-1920.jpg 1920w" sizes="(min-width:900px) 30vw, 100vw" width="3840" height="2550" alt="A copper handi of Hyderabadi chicken dum biryani with fried onions, served with raita" loading="lazy" decoding="async"></div>
+            <span class="n">03</span><h3>Food &amp; Cafés</h3>
+            <p>From bun maska and chai to a copper handi of dum biryani, the city runs on its tables.</p>
+            <span class="go">Discover tables <svg aria-hidden="true"><use href="#i-arrow"/></svg></span>
+          </a>
+          <a class="xcard x4" href="#events" data-filter="culture" data-reveal data-d="1" aria-label="Art and culture — see culture plans">
+            <div class="ph" data-label="Chowmahalla Palace, Hyderabad"><img src="assets/img/chowmahalla-1200.jpg" srcset="assets/img/chowmahalla-640.jpg 640w, assets/img/chowmahalla-1200.jpg 1200w, assets/img/chowmahalla-1920.jpg 1920w" sizes="(min-width:900px) 30vw, 100vw" width="3840" height="2880" alt="The Chowmahalla Palace in Hyderabad, its arched facade and clock tower seen across a green lawn" loading="lazy" decoding="async"></div>
+            <span class="n">04</span><h3>Art &amp; Culture</h3>
+            <p>Palaces, crafts and living traditions, explored with people who like to look closer.</p>
+            <span class="go">Discover culture <svg aria-hidden="true"><use href="#i-arrow"/></svg></span>
+          </a>
+          <a class="xcard x5" href="#events" data-filter="social" data-reveal data-d="2" aria-label="Social meetups — see meetup plans">
+            <div class="ph" data-label="Crowds at Mecca Masjid at night"><img src="assets/img/mecca-masjid-1200.jpg" srcset="assets/img/mecca-masjid-640.jpg 640w, assets/img/mecca-masjid-1200.jpg 1200w, assets/img/mecca-masjid-1920.jpg 1920w" sizes="(min-width:900px) 30vw, 100vw" width="3840" height="2880" alt="A crowd gathered in the evening below the Mecca Masjid in Hyderabad, its arches lit in purple, green and gold" loading="lazy" decoding="async"></div>
+            <span class="n">05</span><h3>Social Meetups</h3>
+            <p>Start with a plan, end with a crew. Easy company, good conversation, no pressure.</p>
+            <span class="go">Discover meetups <svg aria-hidden="true"><use href="#i-arrow"/></svg></span>
+          </a>
+          <a class="xcard x6" href="#events" data-filter="gems" data-reveal aria-label="Hidden gems — see hidden gem plans">
+            <div class="ph" data-label="Qutb Shahi Tombs lit at night"><img src="assets/img/qutb-shahi-1200.jpg" srcset="assets/img/qutb-shahi-640.jpg 640w, assets/img/qutb-shahi-1200.jpg 1200w, assets/img/qutb-shahi-1920.jpg 1920w" sizes="100vw" width="3840" height="2560" alt="The domes of the Qutb Shahi Tombs in Hyderabad, softly lit against the night sky" loading="lazy" decoding="async"></div>
+            <span class="n">06</span><h3>Hidden Gems</h3>
+            <p>Tombs lit up after dark, forested hills, quiet lakes. The corners most weekends miss.</p>
+            <span class="go">Discover gems <svg aria-hidden="true"><use href="#i-arrow"/></svg></span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- EVENTS -->
+    <section class="events on-light pad" id="events" aria-labelledby="events-title">
+      <div class="wrap">
+        <div class="ev-head" data-reveal>
+          <div><div class="eyebrow">03 · What's next</div><h2 class="h-section" id="events-title">Make room<br>for <em>the weekend.</em></h2></div>
+          <p class="lede">The kinds of plans GoHyderabad brings together. For the real thing, the latest announcement is always the source of truth.</p>
+        </div>
+        <p class="notice" data-reveal><svg aria-hidden="true"><use href="#i-info"/></svg><span><strong>These are plan formats, not a live schedule.</strong> Dates, times, prices and availability change with every announcement and are posted on Instagram, so we don't list them here rather than risk showing you something out of date.</span></p>
+
+        <div class="chips" role="group" aria-label="Filter plans by category" data-reveal>
+          <button class="chip" type="button" data-chip="all" aria-pressed="true">All</button>
+          <button class="chip" type="button" data-chip="rides" aria-pressed="false">Rides</button>
+          <button class="chip" type="button" data-chip="sports" aria-pressed="false">Sports</button>
+          <button class="chip" type="button" data-chip="food" aria-pressed="false">Food</button>
+          <button class="chip" type="button" data-chip="culture" aria-pressed="false">Culture</button>
+          <button class="chip" type="button" data-chip="social" aria-pressed="false">Social</button>
+          <button class="chip" type="button" data-chip="gems" aria-pressed="false">Hidden gems</button>
+        </div>
+
+        <div class="ev-grid" id="ev-grid" aria-live="polite">
+          <article class="ecard" data-cat="rides" data-tilt="3" data-reveal>
+            <div class="ph" data-label="Motorcyclists on a desert road"><img src="assets/img/ride-aerial-1200.jpg" srcset="assets/img/ride-aerial-640.jpg 640w, assets/img/ride-aerial-1200.jpg 1200w, assets/img/ride-aerial-1920.jpg 1920w" sizes="(min-width:1080px) 30vw, (min-width:600px) 45vw, 100vw" width="3840" height="2025" alt="Aerial view of four motorcyclists riding along a grey road through a dry desert valley below rugged mountains" loading="lazy" decoding="async"><span class="ptag">Photo · Ladakh</span><span class="badge">Illustrative format</span></div>
+            <div class="ebody">
+              <span class="ecat">Adventure &amp; Road Trips</span>
+              <h3>Ride out of the city</h3>
+              <p class="blurb">A group ride to somewhere worth the journey. From the feed: a road trip to Chincholi.</p>
+              <dl class="edl"><dt>Date</dt><dd>Announced on Instagram</dd><dt>Location</dt><dd>Shared with each plan</dd><dt>Price</dt><dd>Posted per announcement</dd><dt>Spots</dt><dd>Check the announcement</dd></dl>
+              <a class="link" href="https://www.instagram.com/gohyderabad/" target="_blank" rel="noopener noreferrer">See latest plans <svg aria-hidden="true"><use href="#i-up-right"/></svg></a>
+            </div>
+          </article>
+          <article class="ecard" data-cat="sports" data-tilt="3" data-reveal data-d="1">
+            <div class="ph" data-label="Boys playing street cricket"><img src="assets/img/cricket-street-1200.jpg" srcset="assets/img/cricket-street-640.jpg 640w, assets/img/cricket-street-1200.jpg 1200w, assets/img/cricket-street-1920.jpg 1920w" sizes="(min-width:1080px) 30vw, (min-width:600px) 45vw, 100vw" width="3648" height="2736" alt="A batter mid-stroke in a street cricket game, with wickets drawn on a wall and teammates watching" loading="lazy" decoding="async"><span class="ptag">Photo · Kolkata</span><span class="badge">Illustrative format</span></div>
+            <div class="ebody">
+              <span class="ecat">Sports &amp; Box Cricket</span>
+              <h3>Box cricket match-up</h3>
+              <p class="blurb">Quick games, mixed teams, new faces. Turn up, get picked, play.</p>
+              <dl class="edl"><dt>Date</dt><dd>Announced on Instagram</dd><dt>Location</dt><dd>Shared with each plan</dd><dt>Price</dt><dd>Posted per announcement</dd><dt>Spots</dt><dd>Check the announcement</dd></dl>
+              <a class="link" href="https://www.instagram.com/gohyderabad/" target="_blank" rel="noopener noreferrer">See latest plans <svg aria-hidden="true"><use href="#i-up-right"/></svg></a>
+            </div>
+          </article>
+          <article class="ecard" data-cat="food" data-tilt="3" data-reveal data-d="2">
+            <div class="ph" data-label="Bun maska and Irani chai at Cafe Niloufer"><img src="assets/img/chai-niloufer-1200.jpg" srcset="assets/img/chai-niloufer-640.jpg 640w, assets/img/chai-niloufer-1200.jpg 1200w, assets/img/chai-niloufer-1920.jpg 1920w" sizes="(min-width:1080px) 30vw, (min-width:600px) 45vw, 100vw" width="3840" height="2880" alt="Cups of Irani chai and a bun maska on a wooden counter at Cafe Niloufer in Hyderabad" loading="lazy" decoding="async"><span class="badge">Illustrative format</span></div>
+            <div class="ebody">
+              <span class="ecat">Food &amp; Cafés</span>
+              <h3>Chai &amp; table trails</h3>
+              <p class="blurb">Irani chai, famous biryani and the stories behind the counters.</p>
+              <dl class="edl"><dt>Date</dt><dd>Announced on Instagram</dd><dt>Location</dt><dd>Shared with each plan</dd><dt>Price</dt><dd>Posted per announcement</dd><dt>Spots</dt><dd>Check the announcement</dd></dl>
+              <a class="link" href="https://www.instagram.com/gohyderabad/" target="_blank" rel="noopener noreferrer">See latest plans <svg aria-hidden="true"><use href="#i-up-right"/></svg></a>
+            </div>
+          </article>
+          <article class="ecard" data-cat="culture" data-tilt="3" data-reveal>
+            <div class="ph" data-label="Artist sketching a portrait at Shilparamam"><img src="assets/img/shilparamam-artist-1200.jpg" srcset="assets/img/shilparamam-artist-640.jpg 640w, assets/img/shilparamam-artist-1200.jpg 1200w, assets/img/shilparamam-artist-1920.jpg 1920w" sizes="(min-width:1080px) 30vw, (min-width:600px) 45vw, 100vw" width="3512" height="2292" alt="An artist sketching a seated client&#x27;s portrait on an easel at Shilparamam arts and crafts village in Hyderabad" loading="lazy" decoding="async"><span class="badge">Illustrative format</span></div>
+            <div class="ebody">
+              <span class="ecat">Art &amp; Culture</span>
+              <h3>Craft &amp; culture days</h3>
+              <p class="blurb">Palaces, crafts villages and living traditions, with people who like to look closer.</p>
+              <dl class="edl"><dt>Date</dt><dd>Announced on Instagram</dd><dt>Location</dt><dd>Shared with each plan</dd><dt>Price</dt><dd>Posted per announcement</dd><dt>Spots</dt><dd>Check the announcement</dd></dl>
+              <a class="link" href="https://www.instagram.com/gohyderabad/" target="_blank" rel="noopener noreferrer">See latest plans <svg aria-hidden="true"><use href="#i-up-right"/></svg></a>
+            </div>
+          </article>
+          <article class="ecard" data-cat="social" data-tilt="3" data-reveal data-d="1">
+            <div class="ph" data-label="Riders gathered at a motorcycle festival"><img src="assets/img/riders-meet-1200.jpg" srcset="assets/img/riders-meet-640.jpg 640w, assets/img/riders-meet-1200.jpg 1200w" sizes="(min-width:1080px) 30vw, (min-width:600px) 45vw, 100vw" width="1600" height="1200" alt="A crowd of riders in yellow T-shirts gathered around motorcycles at a rider festival, one standing on a bike taking a group selfie" loading="lazy" decoding="async"><span class="ptag">Photo · Goa</span><span class="badge">Illustrative format</span></div>
+            <div class="ebody">
+              <span class="ecat">Social Meetups</span>
+              <h3>Meet your crew</h3>
+              <p class="blurb">Easy get-togethers built around something to do, so conversation comes naturally.</p>
+              <dl class="edl"><dt>Date</dt><dd>Announced on Instagram</dd><dt>Location</dt><dd>Shared with each plan</dd><dt>Price</dt><dd>Posted per announcement</dd><dt>Spots</dt><dd>Check the announcement</dd></dl>
+              <a class="link" href="https://www.instagram.com/gohyderabad/" target="_blank" rel="noopener noreferrer">See latest plans <svg aria-hidden="true"><use href="#i-up-right"/></svg></a>
+            </div>
+          </article>
+          <article class="ecard" data-cat="gems" data-tilt="3" data-reveal data-d="2">
+            <div class="ph" data-label="Paigah Tombs, Hyderabad"><img src="assets/img/paigah-tombs-1200.jpg" srcset="assets/img/paigah-tombs-640.jpg 640w, assets/img/paigah-tombs-1200.jpg 1200w, assets/img/paigah-tombs-1920.jpg 1920w" sizes="(min-width:1080px) 30vw, (min-width:600px) 45vw, 100vw" width="3840" height="2560" alt="The arcaded courtyard of the Paigah Tombs in Hyderabad, with carved stucco arches and marble graves" loading="lazy" decoding="async"><span class="badge">Illustrative format</span></div>
+            <div class="ebody">
+              <span class="ecat">Hidden Gems</span>
+              <h3>Off-the-map day trips</h3>
+              <p class="blurb">Tombs, lakes and hill forests that most weekends overlook.</p>
+              <dl class="edl"><dt>Date</dt><dd>Announced on Instagram</dd><dt>Location</dt><dd>Shared with each plan</dd><dt>Price</dt><dd>Posted per announcement</dd><dt>Spots</dt><dd>Check the announcement</dd></dl>
+              <a class="link" href="https://www.instagram.com/gohyderabad/" target="_blank" rel="noopener noreferrer">See latest plans <svg aria-hidden="true"><use href="#i-up-right"/></svg></a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPLORE -->
+    <section class="explore pad" id="explore" aria-labelledby="explore-title">
+      <div class="wrap">
+        <div class="ex-head" data-reveal>
+          <div><div class="eyebrow">04 · Explore Hyderabad</div><h2 class="h-section" id="explore-title">A city of<br>two <em>tempos.</em></h2></div>
+          <p class="lede">From the Old City's stonework to the glass and green of the west, Hyderabad keeps handing you another side to find. Pick a place to open it.</p>
+        </div>
+        <div class="places" id="places" data-reveal>
+          <article class="place is-active">
+            <div class="ph" data-label="Charminar, Old City"><img src="assets/img/charminar-market-1200.jpg" srcset="assets/img/charminar-market-640.jpg 640w, assets/img/charminar-market-1200.jpg 1200w" sizes="(min-width:900px) 55vw, 100vw" width="1620" height="1080" alt="The illuminated Charminar rising above a crowded night market of stalls and balloon sellers" loading="lazy" decoding="async"></div>
+            <button class="place-hit" type="button" aria-expanded="true" aria-label="Show Charminar"></button>
+            <span class="place-name" aria-hidden="true">Charminar</span>
+            <div class="place-body"><span class="where">Old City</span><h3>Charminar</h3><p>Muhammad Quli Qutb Shah raised the Charminar in 1591. After dark, the plaza around it fills with stalls, lights and the smell of hot food.</p><p class="credit"><a href="https://commons.wikimedia.org/wiki/File%3ACharminar_night_1.jpg" target="_blank" rel="noopener noreferrer">Jagannathsrs</a> · CC BY-SA 4.0</p></div>
+          </article>
+          <article class="place">
+            <div class="ph" data-label="Laad Bazaar"><img src="assets/img/laad-bazaar-1200.jpg" srcset="assets/img/laad-bazaar-640.jpg 640w, assets/img/laad-bazaar-1200.jpg 1200w, assets/img/laad-bazaar-1920.jpg 1920w" sizes="(min-width:900px) 55vw, 100vw" width="3840" height="2880" alt="A dense crowd filling Laad Bazaar beneath colourful awnings with the Mecca Masjid in the distance at sunset" loading="lazy" decoding="async"></div>
+            <button class="place-hit" type="button" aria-expanded="false" aria-label="Show Laad Bazaar"></button>
+            <span class="place-name" aria-hidden="true">Laad Bazaar</span>
+            <div class="place-body"><span class="where">Old City</span><h3>Laad Bazaar</h3><p>The market street beside the Charminar, known for lac bangles, pearls and bridal shopping. Come hungry and ready to bargain.</p><p class="credit"><a href="https://commons.wikimedia.org/wiki/File%3ALaad_Bazaar_as_seen_from_charminar.jpg" target="_blank" rel="noopener noreferrer">deadrat</a> · CC BY 4.0</p></div>
+          </article>
+          <article class="place">
+            <div class="ph" data-label="Golconda Fort"><img src="assets/img/golconda-fort-1200.jpg" srcset="assets/img/golconda-fort-640.jpg 640w, assets/img/golconda-fort-1200.jpg 1200w, assets/img/golconda-fort-1920.jpg 1920w" sizes="(min-width:900px) 55vw, 100vw" width="3840" height="2399" alt="The stone ramparts and ruined halls of Golconda Fort above a green lawn under a blue sky" loading="lazy" decoding="async"></div>
+            <button class="place-hit" type="button" aria-expanded="false" aria-label="Show Golconda Fort"></button>
+            <span class="place-name" aria-hidden="true">Golconda Fort</span>
+            <div class="place-body"><span class="where">West of the city</span><h3>Golconda Fort</h3><p>A Qutb Shahi citadel of granite ramparts and ruined halls, famed for the clap-echo near its entrance gate.</p><p class="credit"><a href="https://commons.wikimedia.org/wiki/File%3AGolconda_Fort_005.jpg" target="_blank" rel="noopener noreferrer">Bernard Gagnon</a> · CC BY-SA 3.0</p></div>
+          </article>
+          <article class="place">
+            <div class="ph" data-label="Hussain Sagar and Tank Bund"><img src="assets/img/tank-bund-1200.jpg" srcset="assets/img/tank-bund-640.jpg 640w, assets/img/tank-bund-1200.jpg 1200w, assets/img/tank-bund-1920.jpg 1920w" sizes="(min-width:900px) 55vw, 100vw" width="3840" height="2560" alt="The Buddha statue on Hussain Sagar lake lit at night, with city lights reflected across the water" loading="lazy" decoding="async"></div>
+            <button class="place-hit" type="button" aria-expanded="false" aria-label="Show Hussain Sagar and Tank Bund"></button>
+            <span class="place-name" aria-hidden="true">Hussain Sagar</span>
+            <div class="place-body"><span class="where">Central Hyderabad</span><h3>Hussain Sagar</h3><p>A lake dug in 1563, with a monolithic Buddha statue on an island and the Tank Bund promenade running along its edge.</p><p class="credit"><a href="https://commons.wikimedia.org/wiki/File%3ALong_Exposure_at_Tank_bunk_Buddha_statue.jpg" target="_blank" rel="noopener noreferrer">iMahesh</a> · CC BY-SA 4.0</p></div>
+          </article>
+          <article class="place">
+            <div class="ph" data-label="Durgam Cheruvu Cable Bridge"><img src="assets/img/cable-bridge-1200.jpg" srcset="assets/img/cable-bridge-640.jpg 640w, assets/img/cable-bridge-1200.jpg 1200w, assets/img/cable-bridge-1920.jpg 1920w" sizes="(min-width:900px) 55vw, 100vw" width="3840" height="2560" alt="The Durgam Cheruvu Cable Bridge at night, its pylon and stay cables lit in bright colours against a black sky" loading="lazy" decoding="async"></div>
+            <button class="place-hit" type="button" aria-expanded="false" aria-label="Show Durgam Cheruvu Cable Bridge"></button>
+            <span class="place-name" aria-hidden="true">Cable Bridge</span>
+            <div class="place-body"><span class="where">Madhapur · Jubilee Hills</span><h3>Durgam Cheruvu Cable Bridge</h3><p>A cable-stayed bridge across Durgam Cheruvu, opened in 2020 and lit up after dark, linking the Jubilee Hills and HITEC City sides of the lake.</p><p class="credit"><a href="https://commons.wikimedia.org/wiki/File%3ALong_Exposure_of_Cable_bridge_on_Durgam_Cheruvu.jpg" target="_blank" rel="noopener noreferrer">iMahesh</a> · CC BY-SA 4.0</p></div>
+          </article>
+          <article class="place">
+            <div class="ph" data-label="HITEC City at night"><img src="assets/img/hitec-night-1200.jpg" srcset="assets/img/hitec-night-640.jpg 640w, assets/img/hitec-night-1200.jpg 1200w, assets/img/hitec-night-1920.jpg 1920w" sizes="(min-width:900px) 55vw, 100vw" width="2048" height="922" alt="Glass office towers in Hyderabad&#x27;s HITEC City glowing at night" loading="lazy" decoding="async"></div>
+            <button class="place-hit" type="button" aria-expanded="false" aria-label="Show HITEC City"></button>
+            <span class="place-name" aria-hidden="true">HITEC City</span>
+            <div class="place-body"><span class="where">The west</span><h3>HITEC City</h3><p>The city's tech corridor, where glass towers glow late into the evening and the weekend feels a long way off, until it isn't.</p><p class="credit"><a href="https://commons.wikimedia.org/wiki/File%3AHyderabad_Hi-Tech_City_Skyline_at_Night_%E2%80%93_India%27s_Emerging_Silicon_Valley_%282025%29.jpg" target="_blank" rel="noopener noreferrer">Mohammad Anees Qamar</a> · CC BY 4.0</p></div>
+          </article>
+          <article class="place">
+            <div class="ph" data-label="Shilparamam crafts village"><img src="assets/img/shilparamam-vendor-1200.jpg" srcset="assets/img/shilparamam-vendor-640.jpg 640w, assets/img/shilparamam-vendor-1200.jpg 1200w, assets/img/shilparamam-vendor-1920.jpg 1920w" sizes="(min-width:900px) 55vw, 100vw" width="3840" height="2161" alt="A vendor holding up hand-painted ceramic bells and pots at a crowded stall at Shilparamam crafts village" loading="lazy" decoding="async"></div>
+            <button class="place-hit" type="button" aria-expanded="false" aria-label="Show Shilparamam"></button>
+            <span class="place-name" aria-hidden="true">Shilparamam</span>
+            <div class="place-body"><span class="where">Madhapur</span><h3>Shilparamam</h3><p>An arts and crafts village of handicraft stalls, open-air artists and colour at every turn.</p><p class="credit"><a href="https://commons.wikimedia.org/wiki/File%3AA_vendor_at_Shilparamam_Telengana.jpg" target="_blank" rel="noopener noreferrer">Nayan j Nath</a> · CC BY-SA 4.0</p></div>
+          </article>
+          <article class="place">
+            <div class="ph" data-label="Ananthagiri Hills"><img src="assets/img/ananthagiri-1200.jpg" srcset="assets/img/ananthagiri-640.jpg 640w, assets/img/ananthagiri-1200.jpg 1200w, assets/img/ananthagiri-1920.jpg 1920w" sizes="(min-width:900px) 55vw, 100vw" width="3840" height="2543" alt="A wide green valley seen from Ananthagiri Hills beneath a cloudy sky" loading="lazy" decoding="async"></div>
+            <button class="place-hit" type="button" aria-expanded="false" aria-label="Show Ananthagiri Hills"></button>
+            <span class="place-name" aria-hidden="true">Ananthagiri</span>
+            <div class="place-body"><span class="where">Vikarabad district</span><h3>Ananthagiri Hills</h3><p>Forested hills within reach of a day trip, a favourite for trails, birding and a quick escape from the city.</p><p class="credit"><a href="https://commons.wikimedia.org/wiki/File%3AAnanthagiri_Hills.JPG" target="_blank" rel="noopener noreferrer">Praveen120</a> · CC BY-SA 3.0</p></div>
+          </article>
+        </div>
+        <h3 class="map-title" id="map-title" data-reveal>Find them on the map</h3>
+        <p class="map-sub" data-reveal>Every place above, pinned. Tap a pin or a name to see where it sits in the city.</p>
+        <div class="map-grid" data-reveal>
+          <ol class="map-list" id="map-list" aria-label="Places on the map">
+            <li><a class="mitem" href="https://www.google.com/maps/search/?api=1&amp;query=17.3616,78.4747" target="_blank" rel="noopener noreferrer" data-lat="17.3616" data-lng="78.4747" data-name="Charminar" data-area="Old City" data-slug="charminar-market" data-group="old" data-text="The 1591 landmark at the heart of the Old City."><span class="mthumb ph" data-label="Charminar"><img src="assets/img/charminar-market-1200.jpg" srcset="assets/img/charminar-market-640.jpg 640w, assets/img/charminar-market-1200.jpg 1200w" sizes="64px" width="1620" height="1080" alt="Charminar, Hyderabad" loading="lazy" decoding="async"></span><span><b>Charminar</b><small>Old City</small></span></a></li>
+            <li><a class="mitem" href="https://www.google.com/maps/search/?api=1&amp;query=17.3609,78.4722" target="_blank" rel="noopener noreferrer" data-lat="17.3609" data-lng="78.4722" data-name="Laad Bazaar" data-area="Old City" data-slug="laad-bazaar" data-group="old" data-text="Bangles, pearls and bridal shopping beside the Charminar."><span class="mthumb ph" data-label="Laad Bazaar"><img src="assets/img/laad-bazaar-1200.jpg" srcset="assets/img/laad-bazaar-640.jpg 640w, assets/img/laad-bazaar-1200.jpg 1200w, assets/img/laad-bazaar-1920.jpg 1920w" sizes="64px" width="3840" height="2880" alt="Laad Bazaar, Hyderabad" loading="lazy" decoding="async"></span><span><b>Laad Bazaar</b><small>Old City</small></span></a></li>
+            <li><a class="mitem" href="https://www.google.com/maps/search/?api=1&amp;query=17.3578,78.4719" target="_blank" rel="noopener noreferrer" data-lat="17.3578" data-lng="78.4719" data-name="Chowmahalla Palace" data-area="Old City" data-slug="chowmahalla" data-group="old" data-text="The Nizams' palace complex with its courtyards and lawns."><span class="mthumb ph" data-label="Chowmahalla Palace"><img src="assets/img/chowmahalla-1200.jpg" srcset="assets/img/chowmahalla-640.jpg 640w, assets/img/chowmahalla-1200.jpg 1200w, assets/img/chowmahalla-1920.jpg 1920w" sizes="64px" width="3840" height="2880" alt="Chowmahalla Palace, Hyderabad" loading="lazy" decoding="async"></span><span><b>Chowmahalla Palace</b><small>Old City</small></span></a></li>
+            <li><a class="mitem" href="https://www.google.com/maps/search/?api=1&amp;query=17.3833,78.4011" target="_blank" rel="noopener noreferrer" data-lat="17.3833" data-lng="78.4011" data-name="Golconda Fort" data-area="West of the city" data-slug="golconda-fort" data-group="" data-text="Granite ramparts of the Qutb Shahi citadel."><span class="mthumb ph" data-label="Golconda Fort"><img src="assets/img/golconda-fort-1200.jpg" srcset="assets/img/golconda-fort-640.jpg 640w, assets/img/golconda-fort-1200.jpg 1200w, assets/img/golconda-fort-1920.jpg 1920w" sizes="64px" width="3840" height="2399" alt="Golconda Fort, Hyderabad" loading="lazy" decoding="async"></span><span><b>Golconda Fort</b><small>West of the city</small></span></a></li>
+            <li><a class="mitem" href="https://www.google.com/maps/search/?api=1&amp;query=17.3947,78.3944" target="_blank" rel="noopener noreferrer" data-lat="17.3947" data-lng="78.3944" data-name="Qutb Shahi Tombs" data-area="Ibrahim Bagh" data-slug="qutb-shahi" data-group="" data-text="Domed royal tombs, beautifully lit after dark."><span class="mthumb ph" data-label="Qutb Shahi Tombs"><img src="assets/img/qutb-shahi-1200.jpg" srcset="assets/img/qutb-shahi-640.jpg 640w, assets/img/qutb-shahi-1200.jpg 1200w, assets/img/qutb-shahi-1920.jpg 1920w" sizes="64px" width="3840" height="2560" alt="Qutb Shahi Tombs, Hyderabad" loading="lazy" decoding="async"></span><span><b>Qutb Shahi Tombs</b><small>Ibrahim Bagh</small></span></a></li>
+            <li><a class="mitem" href="https://www.google.com/maps/search/?api=1&amp;query=17.4239,78.4738" target="_blank" rel="noopener noreferrer" data-lat="17.4239" data-lng="78.4738" data-name="Hussain Sagar" data-area="Tank Bund" data-slug="tank-bund" data-group="" data-text="The lake, the Buddha statue and the Tank Bund promenade."><span class="mthumb ph" data-label="Hussain Sagar"><img src="assets/img/tank-bund-1200.jpg" srcset="assets/img/tank-bund-640.jpg 640w, assets/img/tank-bund-1200.jpg 1200w, assets/img/tank-bund-1920.jpg 1920w" sizes="64px" width="3840" height="2560" alt="Hussain Sagar, Hyderabad" loading="lazy" decoding="async"></span><span><b>Hussain Sagar</b><small>Tank Bund</small></span></a></li>
+            <li><a class="mitem" href="https://www.google.com/maps/search/?api=1&amp;query=17.4321,78.3869" target="_blank" rel="noopener noreferrer" data-lat="17.4321" data-lng="78.3869" data-name="Durgam Cheruvu Cable Bridge" data-area="Madhapur" data-slug="cable-bridge" data-group="" data-text="A cable-stayed bridge, lit up after dark."><span class="mthumb ph" data-label="Durgam Cheruvu Cable Bridge"><img src="assets/img/cable-bridge-1200.jpg" srcset="assets/img/cable-bridge-640.jpg 640w, assets/img/cable-bridge-1200.jpg 1200w, assets/img/cable-bridge-1920.jpg 1920w" sizes="64px" width="3840" height="2560" alt="Durgam Cheruvu Cable Bridge, Hyderabad" loading="lazy" decoding="async"></span><span><b>Durgam Cheruvu Cable Bridge</b><small>Madhapur</small></span></a></li>
+            <li><a class="mitem" href="https://www.google.com/maps/search/?api=1&amp;query=17.4435,78.3772" target="_blank" rel="noopener noreferrer" data-lat="17.4435" data-lng="78.3772" data-name="HITEC City" data-area="The west" data-slug="hitec-night" data-group="" data-text="The tech corridor's glass towers at night."><span class="mthumb ph" data-label="HITEC City"><img src="assets/img/hitec-night-1200.jpg" srcset="assets/img/hitec-night-640.jpg 640w, assets/img/hitec-night-1200.jpg 1200w, assets/img/hitec-night-1920.jpg 1920w" sizes="64px" width="2048" height="922" alt="HITEC City, Hyderabad" loading="lazy" decoding="async"></span><span><b>HITEC City</b><small>The west</small></span></a></li>
+            <li><a class="mitem" href="https://www.google.com/maps/search/?api=1&amp;query=17.4524,78.3817" target="_blank" rel="noopener noreferrer" data-lat="17.4524" data-lng="78.3817" data-name="Shilparamam" data-area="Madhapur" data-slug="shilparamam-vendor" data-group="" data-text="Arts and crafts village with stalls and live artists."><span class="mthumb ph" data-label="Shilparamam"><img src="assets/img/shilparamam-vendor-1200.jpg" srcset="assets/img/shilparamam-vendor-640.jpg 640w, assets/img/shilparamam-vendor-1200.jpg 1200w, assets/img/shilparamam-vendor-1920.jpg 1920w" sizes="64px" width="3840" height="2161" alt="Shilparamam, Hyderabad" loading="lazy" decoding="async"></span><span><b>Shilparamam</b><small>Madhapur</small></span></a></li>
+            <li><a class="mitem" href="https://www.google.com/maps/search/?api=1&amp;query=17.32,77.87" target="_blank" rel="noopener noreferrer" data-lat="17.32" data-lng="77.87" data-name="Ananthagiri Hills" data-area="Vikarabad district" data-slug="ananthagiri" data-group="" data-text="Forested hills for trails and day trips. Pin is approximate; about 80 km west of the city."><span class="mthumb ph" data-label="Ananthagiri Hills"><img src="assets/img/ananthagiri-1200.jpg" srcset="assets/img/ananthagiri-640.jpg 640w, assets/img/ananthagiri-1200.jpg 1200w, assets/img/ananthagiri-1920.jpg 1920w" sizes="64px" width="3840" height="2543" alt="Ananthagiri Hills, Hyderabad" loading="lazy" decoding="async"></span><span><b>Ananthagiri Hills</b><small>Vikarabad district</small></span></a></li>
+          </ol>
+          <div class="map-box"><div id="map" role="region" aria-labelledby="map-title"></div><button class="map-fit" id="map-fit" type="button">Show all</button></div>
+        </div>
+        <p class="map-note">Pin positions are approximate. Map tiles © Esri, HERE, Garmin, OpenStreetMap contributors.</p>
+      </div>
+    </section>
+
+    <!-- COMMUNITY -->
+    <section class="community on-light pad" id="community" aria-labelledby="community-title">
+      <div class="wrap">
+        <div class="journal-head" data-reveal>
+          <div><div class="eyebrow">05 · The best part is who you meet</div><h2 class="h-section" id="community-title">A good plan.<br><em>Better people.</em></h2></div>
+          <p class="lede">The goal isn't just to fill a Saturday. It's to find people who will say yes to the next one. Start with an activity; let the rest happen naturally.</p>
+        </div>
+        <div class="journal">
+          <figure class="jtile j1" data-reveal><div class="ph" style="position:absolute;inset:0" data-label="Ananthagiri trail"><img src="assets/img/ananthagiri-trail-1200.jpg" srcset="assets/img/ananthagiri-trail-640.jpg 640w, assets/img/ananthagiri-trail-1200.jpg 1200w, assets/img/ananthagiri-trail-1920.jpg 1920w" sizes="(min-width:900px) 40vw, 100vw" width="3264" height="2448" alt="A shaded dirt trail among twisting trees in the forest of Ananthagiri Hills" loading="lazy" decoding="async"></div><figcaption><b>Out on the trail</b>Ananthagiri Hills</figcaption></figure>
+          <figure class="jtile j2" data-reveal data-d="1"><div class="ph" style="position:absolute;inset:0" data-label="Night street food stall in Hyderabad"><img src="assets/img/street-food-1200.jpg" srcset="assets/img/street-food-640.jpg 640w, assets/img/street-food-1200.jpg 1200w, assets/img/street-food-1920.jpg 1920w" sizes="(min-width:900px) 28vw, 50vw" width="2816" height="2112" alt="A glass-fronted street food cart under warm streetlights at night in Hyderabad, with cycles parked beside it" loading="lazy" decoding="async"></div><figcaption><b>Late-night bites</b>A street food cart, Hyderabad</figcaption></figure>
+          <figure class="jtile j3" data-reveal data-d="2"><div class="ph" style="position:absolute;inset:0" data-label="Lac bangles at Laad Bazaar"><img src="assets/img/laad-bangles-1200.jpg" srcset="assets/img/laad-bangles-640.jpg 640w, assets/img/laad-bangles-1200.jpg 1200w" sizes="(min-width:900px) 30vw, 50vw" width="1420" height="1120" alt="A hand sorting through heaps of colourful sparkling lac bangles at Laad Bazaar" loading="lazy" decoding="async"></div><figcaption><b>Colour and craft</b>Laad Bazaar</figcaption></figure>
+          <figure class="jtile j4" data-reveal><div class="ph" style="position:absolute;inset:0" data-label="Durgam Cheruvu from above"><img src="assets/img/durgam-aerial-1200.jpg" srcset="assets/img/durgam-aerial-640.jpg 640w, assets/img/durgam-aerial-1200.jpg 1200w, assets/img/durgam-aerial-1920.jpg 1920w" sizes="(min-width:900px) 30vw, 50vw" width="3840" height="2560" alt="Aerial view of the Durgam Cheruvu lake and cable bridge with the HITEC City skyline beyond" loading="lazy" decoding="async"></div><figcaption><b>The view from above</b>Durgam Cheruvu</figcaption></figure>
+          <figure class="jtile j5" data-reveal data-d="1"><div class="ph" style="position:absolute;inset:0" data-label="Hussain Sagar at night"><img src="assets/img/hussain-sagar-1200.jpg" srcset="assets/img/hussain-sagar-640.jpg 640w, assets/img/hussain-sagar-1200.jpg 1200w, assets/img/hussain-sagar-1920.jpg 1920w" sizes="(min-width:900px) 30vw, 50vw" width="3840" height="2570" alt="The Buddha statue on Hussain Sagar lake at night, with city lights reflected in the water" loading="lazy" decoding="async"></div><figcaption><b>Evenings by the water</b>Hussain Sagar</figcaption></figure>
+          <figure class="jtile j6" data-reveal data-d="2"><div class="ph" style="position:absolute;inset:0" data-label="Golconda Fort and the city"><img src="assets/img/golconda-city-1200.jpg" srcset="assets/img/golconda-city-640.jpg 640w, assets/img/golconda-city-1200.jpg 1200w, assets/img/golconda-city-1920.jpg 1920w" sizes="(min-width:900px) 30vw, 50vw" width="3840" height="2560" alt="A ruined stone structure at Golconda Fort with the Hyderabad skyline stretching out behind it" loading="lazy" decoding="async"></div><figcaption><b>The old and the new</b>Golconda Fort, with the city behind</figcaption></figure>
+        </div>
+        <div class="quote-band" data-reveal>
+          <p>Strangers today. Teammates tomorrow.</p>
+          <div class="links">
+            <a class="link" href="https://www.instagram.com/gohyderabad/" target="_blank" rel="noopener noreferrer">@gohyderabad <svg aria-hidden="true"><use href="#i-up-right"/></svg></a>
+            <a class="link" href="https://www.instagram.com/goadventure.in/" target="_blank" rel="noopener noreferrer">@goadventure.in <svg aria-hidden="true"><use href="#i-up-right"/></svg></a>
+          </div>
+        </div>
+        <p class="note-small" data-reveal>The photographs here are openly licensed images of the places GoHyderabad explores, credited at the foot of the page. GoHyderabad's own community moments live on Instagram.</p>
+      </div>
+    </section>
+
+    <!-- HOW -->
+    <section class="how pad" id="how" aria-labelledby="how-title">
+      <div class="wrap">
+        <div class="how-head" data-reveal>
+          <div><div class="eyebrow">06 · No complicated plans</div><h2 class="h-section" id="how-title">Three steps.<br><em>One good weekend.</em></h2></div>
+          <span class="section-no">HOW IT WORKS</span>
+        </div>
+        <div class="steps">
+          <article class="step" data-reveal><div class="step-n">01</div><h3>Find your plan.</h3><p>Explore the kinds of rides, games and get-togethers you'd be excited to join.</p></article>
+          <article class="step" data-reveal data-d="1"><div class="step-n">02</div><h3>Check the details.</h3><p>Open the latest announcement for the real date, meeting point, price and booking information.</p></article>
+          <article class="step" data-reveal data-d="2"><div class="step-n">03</div><h3>Show up &amp; connect.</h3><p>Meet the group, enjoy the experience and give your next weekend a better story.</p></article>
+        </div>
+        <aside class="teams" data-reveal>
+          <div><div class="eyebrow">For teams</div><h3>Bring your team out.</h3><p>Looking for a corporate offsite or group outing? Ask GoHyderabad about current options.</p></div>
+          <a class="btn btn-ghost" href="https://www.instagram.com/gohyderabad/" target="_blank" rel="noopener noreferrer">Message on Instagram <svg aria-hidden="true"><use href="#i-up-right"/></svg></a>
+        </aside>
+      </div>
+    </section>
+
+    <!-- CLOSING -->
+    <section class="closing" aria-labelledby="closing-title">
+      <div class="ph" data-label="Golconda Fort ramparts"><img src="assets/img/golconda-fort-1200.jpg" srcset="assets/img/golconda-fort-640.jpg 640w, assets/img/golconda-fort-1200.jpg 1200w, assets/img/golconda-fort-1920.jpg 1920w" sizes="100vw" width="3840" height="2399" alt="The stone ramparts and ruined halls of Golconda Fort stretching across a green lawn under a blue sky" loading="lazy" decoding="async"></div>
+      <div class="wrap" data-reveal>
+        <div class="eyebrow">Your city. Your people. Your weekend.</div>
+        <h2 id="closing-title">Don't just<br>spend it. <em>Live it.</em></h2>
+        <p>Your next favourite experience is closer than you think. Find the latest plans and come meet your crew.</p>
+        <a class="btn" href="https://www.instagram.com/gohyderabad/" target="_blank" rel="noopener noreferrer">Find your next adventure <svg aria-hidden="true"><use href="#i-up-right"/></svg></a>
+      </div>
+      <p class="credit">Golconda Fort · <a href="https://commons.wikimedia.org/wiki/File%3AGolconda_Fort_005.jpg" target="_blank" rel="noopener noreferrer">Bernard Gagnon</a> · CC BY-SA 3.0</p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="foot-grid">
+        <div>
+          <a class="brand" href="#home" aria-label="GoHyderabad home"><img src="assets/logo.png" width="160" height="160" alt=""><span><b>GoHyderabad</b><small>Meet · Explore · Experience</small></span></a>
+          <p>Weekend experiences around Hyderabad, built around the joy of finding your people.</p>
+        </div>
+        <nav aria-label="Footer navigation"><h2>Explore</h2>
+          <div class="foot-links"><a href="#experiences">Experiences</a><a href="#events">Events</a><a href="#explore">Explore Hyderabad</a><a href="#community">Community</a><a href="#how">How it works</a></div>
+        </nav>
+        <div><h2>Stay in the loop</h2>
+          <div class="foot-links"><a href="https://www.instagram.com/gohyderabad/" target="_blank" rel="noopener noreferrer">Instagram · @gohyderabad ↗</a><a href="https://www.instagram.com/goadventure.in/" target="_blank" rel="noopener noreferrer">Instagram · @goadventure.in ↗</a></div>
+        </div>
+      </div>
+      <details class="credits" id="credits">
+        <summary>Photo credits &amp; licences</summary>
+        <ol>
+          <li class="intro-note">All photographs are from Wikimedia Commons and used under the licences shown. Where a photo was taken outside Hyderabad, it is labelled on the image.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3AAnanthagiri_Hills.JPG" target="_blank" rel="noopener noreferrer">Ananthagiri Hills.JPG</a>” by Praveen120, <a href="https://creativecommons.org/licenses/by-sa/3.0" target="_blank" rel="noopener noreferrer">CC BY-SA 3.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3AAnanthagiri_Hills_Trekking_Area.jpg" target="_blank" rel="noopener noreferrer">Ananthagiri Hills Trekking Area.jpg</a>” by Tanukusreeharsha, <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3AChicken_Hyderabadi_Biryani.JPG" target="_blank" rel="noopener noreferrer">Chicken Hyderabadi Biryani.JPG</a>” by Dheerajk88, <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3ALong_Exposure_of_Cable_bridge_on_Durgam_Cheruvu.jpg" target="_blank" rel="noopener noreferrer">Long Exposure of Cable bridge on Durgam Cheruvu.jpg</a>” by iMahesh, <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3AThe_Charminar_from_Nimrah_Cafe.jpg" target="_blank" rel="noopener noreferrer">The Charminar from Nimrah Cafe.jpg</a>” by VISHNU SHANKAR P, <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3ABun_maska_irani_chai_niloufer_cafe_hyderabad.jpg" target="_blank" rel="noopener noreferrer">Bun maska irani chai niloufer cafe hyderabad.jpg</a>” by Teja011, <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3ACharminar_night_1.jpg" target="_blank" rel="noopener noreferrer">Charminar night 1.jpg</a>” by Jagannathsrs, <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3ACharminar_at_Sunset.JPG" target="_blank" rel="noopener noreferrer">Charminar at Sunset.JPG</a>” by Anumeha Shukla, <a href="https://creativecommons.org/licenses/by-sa/3.0" target="_blank" rel="noopener noreferrer">CC BY-SA 3.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3AChowmahalla_Palace_Hyderabad_Tealagana_India.jpg" target="_blank" rel="noopener noreferrer">Chowmahalla Palace Hyderabad Tealagana India.jpg</a>” by Kavali Chandrakanth KCK, <a href="http://creativecommons.org/publicdomain/zero/1.0/deed.en" target="_blank" rel="noopener noreferrer">CC0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3ACricket_being_played_on_a_Summer_Morning_in_India.jpg" target="_blank" rel="noopener noreferrer">Cricket being played on a Summer Morning in India.jpg</a>” by Prabhat1729, <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3ABoys_Playing_Cricket_-_Working-Class_Neighborhood_-_Suburban_Kolkata_-_India_%2812287932744%29.jpg" target="_blank" rel="noopener noreferrer">Boys Playing Cricket - Working-Class Neighborhood - Suburban Kolkata - India (12287932744).jpg</a>” by Adam Jones, <a href="https://creativecommons.org/licenses/by-sa/2.0" target="_blank" rel="noopener noreferrer">CC BY-SA 2.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3AAerial_view_of_Durgam_cheruvu_and_Hitech_CIty.jpg" target="_blank" rel="noopener noreferrer">Aerial view of Durgam cheruvu and Hitech CIty.jpg</a>” by iMahesh, <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3AGolconda_Fort_and_Hyderabad_city.jpg" target="_blank" rel="noopener noreferrer">Golconda Fort and Hyderabad city.jpg</a>” by iMahesh, <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3AGolconda_Fort_005.jpg" target="_blank" rel="noopener noreferrer">Golconda Fort 005.jpg</a>” by Bernard Gagnon, <a href="https://creativecommons.org/licenses/by-sa/3.0" target="_blank" rel="noopener noreferrer">CC BY-SA 3.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3APerspective_view_of_Charminar_at_night_%28June_2019%29.jpg" target="_blank" rel="noopener noreferrer">Perspective view of Charminar at night (June 2019).jpg</a>” by iMahesh, <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3AHyderabad_Hi-Tech_City_Skyline_at_Night_%E2%80%93_India%27s_Emerging_Silicon_Valley_%282025%29.jpg" target="_blank" rel="noopener noreferrer">Hyderabad Hi-Tech City Skyline at Night – India&#x27;s Emerging Silicon Valley (2025).jpg</a>” by Mohammad Anees Qamar, <a href="https://creativecommons.org/licenses/by/4.0" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3ABuddha_Statue%2C_Hussain_Sagar%2C_Hyd.JPG" target="_blank" rel="noopener noreferrer">Buddha Statue, Hussain Sagar, Hyd.JPG</a>” by Nikhilb239, <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3ALaad_Bazaar_Bangles.jpg" target="_blank" rel="noopener noreferrer">Laad Bazaar Bangles.jpg</a>” by Abhinaba Basu, <a href="https://creativecommons.org/licenses/by/2.0" target="_blank" rel="noopener noreferrer">CC BY 2.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3ALaad_Bazaar_as_seen_from_charminar.jpg" target="_blank" rel="noopener noreferrer">Laad Bazaar as seen from charminar.jpg</a>” by deadrat, <a href="https://creativecommons.org/licenses/by/4.0" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3AMecca_Masjid_in_Hyderabad_12.jpg" target="_blank" rel="noopener noreferrer">Mecca Masjid in Hyderabad 12.jpg</a>” by Tarunsamanta, <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3APaigah_Tombs_03.jpg" target="_blank" rel="noopener noreferrer">Paigah Tombs 03.jpg</a>” by Bernard Gagnon, <a href="https://creativecommons.org/licenses/by-sa/3.0" target="_blank" rel="noopener noreferrer">CC BY-SA 3.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3AQutub_Shahi_Tombs_illuminated.jpg" target="_blank" rel="noopener noreferrer">Qutub Shahi Tombs illuminated.jpg</a>” by iMahesh, <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3ALadakh_motorcycling.jpg" target="_blank" rel="noopener noreferrer">Ladakh motorcycling.jpg</a>” by Ville Hyvönen, <a href="https://creativecommons.org/licenses/by-sa/2.0" target="_blank" rel="noopener noreferrer">CC BY-SA 2.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3AThe_highway_in_heaven.jpg" target="_blank" rel="noopener noreferrer">The highway in heaven.jpg</a>” by Eldhojose19, <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3ARoyal_Enfield_rider%27s_at_%22_2019_Royal_Enfield_One_Ride_%22_festival_at_Vagator_in_Goa.jpg" target="_blank" rel="noopener noreferrer">Royal Enfield rider&#x27;s at &quot; 2019 Royal Enfield One Ride &quot; festival at Vagator in Goa.jpg</a>” by Rudolphfurtado, <a href="https://creativecommons.org/licenses/by/4.0" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3AAn_artist_drawing_a_portrait_of_a_client_at_Shilparamam_village.jpg" target="_blank" rel="noopener noreferrer">An artist drawing a portrait of a client at Shilparamam village.jpg</a>” by Nayan j Nath, <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3AA_vendor_at_Shilparamam_Telengana.jpg" target="_blank" rel="noopener noreferrer">A vendor at Shilparamam Telengana.jpg</a>” by Nayan j Nath, <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3ANight_Street_Food_Stall_Hyderabad.jpg" target="_blank" rel="noopener noreferrer">Night Street Food Stall Hyderabad.jpg</a>” by STLLR Photo, <a href="https://creativecommons.org/licenses/by/2.0" target="_blank" rel="noopener noreferrer">CC BY 2.0</a>. Resized for web.</li>
+          <li>“<a href="https://commons.wikimedia.org/wiki/File%3ALong_Exposure_at_Tank_bunk_Buddha_statue.jpg" target="_blank" rel="noopener noreferrer">Long Exposure at Tank bunk Buddha statue.jpg</a>” by iMahesh, <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. Resized for web.</li>
+        </ol>
+      </details>
+      <div class="foot-bottom"><span>© <span id="year">2026</span> <strong>GoHyderabad</strong> · Meet. Explore. Experience.</span><span>Made for weekends in Hyderabad.</span></div>
+    </div>
+  </footer>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script>
+    (function () {
+      "use strict";
+      var root = document.documentElement;
+      var body = document.body;
+      var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+      root.classList.add("js-ready");
+      document.getElementById("year").textContent = String(new Date().getFullYear());
+
+      // Broken image fallback
+      document.addEventListener("error", function (e) {
+        var t = e.target;
+        if (t && t.tagName === "IMG" && t.parentElement) {
+          t.parentElement.classList.add("img-failed");
+          if (!t.parentElement.dataset.label) t.parentElement.dataset.label = t.alt || "";
+        }
+      }, true);
+
+      // Header, progress, hero scroll parallax
+      var header = document.getElementById("header");
+      var progress = document.getElementById("progress");
+      var hero = document.getElementById("home");
+      var stickyCta = document.getElementById("sticky-cta");
+      var ticking = false;
+      function onScroll() {
+        var y = window.scrollY;
+        var max = root.scrollHeight - window.innerHeight;
+        header.classList.toggle("scrolled", y > 24);
+        stickyCta.classList.toggle("show", y > hero.offsetHeight * 0.7);
+        progress.style.transform = "scaleX(" + (max > 0 ? Math.min(1, y / max) : 0) + ")";
+        if (!reduce && y < hero.offsetHeight) hero.style.setProperty("--sy", String(Math.round(y * 0.22)));
+        ticking = false;
+      }
+      window.addEventListener("scroll", function () { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
+      onScroll();
+
+      // Mobile menu
+      var menuBtn = document.getElementById("menu-btn");
+      var menuIcon = document.getElementById("menu-icon");
+      var nav = document.getElementById("nav-links");
+      function setMenu(open) {
+        body.classList.toggle("menu-open", open);
+        menuBtn.setAttribute("aria-expanded", String(open));
+        menuBtn.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+        menuIcon.innerHTML = '<use href="#' + (open ? "i-close" : "i-menu") + '"></use>';
+      }
+      menuBtn.addEventListener("click", function () { setMenu(menuBtn.getAttribute("aria-expanded") !== "true"); });
+      nav.addEventListener("click", function (e) { if (e.target.closest("a")) setMenu(false); });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && menuBtn.getAttribute("aria-expanded") === "true") { setMenu(false); menuBtn.focus(); }
+      });
+      window.addEventListener("resize", function () { if (window.innerWidth > 860) setMenu(false); });
+
+      // Scroll reveal
+      var items = document.querySelectorAll("[data-reveal]");
+      items.forEach(function (el) { if (el.dataset.d) el.style.setProperty("--d", el.dataset.d); });
+      if ("IntersectionObserver" in window && !reduce) {
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("is-visible"); io.unobserve(en.target); } });
+        }, { threshold: 0.1, rootMargin: "0px 0px -30px 0px" });
+        items.forEach(function (el) { io.observe(el); });
+      } else {
+        items.forEach(function (el) { el.classList.add("is-visible"); });
+      }
+
+      // Hero pointer parallax
+      if (fine && !reduce) {
+        hero.addEventListener("pointermove", function (e) {
+          var r = hero.getBoundingClientRect();
+          hero.style.setProperty("--mx", ((e.clientX - r.left) / r.width - 0.5).toFixed(3));
+          hero.style.setProperty("--my", ((e.clientY - r.top) / r.height - 0.5).toFixed(3));
+        });
+        hero.addEventListener("pointerleave", function () { hero.style.setProperty("--mx", "0"); hero.style.setProperty("--my", "0"); });
+
+        // Subtle 3D tilt
+        document.querySelectorAll("[data-tilt]").forEach(function (el) {
+          var deg = parseFloat(el.dataset.tilt) || 4;
+          el.addEventListener("pointermove", function (e) {
+            var r = el.getBoundingClientRect();
+            var x = (e.clientX - r.left) / r.width - 0.5;
+            var y = (e.clientY - r.top) / r.height - 0.5;
+            el.style.transform = "perspective(1000px) rotateX(" + (-y * deg).toFixed(2) + "deg) rotateY(" + (x * deg).toFixed(2) + "deg)";
+          });
+          el.addEventListener("pointerleave", function () { el.style.transform = ""; });
+        });
+      }
+
+      // Explore accordion
+      var places = Array.prototype.slice.call(document.querySelectorAll("#places .place"));
+      function activate(p) {
+        places.forEach(function (el) {
+          var on = el === p;
+          el.classList.toggle("is-active", on);
+          el.querySelector(".place-hit").setAttribute("aria-expanded", String(on));
+        });
+      }
+      places.forEach(function (p) {
+        var hit = p.querySelector(".place-hit");
+        hit.addEventListener("click", function () { activate(p); });
+        hit.addEventListener("focus", function () { activate(p); });
+        if (fine) {
+          var timer;
+          hit.addEventListener("pointerenter", function () { clearTimeout(timer); timer = setTimeout(function () { activate(p); }, 130); });
+          hit.addEventListener("pointerleave", function () { clearTimeout(timer); });
+        }
+      });
+
+      // Map
+      var rows = Array.prototype.slice.call(document.querySelectorAll(".mitem"));
+      var mapEl = document.getElementById("map");
+      if (window.L && mapEl) {
+        var map = L.map(mapEl, { scrollWheelZoom: false, zoomControl: true, dragging: !L.Browser.mobile, tap: false });
+        L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", { maxZoom: 18, attribution: "Tiles &copy; Esri &mdash; Esri, HERE, Garmin, OpenStreetMap contributors" }).addTo(map);
+        mapEl.addEventListener("click", function () { map.scrollWheelZoom.enable(); });
+        mapEl.addEventListener("mouseleave", function () { map.scrollWheelZoom.disable(); });
+        function pinIcon(img, count) {
+          return L.divIcon({ className: "pin-wrap", iconSize: [46, 46], iconAnchor: [23, 54], popupAnchor: [0, -50],
+            html: '<span class="pin" style="background-image:url(\'' + img + '\')">' + (count ? '<b class="pin-n">' + count + "</b>" : "") + "</span>" });
+        }
+        function popup(d) {
+          var w = document.createElement("div"); w.className = "pop";
+          var im = document.createElement("img"); im.src = d.img; im.alt = d.name; im.loading = "lazy";
+          var b = document.createElement("div"), h = document.createElement("b"), p = document.createElement("p"), a = document.createElement("a");
+          h.textContent = d.name; p.textContent = d.text; a.textContent = "Open in Google Maps \u2197"; a.href = d.href; a.target = "_blank"; a.rel = "noopener noreferrer";
+          b.appendChild(h); b.appendChild(p); b.appendChild(a); w.appendChild(im); w.appendChild(b); return w;
+        }
+        var items = rows.map(function (r) {
+          var d = { name: r.dataset.name, text: r.dataset.text, group: r.dataset.group, href: r.href, ll: [+r.dataset.lat, +r.dataset.lng], img: "assets/img/" + r.dataset.slug + "-640.jpg", row: r };
+          d.marker = L.marker(d.ll, { icon: pinIcon(d.img), title: d.name, keyboard: true }).bindPopup(popup(d), { closeButton: true, autoPanPadding: [30, 30] });
+          return d;
+        });
+        var old = items.filter(function (d) { return d.group === "old"; });
+        var cluster = L.marker(old[0].ll, { icon: pinIcon(old[0].img, old.length), title: "Old City: " + old.length + " places. Zoom in.", keyboard: true });
+        cluster.on("click", function () { map.flyTo(old[0].ll, 16, { duration: 1 }); });
+        var CLUSTER_ZOOM = 15;
+        function sync() {
+          var zoomedIn = map.getZoom() >= CLUSTER_ZOOM;
+          items.forEach(function (d) {
+            var show = d.group !== "old" || zoomedIn;
+            if (show && !map.hasLayer(d.marker)) d.marker.addTo(map);
+            if (!show && map.hasLayer(d.marker)) map.removeLayer(d.marker);
+          });
+          if (zoomedIn) { if (map.hasLayer(cluster)) map.removeLayer(cluster); } else if (!map.hasLayer(cluster)) cluster.addTo(map);
+        }
+        var cityBounds = L.latLngBounds(items.filter(function (d) { return d.name !== "Ananthagiri Hills"; }).map(function (d) { return d.ll; }));
+        var allBounds = L.latLngBounds(items.map(function (d) { return d.ll; }));
+        map.fitBounds(cityBounds, { padding: [50, 50] });
+        map.on("zoomend", sync); sync();
+        map.on("popupopen", function (e) { items.forEach(function (d) { var on = d.marker === e.popup._source; d.row.classList.toggle("is-on", on); if (d.marker._icon) d.marker._icon.classList.toggle("is-on", on); }); });
+        map.on("popupclose", function () { rows.forEach(function (r) { r.classList.remove("is-on"); }); });
+        rows.forEach(function (r, i) {
+          r.addEventListener("click", function (e) {
+            e.preventDefault();
+            var d = items[i], z = d.name === "Ananthagiri Hills" ? 12 : 16;
+            map.flyTo(d.ll, z, { duration: 1.1 });
+            map.once("moveend", function () { sync(); d.marker.openPopup(); });
+            document.getElementById("map").scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" });
+          });
+        });
+        document.getElementById("map-fit").addEventListener("click", function () { map.closePopup(); map.flyToBounds(allBounds, { padding: [40, 40], duration: 1.1 }); });
+        window.addEventListener("load", function () { map.invalidateSize(); });
+      } else {
+        var fit = document.getElementById("map-fit"); if (fit) fit.hidden = true;
+        if (mapEl) { mapEl.textContent = "The interactive map couldn't load. Use the list to open each place in Google Maps."; mapEl.style.cssText = "display:grid;place-items:center;padding:24px;text-align:center;color:#5a5a4d"; }
+      }
+
+      // Events filter (chips + experience cards)
+      var chips = Array.prototype.slice.call(document.querySelectorAll(".chip"));
+      var cards = Array.prototype.slice.call(document.querySelectorAll(".ecard"));
+      function filter(cat) {
+        chips.forEach(function (c) { c.setAttribute("aria-pressed", String(c.dataset.chip === cat)); });
+        cards.forEach(function (c) { var show = cat === "all" || c.dataset.cat === cat; c.hidden = !show; if (show) c.classList.add("is-visible"); });
+      }
+      chips.forEach(function (c) { c.addEventListener("click", function () { filter(c.dataset.chip); }); });
+      document.querySelectorAll("[data-filter]").forEach(function (a) {
+        a.addEventListener("click", function () { filter(a.dataset.filter); });
+      });
+    }());
+  </script>
+</body>
+</html>
