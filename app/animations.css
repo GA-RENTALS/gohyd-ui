@@ -1,0 +1,126 @@
+/* Motion layer — added on top of globals.css. Reduced-motion users get none of it (see end of globals.css). */
+
+/* ---------- Page load: hero choreography ---------- */
+@keyframes lineUp { from { opacity: 0; transform: translateY(55%) rotate(1.5deg); filter: blur(10px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+@keyframes dropIn { from { opacity: 0; transform: translateY(-100%); } to { opacity: 1; transform: none; } }
+@keyframes kenBurns { from { transform: scale(1.14); } to { transform: scale(1); } }
+@keyframes floaty { 0%, 100% { translate: 0 0; } 50% { translate: 0 -8px; } }
+@keyframes sheen { from { transform: translateX(-120%) skewX(-18deg); } to { transform: translateX(220%) skewX(-18deg); } }
+@keyframes imgIn { from { transform: scale(1.22); filter: blur(6px); } to { transform: none; filter: none; } }
+@keyframes wipe { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0); } }
+@keyframes marquee { to { transform: translateX(-50%); } }
+@keyframes pinDrop { 0% { opacity: 0; transform: translateY(-40px) scale(.6); } 60% { opacity: 1; transform: translateY(4px) scale(1.04); } 100% { transform: none; } }
+@keyframes pulseRing { 0% { box-shadow: 0 0 0 0 rgba(233,180,76,.55); } 100% { box-shadow: 0 0 0 18px rgba(233,180,76,0); } }
+
+.header { animation: dropIn .9s var(--ease) both; }
+
+.hero h1 span { animation: lineUp 1.1s var(--ease) .25s both; will-change: transform; }
+.hero h1 span + span { animation-delay: .42s; }
+.hero-place { animation: fadeUp .9s var(--ease) .1s both; }
+.hero-copy > p { animation: fadeUp .9s var(--ease) .75s both; }
+.hero-actions { animation: fadeUp .9s var(--ease) .9s both; }
+.hero-foot { animation: fadeUp .9s var(--ease) 1.2s both; }
+.hero-caption { animation: fadeUp 1s var(--ease) 1.1s both, floaty 7s ease-in-out 2.2s infinite; }
+.hero-photo .ph img { animation: kenBurns 2.8s var(--ease) both; }
+
+/* ---------- Scroll reveals (hook onto the existing [data-reveal] / .is-visible) ---------- */
+.js-ready [data-reveal] .eyebrow::before { transform: scaleX(0); transform-origin: left; transition: transform .9s var(--ease) .25s; }
+.js-ready [data-reveal].is-visible .eyebrow::before { transform: scaleX(1); }
+.h-section em { background: linear-gradient(currentColor, currentColor) 0 94% / 0 2px no-repeat; transition: background-size 1.1s var(--ease) .5s; }
+.js-ready [data-reveal].is-visible .h-section em { background-size: 100% 2px; }
+
+.js-ready .step[data-reveal] .step-n { transform: scale(.6) rotate(-8deg); opacity: 0; transition: transform .9s var(--ease) .2s, opacity .9s .2s; }
+.js-ready .step[data-reveal].is-visible .step-n { transform: none; opacity: 1; }
+
+/* ---------- Hover polish ---------- */
+.btn { position: relative; overflow: hidden; translate: var(--tx, 0) var(--ty, 0); transition: background .25s, color .25s, border-color .25s, transform .25s var(--ease), translate .35s var(--ease); }
+.btn::after { content: ""; position: absolute; inset: 0 auto 0 0; width: 40%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent); transform: translateX(-120%) skewX(-18deg); pointer-events: none; }
+.btn:hover::after { animation: sheen .9s var(--ease); }
+
+/* ---------- Marquee band (inserted by Motion.tsx) ---------- */
+.marquee { position: relative; overflow: hidden; padding-block: 22px; background: var(--char); border-block: 1px solid var(--line); }
+.marquee-track { display: flex; width: max-content; animation: marquee 32s linear infinite; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+.marquee-track span { display: inline-flex; align-items: center; gap: 36px; padding-right: 36px; font: 500 clamp(34px, 5vw, 64px)/1 var(--display); letter-spacing: .04em; text-transform: uppercase; color: transparent; -webkit-text-stroke: 1px rgba(243,238,226,.55); white-space: nowrap; }
+.marquee-track span i { font-style: normal; color: var(--lime); -webkit-text-stroke: 0; font-size: .5em; }
+.marquee-track span b { font-weight: 500; transition: color .3s, -webkit-text-stroke-color .3s; }
+.marquee-track span b:hover { color: var(--lime); -webkit-text-stroke-color: var(--lime); }
+
+/* ---------- Map pins ---------- */
+.pin-wrap .pin { animation: pinDrop .8s var(--ease) both; }
+.pin-wrap .pin.is-on, .pin-wrap.is-on .pin { animation: pulseRing 1.6s ease-out infinite; }
+
+/* ---------- Intro photo stack: restore the overlapping layered look ---------- */
+.stack { padding: 0 0 90px 70px; }
+.stack .stack-main { border-radius: 3px; box-shadow: 0 40px 80px -30px rgba(30,25,10,.55), 0 0 0 1px rgba(30,25,10,.06); }
+.stack .stack-side { position: absolute; left: 0; bottom: 0; width: 44%; rotate: -4deg; border-radius: 2px; box-shadow: 0 40px 70px -24px rgba(30,25,10,.6); animation: floaty 8s ease-in-out infinite; }
+.stack .stack-note { bottom: 56px; box-shadow: 0 18px 36px -14px rgba(0,0,0,.5); }
+.stack::before { content: ""; position: absolute; z-index: -1; top: 8%; right: -4%; width: 62%; height: 78%; border: 1px solid rgba(143,118,80,.55); transform: translate(18px, 18px); }
+
+/* ---------- 3D hero ---------- */
+.hero, .hero .wrap { perspective: 1300px; }
+.hero .wrap { perspective-origin: 15% 50%; }
+.hero-photo { transform: translate3d(calc(var(--mx, 0) * -26px), calc(var(--sy, 0) * 1px + var(--my, 0) * -16px), 0) rotateY(calc(var(--mx, 0) * 5deg)) rotateX(calc(var(--my, 0) * -4deg)) scale(1.1); }
+.hero-copy { transform-style: preserve-3d; transform: rotateY(calc(var(--mx, 0) * 6deg)) rotateX(calc(var(--my, 0) * -4deg)); transition: transform .5s var(--ease); animation: sway 9s ease-in-out 2s infinite; }
+.hero-place { translate: 0 0 14px; }
+.hero h1 { translate: 0 0 36px; transform-style: preserve-3d; }
+.hero-copy > p { translate: 0 0 18px; }
+.hero-actions { translate: 0 0 26px; }
+.hero h1 span { text-shadow: 0 1px 0 #cfc4ad, 0 2px 0 #b9ae98, 0 3px 0 #a39982, 0 4px 0 #8e846e, 0 5px 0 #7a705b, 0 6px 0 #665d4a, 0 8px 12px rgba(0,0,0,.45), 0 22px 40px rgba(0,0,0,.5); }
+.hero h1 span + span { text-shadow: 0 1px 0 #d2a03f, 0 2px 0 #bd8f36, 0 3px 0 #a67d2e, 0 4px 0 #8f6c27, 0 5px 0 #785b20, 0 6px 0 #624a19, 0 8px 12px rgba(0,0,0,.45), 0 22px 40px rgba(0,0,0,.5); }
+.hero-caption { translate: 0 0 70px; }
+/* soft pointer-following glow */
+.hero-glow { position: absolute; z-index: -1; inset: 0; pointer-events: none; background: radial-gradient(520px circle at calc(50% + var(--mx, 0) * 70%) calc(50% + var(--my, 0) * 70%), rgba(233,180,76,.16), transparent 60%); transition: background .4s; }
+@keyframes sway { 0%, 100% { rotate: 0 1 0 -2.5deg; } 50% { rotate: 0 1 0 2.5deg; } }
+
+/* ---------- Scroll parallax (values set by Motion.tsx) ---------- */
+.closing .ph img { scale: 1.14; translate: 0 calc(var(--py, 0) * 1px); will-change: translate; }
+
+/* ================= Loading experience ================= */
+@keyframes imgFade { from { opacity: 0; scale: 1.06; } to { opacity: 1; scale: 1; } }
+@keyframes imgFadeOnly { from { opacity: 0; } to { opacity: 1; } }
+@keyframes shimmer { from { transform: translateX(0); } to { transform: translateX(33.333%); } }
+@keyframes barGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes logoPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+
+/* Images fade in as they arrive instead of popping, over a soft shimmer */
+.motion-ready .ph img:not(.is-loaded) { opacity: 0; }
+.motion-ready .ph img.is-loaded { animation: imgFade 1s var(--ease); }
+.motion-ready .closing .ph img.is-loaded { animation-name: imgFadeOnly; }
+.motion-ready .ph::before { content: ""; position: absolute; z-index: 1; top: 0; bottom: 0; left: -100%; width: 300%; pointer-events: none; background: linear-gradient(100deg, transparent 40%, rgba(255,255,255,.28) 50%, transparent 60%); animation: shimmer 1.6s linear infinite; transition: opacity .5s; }
+.motion-ready .ph:has(img.is-loaded)::before, .ph.img-failed::before { opacity: 0; animation: none; }
+
+/* Splash while the first screen loads */
+.preloader { position: fixed; z-index: 1000; inset: 0; display: grid; place-content: center; justify-items: center; gap: 26px; background: var(--char); transition: opacity .7s var(--ease), visibility .7s; }
+.preloader img { width: 84px; height: 84px; border-radius: 50%; animation: logoPulse 1.6s ease-in-out infinite; }
+.preloader .bar { display: block; width: 160px; height: 2px; overflow: hidden; background: rgba(243,238,226,.14); }
+.preloader .bar::after { content: ""; display: block; height: 100%; background: var(--lime); transform-origin: left; animation: barGrow 2.2s var(--ease) both; }
+html:not(.motion-ready) .preloader { display: none; }
+.motion-go .preloader { opacity: 0; visibility: hidden; pointer-events: none; }
+/* hold the hero choreography until the splash lifts */
+.motion-ready:not(.motion-go) .header, .motion-ready:not(.motion-go) .hero h1 span, .motion-ready:not(.motion-go) .hero-place, .motion-ready:not(.motion-go) .hero-copy > p, .motion-ready:not(.motion-go) .hero-actions, .motion-ready:not(.motion-go) .hero-foot, .motion-ready:not(.motion-go) .hero-caption, .motion-ready:not(.motion-go) .hero-photo .ph img { animation-play-state: paused; }
+
+/* ================= UI polish ================= */
+/* Cursor spotlight on cards */
+.xcard, .ecard { position: relative; }
+.spot { position: absolute; z-index: 2; inset: 0; pointer-events: none; opacity: 0; transition: opacity .4s; background: radial-gradient(380px circle at var(--sx, 50%) var(--sy, 50%), rgba(233,180,76,.22), transparent 62%); mix-blend-mode: soft-light; }
+.xcard:hover .spot, .ecard:hover .spot { opacity: 1; }
+
+/* Active section in the nav */
+.nav-links a.is-current { color: #fff; }
+.nav-links a.is-current::after { transform: scaleX(1); }
+
+/* Cursor ring */
+.cursor { position: fixed; z-index: 999; top: 0; left: 0; width: 38px; height: 38px; margin: -19px 0 0 -19px; border: 1px solid rgba(233,180,76,.85); border-radius: 50%; pointer-events: none; opacity: 0; transition: width .3s var(--ease), height .3s var(--ease), margin .3s var(--ease), background .3s, opacity .3s; }
+.cursor.on { opacity: 1; }
+.cursor.big { width: 64px; height: 64px; margin: -32px 0 0 -32px; background: rgba(233,180,76,.25); }
+@media (hover: none) { .cursor { display: none; } }
+
+/* ================= Smoothness ================= */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+/* keep off-screen work cheap */
+.hero-glow, .spot { will-change: opacity; }
+img { image-rendering: auto; }
+body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
