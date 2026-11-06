@@ -116,20 +116,20 @@ export function initPage() {
         L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", { maxZoom: 18, attribution: "Tiles &copy; Esri &mdash; Esri, HERE, Garmin, OpenStreetMap contributors" }).addTo(map);
         mapEl.addEventListener("click", function () { map.scrollWheelZoom.enable(); });
         mapEl.addEventListener("mouseleave", function () { map.scrollWheelZoom.disable(); });
-        function pinIcon(img, count) {
+        function pinIcon(img, count, emoji) {
           return L.divIcon({ className: "pin-wrap", iconSize: [46, 46], iconAnchor: [23, 54], popupAnchor: [0, -50],
-            html: '<span class="pin" style="background-image:url(\'' + img + '\')">' + (count ? '<b class="pin-n">' + count + "</b>" : "") + "</span>" });
+            html: '<span class="pin"' + (img ? ' style="background-image:url(\'' + img + '\')">' : ">" + (emoji || "")) + ' ' + (count ? '<b class="pin-n">' + count + "</b>" : "") + "</span>" });
         }
         function popup(d) {
           var w = document.createElement("div"); w.className = "pop";
-          var im = document.createElement("img"); im.src = d.img; im.alt = d.name; im.loading = "lazy";
+          var im = d.slug ? document.createElement("img") : null; if (im) { im.src = d.img; im.alt = d.name; im.loading = "lazy"; }
           var b = document.createElement("div"), h = document.createElement("b"), p = document.createElement("p"), a = document.createElement("a");
           h.textContent = d.name; p.textContent = d.text; a.textContent = "Open in Google Maps \u2197"; a.href = d.href; a.target = "_blank"; a.rel = "noopener noreferrer";
-          b.appendChild(h); b.appendChild(p); b.appendChild(a); w.appendChild(im); w.appendChild(b); return w;
+          b.appendChild(h); b.appendChild(p); b.appendChild(a); if (im) w.appendChild(im); w.appendChild(b); return w;
         }
         var items = rows.map(function (r) {
-          var d = { name: r.dataset.name, text: r.dataset.text, group: r.dataset.group, href: r.href, ll: [+r.dataset.lat, +r.dataset.lng], img: "assets/img/" + r.dataset.slug + "-640.jpg", row: r };
-          d.marker = L.marker(d.ll, { icon: pinIcon(d.img), title: d.name, keyboard: true }).bindPopup(popup(d), { closeButton: true, autoPanPadding: [30, 30] });
+          var d = { name: r.dataset.name, text: r.dataset.text, group: r.dataset.group, href: r.href, ll: [+r.dataset.lat, +r.dataset.lng], slug: r.dataset.slug, img: r.dataset.slug ? "assets/img/" + r.dataset.slug + "-640.jpg" : "", row: r };
+          d.marker = L.marker(d.ll, { icon: pinIcon(d.img, 0, r.dataset.emoji), title: d.name, keyboard: true }).bindPopup(popup(d), { closeButton: true, autoPanPadding: [30, 30] });
           return d;
         });
         var old = items.filter(function (d) { return d.group === "old"; });
@@ -145,7 +145,7 @@ export function initPage() {
           });
           if (zoomedIn) { if (map.hasLayer(cluster)) map.removeLayer(cluster); } else if (!map.hasLayer(cluster)) cluster.addTo(map);
         }
-        var cityBounds = L.latLngBounds(items.filter(function (d) { return d.name !== "Ananthagiri Hills"; }).map(function (d) { return d.ll; }));
+        var cityBounds = L.latLngBounds(items.filter(function (d) { return d.name !== "Ananthagiri Hills" && d.group !== "esc"; }).map(function (d) { return d.ll; }));
         var allBounds = L.latLngBounds(items.map(function (d) { return d.ll; }));
         map.fitBounds(cityBounds, { padding: [50, 50] });
         map.on("zoomend", sync); sync();
@@ -174,7 +174,12 @@ export function initPage() {
         chips.forEach(function (c) { c.setAttribute("aria-pressed", String(c.dataset.chip === cat)); });
         cards.forEach(function (c) { var show = cat === "all" || c.dataset.cat === cat; c.hidden = !show; if (show) c.classList.add("is-visible"); });
       }
-      chips.forEach(function (c) { c.addEventListener("click", function () { filter(c.dataset.chip); }); });
+      chips.forEach(function (c) { c.addEventListener("click", function () { filter(c.dataset.chip); document.getElementById("ev-grid").scrollTo({ left: 0 }); }); });
+      document.querySelectorAll(".arrow").forEach(function (b) {
+        b.addEventListener("click", function () {
+          document.getElementById(b.dataset.target).scrollBy({ left: Number(b.dataset.dir) * 600, behavior: reduce ? "auto" : "smooth" });
+        });
+      });
       document.querySelectorAll("[data-filter]").forEach(function (a) {
         a.addEventListener("click", function () { filter(a.dataset.filter); });
       });
