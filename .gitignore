@@ -2,3 +2,7 @@ node_modules
 .next
 next-env.d.ts
 .vscode
+.env.local
+.next-verify
+*.tsbuildinfo
+.DS_Store

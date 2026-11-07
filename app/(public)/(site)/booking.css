@@ -1,0 +1,115 @@
+/* Booking pages. They reuse the public site's colours, fonts and buttons (see ../globals.css) and add only what is new. */
+.bk-nav { display: flex; align-items: center; gap: clamp(14px, 2.4vw, 32px); margin-left: auto; justify-content: flex-end; }
+.bk-nav a { white-space: nowrap; }
+.bk-nav a, .bk-linkbtn { color: rgba(243,238,226,.86); font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; background: none; border: 0; padding: 10px 0; cursor: pointer; font-family: inherit; }
+.bk-nav a:hover, .bk-linkbtn:hover { color: var(--lime); }
+
+.bk-main { min-height: 100vh; padding: 130px 0 80px; }
+.bk-main .wrap { width: min(100% - var(--pad) * 2, 1120px); }
+.bk-narrow { width: min(100% - var(--pad) * 2, 560px) !important; margin-inline: auto; }
+.bk-title { margin: 14px 0 10px; font: 500 clamp(40px, 6vw, 72px)/.95 var(--display); letter-spacing: -.01em; text-transform: uppercase; }
+.bk-title em { font: italic 400 .8em/1 var(--serif); text-transform: none; color: var(--sand-light); }
+.bk-lede { max-width: 60ch; color: var(--text-soft); font-size: 17px; }
+.bk-note { color: var(--text-soft); font-size: 14px; }
+.bk-error { margin: 12px 0 0; padding: 12px 14px; border: 1px solid #7a3a34; background: rgba(160,60,50,.18); color: #f2b3aa; border-radius: 2px; font-size: 14px; }
+.bk-ok { margin: 12px 0 0; padding: 12px 14px; border: 1px solid #4d6a38; background: rgba(83,112,63,.2); color: #cfe3b5; border-radius: 2px; font-size: 14px; }
+
+.bk-card { background: var(--char-2); border: 1px solid var(--line); border-radius: 4px; padding: clamp(18px, 3vw, 28px); }
+.bk-card + .bk-card { margin-top: 20px; }
+.bk-card h2 { margin: 0 0 14px; font: 600 13px/1.2 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--sand-light); }
+
+/* trips list */
+.bk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 22px; margin-top: 36px; }
+.bk-trip { display: flex; flex-direction: column; background: var(--char-2); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; transition: transform .25s var(--ease), border-color .25s; }
+.bk-trip:hover { transform: translateY(-3px); border-color: rgba(243,238,226,.4); }
+.bk-trip .bk-cover { aspect-ratio: 4 / 3; background: linear-gradient(135deg, #1f2a20, #14201a); }
+.bk-trip .bk-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.bk-trip .bk-body { display: flex; flex-direction: column; gap: 8px; padding: 18px; flex: 1; }
+.bk-trip h3 { margin: 0; font: 700 20px/1.2 var(--sans); }
+.bk-trip p { margin: 0; color: var(--text-soft); font-size: 14px; }
+.bk-meta { margin-top: auto; padding-top: 10px; display: flex; justify-content: space-between; gap: 10px; font-size: 13px; color: var(--sand-light); }
+.bk-empty { margin-top: 36px; padding: 40px 24px; border: 1px dashed var(--line); text-align: center; color: var(--text-soft); }
+
+/* trip detail */
+.bk-detail { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); margin-top: 32px; align-items: start; }
+@media (max-width: 860px) { .bk-detail { grid-template-columns: 1fr; } }
+.bk-hero-img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 4px; background: var(--forest); display: block; }
+.bk-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 0; }
+.bk-chip { padding: 5px 10px; border: 1px solid var(--line); border-radius: 100px; font-size: 12px; letter-spacing: .06em; color: var(--sand-light); text-transform: capitalize; }
+.bk-list { margin: 0; padding-left: 20px; color: var(--ivory-2); line-height: 1.8; }
+.bk-prose { color: var(--ivory-2); white-space: pre-line; }
+.bk-sticky { position: sticky; top: 100px; }
+
+.bk-sched { display: grid; gap: 10px; margin: 0 0 18px; padding: 0; border: 0; }
+.bk-sched label { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px; border: 1px solid var(--line); border-radius: 3px; cursor: pointer; }
+.bk-sched label:has(input:checked) { border-color: var(--lime); background: rgba(233,180,76,.08); }
+.bk-sched input { accent-color: var(--lime); }
+.bk-sched small { display: block; color: var(--text-soft); font-size: 12px; margin-top: 2px; }
+
+/* forms */
+.bk-field { display: grid; gap: 6px; margin-bottom: 16px; }
+.bk-field label, .bk-field > span { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--sand-light); }
+.bk-field input, .bk-field select, .bk-field textarea { width: 100%; padding: 13px 14px; background: rgba(243,238,226,.05); color: var(--ivory); border: 1px solid var(--line); border-radius: 2px; font: inherit; }
+.bk-field input:focus, .bk-field select:focus, .bk-field textarea:focus { outline: 2px solid var(--lime); outline-offset: 1px; }
+.bk-field select option { color: #111; }
+.bk-hint { font-size: 12px; color: var(--text-soft); }
+.bk-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 520px) { .bk-row2 { grid-template-columns: 1fr; } }
+.bk-stepper { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 2px; }
+.bk-stepper button { width: 44px; height: 44px; background: none; border: 0; color: var(--ivory); font-size: 20px; cursor: pointer; }
+.bk-stepper button:disabled { opacity: .35; cursor: default; }
+.bk-stepper output { min-width: 44px; text-align: center; font-weight: 700; }
+.bk-total { display: flex; justify-content: space-between; align-items: baseline; margin: 6px 0 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+.bk-total strong { font-size: 24px; }
+.bk-btn-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.bk-card .btn { width: 100%; }
+.bk-btn-row .btn { width: auto; }
+.btn[disabled] { opacity: .5; cursor: not-allowed; transform: none; }
+.bk-check { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--ivory-2); }
+.bk-check input { margin-top: 4px; accent-color: var(--lime); }
+
+/* checkout + bookings */
+.bk-person { padding: 16px 0; border-top: 1px solid var(--line); }
+.bk-person:first-of-type { border-top: 0; padding-top: 0; }
+.bk-person h3 { margin: 0 0 12px; font-size: 14px; color: var(--sand-light); }
+.bk-pill { display: inline-block; padding: 3px 10px; border-radius: 100px; font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; background: rgba(243,238,226,.1); color: var(--ivory); }
+.bk-pill.is-good { background: rgba(83,112,63,.35); color: #cfe3b5; }
+.bk-pill.is-wait { background: rgba(233,180,76,.2); color: var(--lime); }
+.bk-pill.is-bad { background: rgba(160,60,50,.3); color: #f2b3aa; }
+.bk-booking { display: grid; gap: 14px; }
+.bk-booking header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.bk-booking h3 { margin: 0; font: 700 20px/1.2 var(--sans); }
+.bk-dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 0; }
+.bk-dl dt { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-soft); }
+.bk-dl dd { margin: 2px 0 0; font-weight: 600; }
+.bk-linkbtn-danger { background: none; border: 0; color: #f2b3aa; cursor: pointer; font: inherit; font-size: 14px; text-decoration: underline; padding: 0; }
+
+.bk-footer { border-top: 1px solid var(--line); padding: 24px 0; color: var(--text-soft); font-size: 13px; }
+.bk-footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+/* ---------- Mobile polish (booking pages) ---------- */
+.bk-list { list-style: disc; }
+.bk-row-age { display: grid; grid-template-columns: 96px 1fr; gap: 12px; }
+.bk-more { margin: 0 0 4px; }
+.bk-more summary { cursor: pointer; padding: 10px 0; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--sand-light); }
+.bk-more .bk-field { margin-top: 6px; }
+.bk-bookbar { display: none; }
+@media (max-width: 860px) {
+  .bk-sticky { position: static; }
+  .bk-main { padding-top: 104px; padding-bottom: 56px; }
+  .bk-detail { padding-bottom: 76px; }
+  #book { scroll-margin-top: 96px; }
+  .bk-bookbar { position: fixed; z-index: 90; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 16px; min-height: 56px; background: var(--lime); color: var(--ink); border-radius: 3px; box-shadow: 0 14px 34px rgba(0,0,0,.45); text-decoration: none; transition: transform .3s var(--ease), opacity .3s; }
+  .bk-bookbar.is-hidden { transform: translateY(160%); opacity: 0; pointer-events: none; }
+  .bk-bookbar strong { font-size: 18px; }
+  .bk-bookbar-cta { font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+  .bk-nav a { padding: 12px 0; }
+  .bk-title { font-size: clamp(36px, 11vw, 56px); }
+  .bk-card { padding: 18px; }
+  .bk-stepper button { width: 48px; height: 48px; }
+  .bk-sched label { padding: 16px 14px; }
+  .bk-field input, .bk-field select { min-height: 48px; }
+}
+@media (max-width: 380px) { .bk-nav { gap: 12px; } .bk-nav a { font-size: 11px; letter-spacing: .08em; } }
+@media (max-width: 520px) { .bk-row2.is-keep { grid-template-columns: 1fr 1fr; } }
+.bk-row2.is-keep, .bk-row-age { align-items: end; }

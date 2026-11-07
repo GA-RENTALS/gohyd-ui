@@ -133,8 +133,8 @@ export function initPage() {
           return d;
         });
         var old = items.filter(function (d) { return d.group === "old"; });
-        var cluster = L.marker(old[0].ll, { icon: pinIcon(old[0].img, old.length), title: "Old City: " + old.length + " places. Zoom in.", keyboard: true });
-        cluster.on("click", function () { map.flyTo(old[0].ll, 16, { duration: 1 }); });
+        var cluster = old.length ? L.marker(old[0].ll, { icon: pinIcon(old[0].img, old.length), title: "Old City: " + old.length + " places. Zoom in.", keyboard: true }) : null;
+        if (cluster) cluster.on("click", function () { map.flyTo(old[0].ll, 16, { duration: 1 }); });
         var CLUSTER_ZOOM = 15;
         function sync() {
           var zoomedIn = map.getZoom() >= CLUSTER_ZOOM;
@@ -143,11 +143,14 @@ export function initPage() {
             if (show && !map.hasLayer(d.marker)) d.marker.addTo(map);
             if (!show && map.hasLayer(d.marker)) map.removeLayer(d.marker);
           });
-          if (zoomedIn) { if (map.hasLayer(cluster)) map.removeLayer(cluster); } else if (!map.hasLayer(cluster)) cluster.addTo(map);
+          if (cluster) {
+            if (zoomedIn) { if (map.hasLayer(cluster)) map.removeLayer(cluster); } else if (!map.hasLayer(cluster)) cluster.addTo(map);
+          }
         }
-        var cityBounds = L.latLngBounds(items.filter(function (d) { return d.name !== "Ananthagiri Hills" && d.group !== "esc"; }).map(function (d) { return d.ll; }));
         var allBounds = L.latLngBounds(items.map(function (d) { return d.ll; }));
-        map.fitBounds(cityBounds, { padding: [50, 50] });
+        var cityItems = items.filter(function (d) { return d.name !== "Ananthagiri Hills" && d.group !== "esc"; });
+        var initialBounds = cityItems.length ? L.latLngBounds(cityItems.map(function (d) { return d.ll; })) : allBounds;
+        map.fitBounds(initialBounds, { padding: [50, 50] });
         map.on("zoomend", sync); sync();
         map.on("popupopen", function (e) { items.forEach(function (d) { var on = d.marker === e.popup._source; d.row.classList.toggle("is-on", on); if (d.marker._icon) d.marker._icon.classList.toggle("is-on", on); }); });
         map.on("popupclose", function () { rows.forEach(function (r) { r.classList.remove("is-on"); }); });
