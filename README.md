@@ -28,6 +28,8 @@ The customer website, booking pages and staff admin panel for GoHyderabad, in on
 
 ## 1. Quick start
 
+Use Node.js 22.12 or later. Tailwind's build-time dependency includes ESM-only code that Next.js loads through CommonJS.
+
 ```
 cd GoHyderabad
 cp .env.local.example .env.local     # NEXT_PUBLIC_BACKEND_URL=http://127.0.0.1:8000
@@ -150,7 +152,7 @@ There is no screen per table. `components/admin/ResourceView.tsx` builds a list 
 - **Lists:** search, sort, paging, edit and delete according to the user's permissions. On phones each row becomes a card.
 - **Forms:** text, numbers, dates, choices, linked records, switches, JSON and file upload (type and size are checked before and after sending).
 - **Actions:** verify or reject a manual payment, approve a refund, grant a departure exception, check in a participant, publish content. All go through the backend services.
-- **Dashboard:** key figures with 30-day change, revenue and bookings charts, recent bookings, and a "Finish setting up" card listing placeholder business values and missing integrations.
+- **Dashboard:** key figures with 30-day change, revenue and bookings charts, recent bookings, upcoming trip dates, and a "Finish setting up" card listing placeholder business values and missing integrations. Staff with trip-create permission can add a trip; schedule-create permission allows adding trip dates. Bookings themselves continue through checkout.
 - **Sign in:** a Password / OTP switch; the server confirms the account has staff access.
 
 ## 10. Talking to the API

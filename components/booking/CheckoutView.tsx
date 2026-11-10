@@ -16,6 +16,8 @@ export function CheckoutView({ id }: { id: string }) {
   const { user } = useCustomer();
   const [order, setOrder] = useState<Checkout | null>(null);
   const [people, setPeople] = useState<Record<string, Participant[]>>({});
+  const [activeWaiver, setActiveWaiver] = useState<{ id: string; title: string; version: number; body: string } | null>(null);
+  const [waiverError, setWaiverError] = useState("");
   const [waiver, setWaiver] = useState(false);
   const [state, setState] = useState<"loading" | "ready" | "working" | "paid">("loading");
   const [error, setError] = useState("");
@@ -24,6 +26,17 @@ export function CheckoutView({ id }: { id: string }) {
     try {
       const co = await customerApi.checkout(id);
       setOrder(co);
+      try {
+        const currentWaiver = await customerApi.activeWaiver();
+        setActiveWaiver(currentWaiver);
+        setWaiverError("");
+      } catch (e) {
+        setActiveWaiver(null);
+        const status = (e as { status?: number }).status;
+        setWaiverError(status === 503
+          ? "Checkout is temporarily unavailable because the approved participation waiver has not been configured."
+          : e instanceof Error ? e.message : "The participation waiver could not be loaded. Please try again.");
+      }
       setPeople((prev) => {
         const next: Record<string, Participant[]> = {};
         for (const b of co.bookings) {
@@ -48,12 +61,13 @@ export function CheckoutView({ id }: { id: string }) {
     for (const b of order.bookings) {
       if ((people[b.id] ?? []).some((p) => !p.full_name.trim())) { setError("Please enter a name for everyone on the booking."); return; }
     }
+    if (!activeWaiver) { setError(waiverError || "The participation waiver is not available. Please try again later."); return; }
     if (!waiver) { setError("Please accept the safety waiver to continue."); return; }
     setState("working");
     try {
       for (const b of order.bookings) {
         await customerApi.saveParticipants(b.id, (people[b.id] ?? []).map((p) => ({ ...p, full_name: p.full_name.trim(), age: p.age ?? null })));
-        await customerApi.acceptWaiver(b.id);
+        await customerApi.acceptWaiver(b.id, activeWaiver.id);
       }
       const payment = await customerApi.startPayment(order.id, "ADVANCE");
       const paid = await payWithRazorpay(payment, { name: user?.full_name, contact: user?.phone_number, email: user?.email ?? undefined }, `Advance for ${order.bookings.map((b) => b.trip_title).join(", ")}`);
@@ -107,10 +121,16 @@ export function CheckoutView({ id }: { id: string }) {
           </div>
         ))}
         <div className="bk-card">
-          <label className="bk-check">
-            <input type="checkbox" checked={waiver} onChange={(e) => setWaiver(e.target.checked)} />
-            <span>I confirm that everyone on this booking has read and accepts GoHyderabad's participation waiver and safety guidelines, and that the details above are correct.</span>
-          </label>
+          {activeWaiver ? (
+            <>
+              <h2>{activeWaiver.title} (version {activeWaiver.version})</h2>
+              <p className="bk-note" style={{ whiteSpace: "pre-wrap", marginTop: 8 }}>{activeWaiver.body}</p>
+              <label className="bk-check" style={{ marginTop: 16 }}>
+                <input type="checkbox" checked={waiver} onChange={(e) => setWaiver(e.target.checked)} />
+                <span>I have read and accept this waiver for everyone on this booking. I confirm the participant details above are correct.</span>
+              </label>
+            </>
+          ) : <p className="bk-error" role="alert">{waiverError || "Loading the current participation waiver…"}</p>}
         </div>
       </div>
 
@@ -126,7 +146,7 @@ export function CheckoutView({ id }: { id: string }) {
         <div className="bk-total"><span>Total</span><strong>{money(order.total_amount)}</strong></div>
         <div className="bk-total" style={{ borderTop: 0, margin: "0 0 16px" }}><span>Due now (advance)</span><strong>{money(order.advance_total)}</strong></div>
         {error && <p className="bk-error" role="alert">{error}</p>}
-        <button type="button" className="btn" disabled={state === "working"} onClick={pay} style={{ marginTop: 12 }}>
+        <button type="button" className="btn" disabled={state === "working" || !activeWaiver} onClick={pay} style={{ marginTop: 12 }}>
           {state === "working" ? "Please wait…" : `Pay ${money(order.advance_total)} to confirm`}
         </button>
         <p className="bk-hint" style={{ marginTop: 10 }}>Secure payment by Razorpay (UPI, cards, netbanking).</p>

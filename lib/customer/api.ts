@@ -39,6 +39,7 @@ export const customerApi = {
   bookings: async () => results(await api<Booking[] | { results: Booking[] }>("/bookings/")),
   saveParticipants: (bookingId: string, people: Participant[]) =>
     api<Participant[]>(`/bookings/${bookingId}/participants/`, { method: "PUT", json: people }),
-  acceptWaiver: (bookingId: string) => api<{ status: string }>(`/bookings/${bookingId}/accept-waiver/`, { method: "POST" }),
+  activeWaiver: () => api<{ id: string; title: string; version: number; language: string; body: string }>("/safety-waivers/active/?lang=en", { auth: false }),
+  acceptWaiver: (bookingId: string, waiver: string) => api<{ status: string }>(`/bookings/${bookingId}/accept-waiver/`, { method: "POST", json: { waiver } }),
   cancelBooking: (bookingId: string, reason: string) => api<Booking>(`/bookings/${bookingId}/cancel/`, { method: "POST", json: { reason } }),
 };
