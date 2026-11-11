@@ -38,6 +38,14 @@ export const customerApi = {
   /** Reference + the phone used to book. */
   eventBookingStatus: (reference: string, phone: string) =>
     api<EventBooking>(`/event-bookings/${encodeURIComponent(reference.trim().toUpperCase())}/?phone=${encodeURIComponent(phone)}`, { auth: false }),
+  /** Uploads the UPI payment screenshot for a booking (reference + the phone used to book). */
+  uploadEventPayment: (reference: string, phone: string, screenshot: File, utr = "") => {
+    const form = new FormData();
+    form.append("phone", phone);
+    form.append("screenshot", screenshot);
+    if (utr) form.append("utr", utr);
+    return api<EventBooking>(`/event-bookings/${encodeURIComponent(reference.trim().toUpperCase())}/payment-proof/`, { method: "POST", auth: false, json: form });
+  },
 
   /** One trip date, N people. All-or-nothing; the same idempotency key never creates two checkouts. */
   createCheckout: (schedule: string, participant_count: number, pickup_point: string | null, coupon = "", key = newKey()) =>

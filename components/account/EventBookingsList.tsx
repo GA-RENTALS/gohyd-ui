@@ -24,10 +24,15 @@ export function EventBookingsList({ bookings }: { bookings: EventBooking[] }) {
               {b.venue && <li>{b.venue}</li>}
               <li>{b.participant_count} {b.participant_count === 1 ? "participant" : "participants"}</li>
               {b.status === "PENDING" && b.reserved_until && <li>Slots held until {longDate(b.reserved_until)} · {time(b.reserved_until)}</li>}
+              {b.payment && <li>Payment screenshot: <strong>{b.payment_submitted ? "sent" : "not sent yet"}</strong></li>}
             </ul>
             <div className="ac-bottom">
               <span className="ac-price">{money(b.total_amount)}</span>
-              <span className="ac-caption">{b.status === "PENDING" ? "Our team will confirm your place. Pay at the venue." : b.status === "CONFIRMED" ? "See you there!" : ""}</span>
+              <span className="ac-caption">{b.status === "PENDING"
+                ? b.payment
+                  ? b.payment_submitted ? "We're checking your payment and will confirm on WhatsApp." : <>To pay, open the <Link href={`/events/${b.event_slug}#book`}>event page</Link> and use “Check your booking status”.</>
+                  : "Our team will confirm your place. Pay at the venue."
+                : b.status === "CONFIRMED" ? "See you there!" : ""}</span>
             </div>
           </div>
         </article>

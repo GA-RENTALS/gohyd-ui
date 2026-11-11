@@ -135,6 +135,12 @@ export default function Home() {
                       <p className="truncate text-body-medium text-text-primary">{b.contact_name || "Guest"} × {b.participant_count}</p>
                       <p className="truncate text-body-regular text-text-secondary">{b.reference} · {b.schedule__event__slug}</p>
                     </div>
+                    {b.payment_screenshot_url && (
+                      <a href={b.payment_screenshot_url} target="_blank" rel="noopener noreferrer" title="Open payment screenshot" className="shrink-0">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={b.payment_screenshot_url} alt="Payment screenshot" className="h-10 w-8 rounded border border-border-button-default object-cover" />
+                      </a>
+                    )}
                     <Chip variant="caption" color={statusColor(b.status)}>{b.status}</Chip>
                     <span className="w-24 text-end text-body-medium text-text-primary">{money(b.total_amount)}</span>
                   </li>

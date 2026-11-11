@@ -41,7 +41,7 @@ export type Dashboard = {
   setup: { key: string; severity: "warning" | "info"; title: string; detail: string; href: string }[];
   recent_bookings: { id: string; reference: string; status: string; total_amount: string; created_at: string; primary_booker__full_name: string | null; schedule__trip__slug: string | null }[];
   upcoming_trips: { id: string; starts_at: string; capacity: number; seats_booked: number; trip__slug: string }[];
-  recent_event_bookings?: { id: string; reference: string; status: string; total_amount: string; participant_count: number; created_at: string; contact_name: string; schedule__event__slug: string }[];
+  recent_event_bookings?: { id: string; reference: string; status: string; total_amount: string; participant_count: number; created_at: string; contact_name: string; schedule__event__slug: string; payment_screenshot_url?: string | null }[];
   as_of: string;
 };
 export type Field = {

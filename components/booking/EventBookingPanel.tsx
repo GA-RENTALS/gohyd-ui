@@ -3,9 +3,10 @@ import { useT } from "@/components/site/LangProvider";
 import { useState } from "react";
 import { customerApi } from "@/lib/customer/api";
 import { longDate, money, time as timeLower } from "@/lib/customer/format";
+import { FEATURED_EVENT_SLUG, FEATURED_EVENT_UPI_QR } from "@/components/site/data/featured-event";
 
 const time = (iso: string) => timeLower(iso).toUpperCase();
-import type { EventBooking, EventRegistrationType, EventSchedule } from "@/lib/customer/types";
+import type { EventBooking, EventPayment, EventRegistrationType, EventSchedule } from "@/lib/customer/types";
 
 const fullDate = (iso: string) =>
   new Date(iso).toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" });
@@ -27,7 +28,101 @@ const STATUS_NOTE: Record<EventBooking["status"], string> = {
   EXPIRED: "The hold on these slots ran out before confirmation. Request again or message us on WhatsApp.",
 };
 
-function BookingResult({ booking, onReset }: { booking: EventBooking; onReset?: () => void }) {
+const PAYMENT_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const PAYMENT_MAX_BYTES = 5 * 1024 * 1024;
+
+function upiLink(p: EventPayment, amount: string, reference: string) {
+  if (!p.upi_id) return "";
+  const q = new URLSearchParams({ pa: p.upi_id, cu: "INR", am: Number(amount).toFixed(2), tn: reference });
+  if (p.payee_name) q.set("pn", p.payee_name);
+  return `upi://pay?${q.toString()}`;
+}
+
+/** Pay by UPI QR, then upload the payment screenshot. The team checks it before confirming the booking. */
+function PaymentStep({ booking, phone, onUploaded }: { booking: EventBooking; phone: string; onUploaded: (b: EventBooking) => void }) {
+  const p = booking.payment!;
+  const [file, setFile] = useState<File | null>(null);
+  const [utr, setUtr] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [replacing, setReplacing] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const upi = upiLink(p, booking.total_amount, booking.reference);
+  const qr = p.qr_url || (booking.event_slug === FEATURED_EVENT_SLUG ? FEATURED_EVENT_UPI_QR : null);
+
+  function choose(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0] ?? null;
+    setError("");
+    if (f && !PAYMENT_TYPES.includes(f.type)) { setError("Choose a JPG, PNG or WebP screenshot."); setFile(null); return; }
+    if (f && f.size > PAYMENT_MAX_BYTES) { setError("The screenshot must be smaller than 5 MB."); setFile(null); return; }
+    setFile(f);
+  }
+
+  async function upload(e: React.FormEvent) {
+    e.preventDefault();
+    if (!file) { setError("Choose the screenshot of your payment."); return; }
+    setBusy(true); setError("");
+    try {
+      onUploaded(await customerApi.uploadEventPayment(booking.reference, phone, file, utr.trim()));
+      setReplacing(false); setFile(null); setUtr("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "We couldn't upload your screenshot. Please try again.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function copyUpi() {
+    try { await navigator.clipboard.writeText(p.upi_id); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch {}
+  }
+
+  if (booking.payment_submitted && !replacing) {
+    return (
+      <div className="bk-pay">
+        <p className="bk-pay-done">Payment screenshot received. The team will check it and confirm your booking on WhatsApp.</p>
+        <button type="button" className="bk-linkbtn" onClick={() => setReplacing(true)}>Upload a different screenshot</button>
+      </div>
+    );
+  }
+
+  return (
+    <form className="bk-pay" onSubmit={upload}>
+      <h3>Pay {money(booking.total_amount)} to confirm</h3>
+      <ol className="bk-pay-steps">
+        <li>{qr ? "Scan the QR code" : "Pay to the UPI ID below"} with any UPI app (GPay, PhonePe, Paytm) and pay <strong>{money(booking.total_amount)}</strong>.</li>
+        <li>Take a screenshot of the payment.</li>
+        <li>Upload it below.</li>
+      </ol>
+      {qr && (
+        <a href={qr} target="_blank" rel="noreferrer" className="bk-pay-qr">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={qr} alt={`UPI QR code${p.payee_name ? ` for ${p.payee_name}` : ""}`} />
+        </a>
+      )}
+      {(p.upi_id || p.payee_name) && (
+        <dl className="bk-booking-facts">
+          {p.payee_name && <><dt>Paying to</dt><dd>{p.payee_name}</dd></>}
+          {p.upi_id && <><dt>UPI ID</dt><dd><strong>{p.upi_id}</strong> <button type="button" className="bk-linkbtn" onClick={copyUpi}>{copied ? "Copied" : "Copy"}</button></dd></>}
+        </dl>
+      )}
+      {upi && <a className="btn btn-ghost bk-pay-app" href={upi}>Open UPI app on this phone</a>}
+      <div className="bk-field">
+        <label htmlFor={`pay-shot-${booking.reference}`}>Payment screenshot</label>
+        <input id={`pay-shot-${booking.reference}`} type="file" accept="image/png,image/jpeg,image/webp" onChange={choose} required />
+      </div>
+      <div className="bk-field">
+        <label htmlFor={`pay-utr-${booking.reference}`}>UPI transaction ID <span className="bk-label-optional">(optional)</span></label>
+        <input id={`pay-utr-${booking.reference}`} inputMode="numeric" maxLength={40} placeholder="12-digit UTR number" value={utr} onChange={(e) => setUtr(e.target.value)} />
+      </div>
+      {error && <p className="bk-error" role="alert">{error}</p>}
+      <button type="submit" className="btn" disabled={busy}>{busy ? "Uploading…" : "Upload screenshot"}</button>
+      {replacing && <button type="button" className="bk-linkbtn" onClick={() => setReplacing(false)}>Keep the earlier screenshot</button>}
+    </form>
+  );
+}
+
+function BookingResult({ booking: initial, phone, onReset }: { booking: EventBooking; phone: string; onReset?: () => void }) {
+  const [booking, setBooking] = useState(initial);
   const t = useT();
   const confirmText = [
     `Hello GoHyderabad, please confirm my booking ${booking.reference}.`,
@@ -51,6 +146,9 @@ function BookingResult({ booking, onReset }: { booking: EventBooking; onReset?: 
         )}
       </dl>
       <p className="bk-hint">{STATUS_NOTE[booking.status]}</p>
+      {booking.payment && (booking.status === "PENDING" || booking.status === "CONFIRMED") && (
+        <PaymentStep booking={booking} phone={phone} onUploaded={setBooking} />
+      )}
       {wa && booking.status === "PENDING" && (
         <a className="btn event-whatsapp" href={wa} target="_blank" rel="noreferrer">Confirm on WhatsApp</a>
       )}
@@ -91,7 +189,7 @@ function StatusLookup() {
       </div>
       {error && <p className="bk-error" role="alert">{error}</p>}
       <button type="submit" className="btn btn-ghost" disabled={busy}>{busy ? "Checking…" : "Check status"}</button>
-      {booking && <div style={{ marginTop: 16 }}><BookingResult booking={booking} /></div>}
+      {booking && <div style={{ marginTop: 16 }}><BookingResult key={booking.reference} booking={booking} phone={phone} /></div>}
     </form>
   );
 }
@@ -101,7 +199,7 @@ function StatusLookup() {
  * booking with a reference; staff confirm it in the admin panel.
  */
 export function EventBookingPanel({
-  slug, title, price, schedules, whatsappNumber, venue, registrationType, maxPerBooking, holdHours,
+  slug, title, price, schedules, whatsappNumber, venue, registrationType, maxPerBooking, holdHours, takesUpiPayment = false,
 }: {
   slug: string;
   title: string;
@@ -112,6 +210,8 @@ export function EventBookingPanel({
   registrationType: EventRegistrationType;
   maxPerBooking: number | null;
   holdHours: number;
+  /** The event shows a UPI QR after booking and asks for a payment screenshot. */
+  takesUpiPayment?: boolean;
 }) {
   const t = useT();
   const minCount = registrationType === "GROUP" ? 2 : 1;
@@ -171,7 +271,7 @@ export function EventBookingPanel({
       {booking ? (
         <>
           <h2>Booking request received</h2>
-          <BookingResult booking={booking} onReset={() => { setBooking(null); setConsent(false); }} />
+          <BookingResult key={booking.reference} booking={booking} phone={phone} onReset={() => { setBooking(null); setConsent(false); }} />
         </>
       ) : (
         <>
@@ -242,7 +342,9 @@ export function EventBookingPanel({
               {error && <p className="bk-error" role="alert">{error}</p>}
               <button className="btn" type="submit" disabled={busy}>{busy ? t("Sending…") : t("Request a booking")}</button>
               {waRegister && <a className="btn event-whatsapp" href={waRegister} target="_blank" rel="noreferrer">{t("Register on WhatsApp")}</a>}
-              <p className="bk-hint">This submits a registration request and holds your slots for up to {holdHours} hours. Your slot is confirmed after the event team verifies availability and sends confirmation. No payment is collected online.</p>
+              <p className="bk-hint">{takesUpiPayment
+                ? `This holds your slots for up to ${holdHours} hours. Next you'll see a UPI QR code: pay the entry fee and upload the payment screenshot. Your slot is confirmed after the team checks your payment.`
+                : `This submits a registration request and holds your slots for up to ${holdHours} hours. Your slot is confirmed after the event team verifies availability and sends confirmation. No payment is collected online.`}</p>
             </form>
           )}
         </>

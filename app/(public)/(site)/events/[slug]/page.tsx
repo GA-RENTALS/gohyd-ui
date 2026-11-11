@@ -163,7 +163,7 @@ function eventJsonLd(event: EventPageData) {
 }
 
 /**
- * Event detail page. Same layout and styles as the trip page (booking.css): title, chips, red section tabs,
+ * Event detail page. Same layout and styles as the trip page (booking.css): title, chips,
  * content cards on the left and the booking card on the right. Sections without content are skipped.
  */
 export default async function EventPage({ params }: Props) {
@@ -272,10 +272,6 @@ export default async function EventPage({ params }: Props) {
         {venue && <span className="bk-chip">{venue}</span>}
       </div>
 
-      <nav className="bk-section-tabs" aria-label="Event details">
-        {sections.map((section) => <a key={section.id} href={`#${section.id}`}>{section.label}</a>)}
-      </nav>
-
       <div className="bk-detail">
         <div className="bk-detail-content">
           {sections.map((section) => (
@@ -297,6 +293,7 @@ export default async function EventPage({ params }: Props) {
             registrationType={event.registration_type}
             maxPerBooking={event.max_participants_per_booking}
             holdHours={event.reservation_hold_hours}
+            takesUpiPayment={Boolean(event.payment)}
           />
         ) : (
           <EventEnquiryPanel slug={event.slug} title={event.title} price={event.price} schedules={event.schedules} whatsappNumber={event.booking_whatsapp_number || ""} venue={venue} />

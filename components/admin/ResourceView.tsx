@@ -415,6 +415,12 @@ function RecordForm({ schema, row, onClose, onSaved }: { schema: Schema; row: an
                   input = (
                     <div className="flex flex-col gap-2">
                       <span className="text-body-medium text-text-secondary">{label}</span>
+                      {current && !(v instanceof File) && /\.(jpe?g|png|webp|gif)(\?|$)/i.test(current) && (
+                        <a href={current} target="_blank" rel="noopener noreferrer" className="block w-fit">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={current} alt={label} className="max-h-96 max-w-full rounded-lg border border-border-button-default object-contain" />
+                        </a>
+                      )}
                       {current && !(v instanceof File) && (
                         <a href={current} target="_blank" rel="noopener noreferrer" className="text-body-medium text-text-secondary underline">View current file</a>
                       )}

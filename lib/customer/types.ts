@@ -74,6 +74,8 @@ export type EventDetail = {
   schedule_note: string;
   seo_title?: string;
   seo_description?: string;
+  /** UPI QR payment details; null/absent when the event doesn't take QR payments. */
+  payment?: EventPayment | null;
 };
 
 export type EventBookingStatus = "PENDING" | "CONFIRMED" | "CANCELLED" | "EXPIRED";
@@ -96,7 +98,12 @@ export type EventBooking = {
   venue: string;
   booking_whatsapp_number: string;
   seats_left: number | null;
+  /** UPI QR details when the event takes payment by QR code; otherwise null. */
+  payment: EventPayment | null;
+  payment_submitted: boolean;
+  payment_submitted_at: string | null;
 };
+export type EventPayment = { qr_url: string | null; upi_id: string; payee_name: string };
 
 export type PickupPoint = { id: string; name: string; address: string; pickup_time: string | null };
 export type RefundTier = { days_before: number; refund_basis_points: number; note: string };

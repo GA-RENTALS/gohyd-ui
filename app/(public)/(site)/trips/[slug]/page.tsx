@@ -82,24 +82,12 @@ export default async function TripPage({ params }: Props) {
     trip.min_age ? `ages ${trip.min_age}+` : null,
   ].filter(Boolean) as string[];
   const tiers = [...trip.policies].sort((a, b) => b.days_before - a.days_before);
-  const sections = [
-    { id: "trip-about", label: t("tab.about") },
-    { id: "trip-itinerary", label: t("Itinerary") },
-    { id: "trip-bring", label: t("Things to bring") },
-    { id: "trip-includes", label: t("Includes") },
-    { id: "trip-excludes", label: t("Excludes") },
-  ];
-
   return (
     <div className="wrap">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(tripJsonLd(trip)) }} />
       <div className="eyebrow">{t("Trip")}</div>
       <h1 className="bk-title">{trip.title || trip.slug}</h1>
       {trip.categories.length > 0 && <div className="bk-chips">{trip.categories.map((c) => <span key={c} className="bk-chip">{c.replace(/-/g, " ")}</span>)}</div>}
-
-      <nav className="bk-section-tabs" aria-label="Trip details">
-        {sections.map((section) => <a key={section.id} href={`#${section.id}`}>{section.label}</a>)}
-      </nav>
 
       <div className="bk-detail">
         <div className="bk-detail-content">

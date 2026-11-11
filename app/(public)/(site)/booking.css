@@ -33,9 +33,6 @@
 /* trip detail */
 .bk-detail { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); margin-top: 32px; align-items: start; }
 @media (max-width: 860px) { .bk-detail { grid-template-columns: 1fr; } }
-.bk-section-tabs { position: sticky; z-index: 8; top: 72px; display: flex; gap: 4px; overflow-x: auto; margin-top: 28px; padding: 7px; border-radius: 4px; background: #bd2520; scrollbar-width: thin; }
-.bk-section-tabs a { flex: 1 0 auto; padding: 12px 16px; border-radius: 3px; color: #fff; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-align: center; text-decoration: none; text-transform: uppercase; white-space: nowrap; }
-.bk-section-tabs a:hover, .bk-section-tabs a:focus-visible { outline: none; background: #fff; color: #171612; }
 .bk-detail-content { display: grid; gap: 20px; min-width: 0; }
 .bk-detail-content .bk-card + .bk-card { margin-top: 0; }
 .bk-detail-section { scroll-margin-top: 148px; }
@@ -116,8 +113,6 @@
   .bk-sticky { position: static; }
   .bk-main { padding-top: 104px; padding-bottom: 56px; }
   .bk-detail { padding-bottom: 76px; }
-  .bk-section-tabs { top: 64px; margin-inline: calc(var(--pad) * -1); padding-inline: var(--pad); border-radius: 0; }
-  .bk-section-tabs a { padding: 12px 14px; }
   .bk-detail-section { scroll-margin-top: 126px; }
   #book { scroll-margin-top: 96px; }
   .bk-bookbar { position: fixed; z-index: 90; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 16px; min-height: 56px; background: var(--lime); color: var(--ink); border-radius: 3px; box-shadow: 0 14px 34px rgba(0,0,0,.45); text-decoration: none; transition: transform .3s var(--ease), opacity .3s; }
@@ -209,8 +204,6 @@
   .bk-main { padding-top: calc(88px + env(safe-area-inset-top)); padding-bottom: 60px; }
   .bk-detail { gap: 18px; margin-top: 22px; padding-bottom: 88px; }
   .bk-detail-content { gap: 14px; }
-  .bk-section-tabs { top: calc(66px + env(safe-area-inset-top)); gap: 3px; margin-top: 20px; margin-inline: calc(var(--pad) * -1); padding: 6px var(--pad); border-radius: 0; scroll-padding-inline: var(--pad); scroll-snap-type: x proximity; overscroll-behavior-inline: contain; -webkit-overflow-scrolling: touch; }
-  .bk-section-tabs a { flex: 0 0 auto; min-height: 44px; padding: 11px 12px; font-size: 11px; letter-spacing: .06em; scroll-snap-align: start; }
   .bk-detail-section { scroll-margin-top: calc(120px + env(safe-area-inset-top)); }
   #book { scroll-margin-top: calc(86px + env(safe-area-inset-top)); }
   .bk-title { max-width: 100%; overflow-wrap: anywhere; font-size: clamp(36px, 10vw, 54px); }
@@ -255,7 +248,16 @@
 @media (max-width: 360px) {
   .header .brand b { font-size: 10px; letter-spacing: .06em; }
   .header .wrap.nav { gap: 5px; }
-  .bk-section-tabs a { padding-inline: 10px; font-size: 10px; }
   .bk-bookbar { left: 8px; right: 8px; }
   .bk-bookbar-cta { font-size: 9px; letter-spacing: .06em; }
 }
+
+/* UPI QR payment + screenshot upload (events that take payment by QR) */
+.bk-pay { margin: 18px 0; padding: 16px; border: 1px solid var(--line); border-radius: 3px; background: rgba(243,238,226,.03); }
+.bk-pay h3 { margin: 0 0 10px; font: 700 16px/1.3 var(--sans); color: var(--ivory); }
+.bk-pay-steps { margin: 0 0 14px; padding-left: 20px; color: var(--ivory-2); font-size: 14px; line-height: 1.6; }
+.bk-pay-qr { display: block; width: min(100%, 260px); margin: 0 auto 14px; border-radius: 6px; overflow: hidden; background: #fff; }
+.bk-pay-qr img { display: block; width: 100%; height: auto; }
+.bk-pay-app { display: block; width: 100%; margin: 0 0 14px; text-align: center; }
+.bk-pay-done { margin: 0 0 8px; padding: 12px 14px; border: 1px solid rgba(120,170,90,.5); background: rgba(120,170,90,.12); color: var(--ivory); border-radius: 2px; font-size: 14px; }
+.bk-pay .bk-field input[type="file"] { padding: 10px; }

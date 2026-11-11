@@ -10,6 +10,8 @@ export const FEATURED_EVENT_ENDS_AT = "2026-11-14T22:00:00+05:30";
 export const FEATURED_EVENT_CAPACITY = 15;
 export const FEATURED_EVENT_WHATSAPP = "+91 90593 38727";
 export const FEATURED_EVENT_POSTER = "/assets/img/box-cricket-poster.jpg";
+/** UPI QR for the featured event's entry fee, used until a QR image is uploaded to the event in the admin. */
+export const FEATURED_EVENT_UPI_QR = "/assets/img/box-cricket-upi-qr.jpg";
 
 export const FEATURED_EVENT_PLAN: PlanCardData = {
   slug: FEATURED_EVENT_SLUG,
