@@ -1,0 +1,46 @@
+name: Deploy GoHyderabad Frontend
+
+on:
+  push:
+    branches:
+      - release
+
+concurrency:
+  group: gohyd-frontend-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          command_timeout: 30m
+          timeout: 60s
+          script: |
+            set -e
+            cd /home/ubuntu/gohyd-ui
+            PREVIOUS=$(git rev-parse HEAD)
+            git pull origin release
+
+            # Rebuild image without cache to bake in updated NEXT_PUBLIC environment variables
+            docker compose down
+            docker compose build --no-cache
+            docker compose up -d
+
+            # Verify container is running
+            if ! docker compose ps --services --filter "status=running" | grep -q .; then
+              echo "Deployment failed: container is not running. Rolling back to $PREVIOUS"
+              git reset --hard "$PREVIOUS"
+              docker compose down
+              docker compose build --no-cache
+              docker compose up -d
+              exit 1
+            fi
+
+            # Clean up dangling build artifacts
+            docker image prune -f
