@@ -163,6 +163,7 @@ function renderTripCard(trip: PublicTrip, upcoming: boolean): HTMLElement {
     image.alt = trip.title;
     image.loading = "lazy";
     image.decoding = "async";
+    revealWhenLoaded(image);
     photo.append(image);
   }
   photo.append(element("span", "ptag", categoryLabel(category)));
@@ -218,6 +219,7 @@ function renderEventCard(event: PublicEvent): HTMLElement {
     markPortraitPoster(image, photo);
     image.loading = "lazy";
     image.decoding = "async";
+    revealWhenLoaded(image);
     photo.append(image);
   }
   photo.append(element("span", "ptag", categoryLabel(category)));
@@ -247,6 +249,19 @@ function renderEventCard(event: PublicEvent): HTMLElement {
 }
 
 /** Portrait posters (e.g. event flyers) are shown whole instead of being cropped to the card's landscape frame. */
+/**
+ * Cards are built after the API responds, so Motion.tsx (which only tags images present on first paint) never sees
+ * them. Without `is-loaded`, `.motion-ready .ph img` stays at opacity 0 behind the shimmer.
+ */
+function revealWhenLoaded(image: HTMLImageElement): void {
+  const done = () => image.classList.add("is-loaded");
+  if (image.complete && image.naturalWidth) done();
+  else {
+    image.addEventListener("load", done, { once: true });
+    image.addEventListener("error", done, { once: true });
+  }
+}
+
 function markPortraitPoster(image: HTMLImageElement, frame: HTMLElement): void {
   const check = () => { if (image.naturalHeight > image.naturalWidth * 1.05) frame.classList.add("ph-poster"); };
   if (image.complete && image.naturalWidth) check();
@@ -345,6 +360,7 @@ function renderDestinations(destinations: PublicDestination[]): void {
       image.alt = destination.name;
       image.loading = "lazy";
       image.decoding = "async";
+      revealWhenLoaded(image);
       thumbnail.append(image);
     }
 
