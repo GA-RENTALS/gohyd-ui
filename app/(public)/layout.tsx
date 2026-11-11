@@ -3,20 +3,36 @@ import "lenis/dist/lenis.css";
 import "./globals.css";
 import "./animations.css";
 import "./sections.css";
+import { OG_IMAGE, SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_TITLE, SITE_URL, SOCIAL_PROFILES, absoluteUrl, jsonLd } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "GoHyderabad — Your Weekends, Reimagined",
-  description:
-    "GoHyderabad is a Hyderabad-based weekend experiences community. Ride out, play box cricket, find food and culture, explore hidden gems and meet your kind of people.",
-  icons: { icon: "/assets/logo.png", apple: "/assets/logo.png" },
-  openGraph: {
-    siteName: "GoHyderabad",
-    type: "website",
-    title: "GoHyderabad — Your Weekends, Reimagined",
-    description:
-      "Discover a different side of Hyderabad. Ride out, play hard, explore hidden gems, and meet your kind of people.",
+  metadataBase: new URL(SITE_URL),
+  title: { default: SITE_TITLE, template: `%s | ${SITE_NAME}` },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  keywords: [
+    "Hyderabad weekend trips", "things to do in Hyderabad", "Hyderabad events", "box cricket Hyderabad",
+    "bike rides from Hyderabad", "treks near Hyderabad", "Hyderabad food walk", "meet new people Hyderabad",
+    "weekend getaways Hyderabad", "GoHyderabad",
+  ],
+  icons: {
+    icon: [{ url: "/assets/logo.png", type: "image/png" }, { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }],
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180" }],
   },
-  twitter: { card: "summary_large_image" },
+  manifest: "/manifest.webmanifest",
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    locale: "en_IN",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    images: [OG_IMAGE],
+  },
+  twitter: { card: "summary_large_image", title: SITE_TITLE, description: SITE_DESCRIPTION, images: [OG_IMAGE.url] },
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
+  // Search Console: set NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION to the code from the "HTML tag" method.
+  verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } : undefined,
+  category: "travel",
 };
 
 export const viewport: Viewport = {
@@ -26,18 +42,35 @@ export const viewport: Viewport = {
   themeColor: "#12130e",
 };
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "GoHyderabad",
-  description: "Weekend experiences and community in Hyderabad, India.",
-  logo: "assets/logo.png",
-  sameAs: ["https://www.instagram.com/gohyderabad/", "https://www.instagram.com/goadventure.in/"],
-};
+const siteJsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": `${SITE_URL}/#organization`,
+    name: SITE_NAME,
+    url: SITE_URL,
+    slogan: SITE_TAGLINE,
+    description: "Weekend experiences and community in Hyderabad, India.",
+    logo: absoluteUrl("/brand/gohyderabad-logo.png"),
+    image: absoluteUrl(OG_IMAGE.url),
+    areaServed: { "@type": "City", name: "Hyderabad" },
+    address: { "@type": "PostalAddress", addressLocality: "Hyderabad", addressRegion: "Telangana", addressCountry: "IN" },
+    sameAs: SOCIAL_PROFILES,
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${SITE_URL}/#website`,
+    name: SITE_NAME,
+    url: SITE_URL,
+    inLanguage: "en-IN",
+    publisher: { "@id": `${SITE_URL}/#organization` },
+  },
+];
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en-IN" suppressHydrationWarning>
       <head>
         <link
           rel="preload"
@@ -54,7 +87,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('motion-ready');setTimeout(function(){document.documentElement.classList.add('motion-go')},5000)" }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(siteJsonLd) }} />
       </head>
       <body>{children}</body>
     </html>

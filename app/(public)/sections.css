@@ -85,3 +85,38 @@
   .scroll-cue { padding-block: 14px; }
   .bk-footer a { display: inline-block; padding: 12px 0; }
 }
+
+/* ---- Upcoming events: portrait posters and empty state ---- */
+.ph.ph-poster { background: var(--char); }
+.ecard .ph.ph-poster { aspect-ratio: 4 / 5; }
+.ph.ph-poster img { object-fit: contain; }
+.ev-empty { padding: 28px 4px; color: var(--text-soft-dark); font-size: 15px; line-height: 1.7; }
+
+/* ---- Upcoming events popup (opens once per session on the homepage) ---- */
+.ev-popup { width: min(440px, calc(100% - 32px)); max-width: none; max-height: calc(100dvh - 32px); margin: auto; padding: 0; border: 0; border-radius: 6px; background: var(--char); color: var(--ivory); color-scheme: dark; overflow: auto; box-shadow: 0 30px 80px rgba(0,0,0,.55); }
+.ev-popup::backdrop { background: rgba(10,11,8,.72); backdrop-filter: blur(3px); }
+.ev-popup[open] { animation: ev-popup-in .35s var(--ease) both; }
+@keyframes ev-popup-in { from { opacity: 0; transform: translateY(18px) scale(.98); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .ev-popup[open] { animation: none; } }
+.ev-popup-card { position: relative; display: flex; flex-direction: column; }
+.ev-popup-close { position: absolute; top: 10px; right: 10px; z-index: 2; display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border: 1px solid rgba(243,238,226,.35); border-radius: 50%; background: rgba(18,19,14,.78); color: var(--ivory); font-size: 24px; line-height: 1; }
+.ev-popup-close:hover { background: var(--lime); color: var(--ink); border-color: var(--lime); }
+.ev-popup-eyebrow { padding: 16px 60px 12px 18px; color: var(--sand-light); font-size: 11px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
+.ev-popup-poster { display: block; background: #0b0c09; }
+.ev-popup-poster img { width: 100%; height: auto; max-height: min(58dvh, 560px); object-fit: contain; }
+.ev-popup-noposter { display: grid; place-items: center; min-height: 220px; padding: 24px; font: 500 34px/1 var(--display); text-transform: uppercase; text-align: center; }
+.ev-popup-nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px 0; }
+.ev-popup-nav .arrow { width: 38px; height: 38px; border-color: rgba(243,238,226,.35); color: var(--ivory); }
+.ev-popup-nav .arrow:hover { background: var(--ivory); color: var(--ink); }
+.ev-popup-dots { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.ev-popup-dots button { width: 9px; height: 9px; padding: 0; border: 0; border-radius: 50%; background: rgba(243,238,226,.3); }
+.ev-popup-dots button.is-active { background: var(--lime); }
+.ev-popup-body { padding: 14px 18px 20px; }
+.ev-popup-body h2 { font: 500 30px/1 var(--display); letter-spacing: .01em; text-transform: uppercase; }
+.ev-popup-meta { margin-top: 8px; color: var(--text-soft); font-size: 14px; font-weight: 600; }
+.ev-popup-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 20px; margin-top: 16px; }
+.ev-popup-actions .btn { min-height: 48px; flex: 1 1 auto; }
+.ev-popup-all { color: var(--sand-light); font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; text-decoration: underline; text-underline-offset: 4px; }
+
+/* Sections filled from the backend stay hidden until they have content. */
+section[hidden] { display: none !important; }

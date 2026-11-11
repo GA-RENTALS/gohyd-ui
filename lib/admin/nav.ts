@@ -4,6 +4,7 @@ import type { Module } from "./api";
 export const GROUPS = [
   { key: "home", label: "Home", icon: "home", modules: ["dashboard"] },
   { key: "trips", label: "Trips", icon: "map", modules: ["trips", "destinations"] },
+  { key: "events", label: "Events", icon: "calendar", modules: ["events"] },
   { key: "bookings", label: "Bookings", icon: "ticket", modules: ["bookings", "checkout", "participants"] },
   { key: "finance", label: "Finance", icon: "landmark", modules: ["payments", "finance"] },
   { key: "customers", label: "Customers", icon: "users", modules: ["customers", "crm", "memberships"] },

@@ -5,9 +5,10 @@ import type { PlanCardData } from "./types";
 
 export function PlanCard({ plan }: { plan: PlanCardData }) {
   const slug = plan.slug || planSlug(plan.title);
+  const isPoster = Boolean(plan.photo.width && plan.photo.height && plan.photo.height > plan.photo.width);
   return (
     <article className="ecard" data-cat={plan.cat}>
-      <div className="ph" data-label={plan.label}>
+      <div className={isPoster ? "ph ph-poster" : "ph"} data-label={plan.label}>
         <SitePhoto photo={plan.photo} />
         <span className="ptag">{plan.tag}</span>
         {plan.is_hot && <span className="badge hot-event-badge">Hot event</span>}

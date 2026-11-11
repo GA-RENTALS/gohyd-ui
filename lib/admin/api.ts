@@ -45,7 +45,9 @@ export type Dashboard = {
 };
 export type Field = {
   name: string; label: string; type: string; required: boolean; read_only: boolean; allow_null: boolean; help_text: string;
-  choices?: { value: string; label: string }[]; options?: { value: string; label: string }[]; many?: boolean;
+  choices?: { value: string; label: string }[];
+  options?: { value: string; label: string; media_kind?: string; image_preview_url?: string }[];
+  many?: boolean;
   /** File fields: the largest upload in MB and the allowed extensions (".png,.pdf"). */
   max_mb?: number; accept?: string;
 };

@@ -1,14 +1,18 @@
 import { Icon } from "../Icon";
 import { PlanCard } from "../PlanCard";
-import { PLANS } from "../data/plans";
+import { FEATURED_EVENT_PLAN } from "../data/featured-event";
 
+/**
+ * Upcoming events. Server-rendered with the local Box Cricket fallback; publicContent.ts replaces the rail with
+ * every published Event from the backend that has a future date.
+ */
 export function Events() {
   return (
     <section className="events on-light pad" id="events" aria-labelledby="events-title">
       <div className="wrap">
         <div className="ev-head" data-reveal="">
           <div>
-            <div className="eyebrow">03 · What's next</div>
+            <div className="eyebrow">01 · Upcoming events</div>
             <h2 className="h-section" id="events-title">
               Make room
               <br />
@@ -16,64 +20,38 @@ export function Events() {
               {" "}
               <em>the weekend.</em>
             </h2>
-            <p className="count-line">50 plans + a featured event around Hyderabad</p>
+            <p className="count-line" id="events-count">1 upcoming event in Hyderabad</p>
           </div>
           <p className="lede">
-            Find your next reason to step out. Pick a plan, bring your curiosity, and let the weekend take shape.
+            Find your next reason to step out. Pick an event, book your spot, and let the weekend take shape.
           </p>
         </div>
         <p className="notice" data-reveal="">
           <Icon name="info" />
           <span>
-            <strong>Plans open into full details.</strong>
+            <strong>Book in a minute.</strong>
             {" "}
-            Choose a plan to review its itinerary and send your preferred date and group size. Our team will confirm the schedule, price and availability.
+            Open an event to see the details and send your booking request. Our team will confirm your place on WhatsApp or a call.
           </span>
         </p>
         <div className="section-top" data-reveal="">
           <div>
             <h2 className="rail-title">
-              Explore all
+              Upcoming
               {" "}
-              <span>50 plans + 1 hot event</span>
+              <span>events</span>
             </h2>
-            <p className="hint">From quick city escapes to full weekend adventures</p>
+            <p className="hint">Dates, prices and slots for what's coming up next</p>
           </div>
           <div className="controls">
-            <button className="arrow" type="button" data-target="ev-grid" data-dir="-1" aria-label="Scroll plans left">‹</button>
-            <button className="arrow" type="button" data-target="ev-grid" data-dir="1" aria-label="Scroll plans right">›</button>
+            <button className="arrow" type="button" data-target="ev-grid" data-dir="-1" aria-label="Scroll events left">‹</button>
+            <button className="arrow" type="button" data-target="ev-grid" data-dir="1" aria-label="Scroll events right">›</button>
           </div>
         </div>
-        <div className="chips" role="group" aria-label="Filter plans by category" data-reveal="">
-          <button className="chip" type="button" data-chip="all" aria-pressed="true">All</button>
-          {" "}
-          <button className="chip" type="button" data-chip="trekking" aria-pressed="false">Trekking</button>
-          {" "}
-          <button className="chip" type="button" data-chip="forts" aria-pressed="false">Forts</button>
-          {" "}
-          <button className="chip" type="button" data-chip="day-trips" aria-pressed="false">Day Trips</button>
-          {" "}
-          <button className="chip" type="button" data-chip="camping" aria-pressed="false">Camping</button>
-          {" "}
-          <button className="chip" type="button" data-chip="rides" aria-pressed="false">Rides</button>
-          {" "}
-          <button className="chip" type="button" data-chip="sports" aria-pressed="false">Sports</button>
-          {" "}
-          <button className="chip" type="button" data-chip="lakes" aria-pressed="false">Lakes</button>
-          {" "}
-          <button className="chip" type="button" data-chip="adventure" aria-pressed="false">Adventure</button>
-          {" "}
-          <button className="chip" type="button" data-chip="wildlife" aria-pressed="false">Wildlife</button>
-          {" "}
-          <button className="chip" type="button" data-chip="waterfalls" aria-pressed="false">Waterfalls</button>
-          {" "}
-          <button className="chip" type="button" data-chip="temples" aria-pressed="false">Temples</button>
-          {" "}
-          <button className="chip" type="button" data-chip="viewpoints" aria-pressed="false">Viewpoints</button>
+        <div className="rail ev-rail" id="ev-grid" aria-live="polite" tabIndex={0} aria-label="Upcoming events">
+          <PlanCard plan={FEATURED_EVENT_PLAN} />
         </div>
-        <div className="rail ev-rail" id="ev-grid" aria-live="polite" tabIndex={0} aria-label="Plan formats">
-          {PLANS.map((plan) => <PlanCard key={plan.title} plan={plan} />)}
-        </div>
+        <p className="content-status" id="public-content-status" role="status" aria-live="polite" hidden />
       </div>
     </section>
   );

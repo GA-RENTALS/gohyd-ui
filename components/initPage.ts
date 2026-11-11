@@ -174,6 +174,8 @@ export function initPage() {
       var chips = Array.prototype.slice.call(document.querySelectorAll(".chip"));
       var cards = Array.prototype.slice.call(document.querySelectorAll(".ecard"));
       function filter(cat) {
+        // Only a few upcoming events are listed; if none match the category, keep every event visible.
+        if (cat !== "all" && !cards.some(function (c) { return c.dataset.cat === cat; })) cat = "all";
         chips.forEach(function (c) { c.setAttribute("aria-pressed", String(c.dataset.chip === cat)); });
         cards.forEach(function (c) { var show = cat === "all" || c.dataset.cat === cat; c.hidden = !show; if (show) c.classList.add("is-visible"); });
       }

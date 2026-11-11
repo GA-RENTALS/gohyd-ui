@@ -4,7 +4,8 @@ import { BookingPanel } from "@/components/booking/BookingPanel";
 import { MobileBookBar } from "@/components/booking/MobileBookBar";
 import { money } from "@/lib/customer/format";
 import { getTrip } from "@/lib/customer/server";
-import type { RefundTier } from "@/lib/customer/types";
+import type { RefundTier, TripDetail } from "@/lib/customer/types";
+import { SITE_NAME, SITE_URL, absoluteUrl, jsonLd, metaDescription, pageMetadata } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ slug: string }> };
@@ -12,12 +13,57 @@ type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const trip = await getTrip(slug).catch(() => null);
-  if (!trip) return { title: "Trip not found · GoHyderabad" };
-  return {
-    title: `${trip.title || slug} · GoHyderabad`,
-    description: trip.summary || undefined,
-    openGraph: { title: trip.title || slug, description: trip.summary || undefined, images: trip.cover_url ? [trip.cover_url] : undefined },
-  };
+  if (!trip) return { title: "Trip not found", robots: { index: false } };
+  return pageMetadata({
+    title: trip.seo_title || `${trip.title || slug} — Trip from Hyderabad`,
+    description: metaDescription(trip.seo_description, trip.summary, trip.body),
+    path: `/trips/${trip.slug}`,
+    image: trip.cover_url,
+    imageAlt: trip.title,
+  });
+}
+
+/** schema.org TouristTrip with one Offer per open departure (price, seats, booking URL). */
+function tripJsonLd(trip: TripDetail) {
+  const url = `${SITE_URL}/trips/${trip.slug}`;
+  return [
+    {
+      "@context": "https://schema.org",
+      "@type": "TouristTrip",
+      name: trip.title || trip.slug,
+      description: metaDescription(trip.summary, trip.body),
+      url,
+      ...(trip.cover_url ? { image: [absoluteUrl(trip.cover_url)] } : {}),
+      touristType: trip.categories.map((c) => c.replace(/-/g, " ")),
+      provider: { "@type": "Organization", "@id": `${SITE_URL}/#organization`, name: SITE_NAME, url: SITE_URL },
+      ...(trip.itineraries.length ? {
+        itinerary: {
+          "@type": "ItemList",
+          itemListElement: trip.itineraries.flatMap((day) => day.items).map((item, i) => ({ "@type": "ListItem", position: i + 1, name: item.text })),
+        },
+      } : {}),
+      offers: trip.schedules.map((s) => ({
+        "@type": "Offer",
+        url,
+        price: Number(s.price_per_participant).toFixed(2),
+        priceCurrency: s.currency || "INR",
+        availability: s.is_open && s.seats_left > 0 ? "https://schema.org/InStock" : "https://schema.org/SoldOut",
+        availabilityEnds: s.starts_at,
+        validFrom: undefined,
+        eligibleQuantity: { "@type": "QuantitativeValue", maxValue: s.seats_left },
+        description: `Departure ${s.starts_at.slice(0, 10)}`,
+      })),
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+        { "@type": "ListItem", position: 2, name: "Trips", item: `${SITE_URL}/trips` },
+        { "@type": "ListItem", position: 3, name: trip.title || trip.slug, item: url },
+      ],
+    },
+  ];
 }
 
 const refundText = (tier: RefundTier) =>
@@ -44,6 +90,7 @@ export default async function TripPage({ params }: Props) {
 
   return (
     <div className="wrap">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(tripJsonLd(trip)) }} />
       <div className="eyebrow">Trip</div>
       <h1 className="bk-title">{trip.title || trip.slug}</h1>
       {trip.categories.length > 0 && <div className="bk-chips">{trip.categories.map((c) => <span key={c} className="bk-chip">{c.replace(/-/g, " ")}</span>)}</div>}

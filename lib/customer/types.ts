@@ -25,7 +25,7 @@ export type Schedule = {
   balance_due_days_before: number;
 };
 
-export type ItineraryItem = { id: number; time_label: string; text: string };
+export type ItineraryItem = { id: number; time_label: string; text: string; detail?: string };
 export type ItineraryDay = { id: number; day_number: number; title: string; items: ItineraryItem[] };
 
 export type EventSchedule = {
@@ -33,9 +33,13 @@ export type EventSchedule = {
   starts_at: string;
   ends_at: string | null;
   capacity: number | null;
+  /** Capacity minus confirmed bookings and unexpired pending holds; null when the date has no capacity limit. */
+  seats_left: number | null;
   is_date_locked: boolean;
   time_tbd: boolean;
 };
+export type EventRegistrationType = "INDIVIDUAL" | "GROUP" | "BOTH";
+export type EventFormatDetail = { label: string; value: string };
 export type EventDetail = {
   id: string;
   slug: string;
@@ -57,6 +61,41 @@ export type EventDetail = {
   things_to_bring: string[];
   inclusions: string[];
   exclusions: string[];
+  format_details: EventFormatDetail[];
+  rules: string[];
+  registration_type: EventRegistrationType;
+  max_participants_per_booking: number | null;
+  reservation_hold_hours: number;
+  highlights: string[];
+  faqs: { question: string; answer: string }[];
+  headline: string;
+  image_caption: string;
+  format_note: string;
+  schedule_note: string;
+  seo_title?: string;
+  seo_description?: string;
+};
+
+export type EventBookingStatus = "PENDING" | "CONFIRMED" | "CANCELLED" | "EXPIRED";
+export type EventBooking = {
+  reference: string;
+  status: EventBookingStatus;
+  status_label: string;
+  contact_name: string;
+  participant_count: number;
+  unit_price: string | null;
+  total_amount: string;
+  reserved_until: string | null;
+  confirmed_at: string | null;
+  created_at: string;
+  event_slug: string;
+  event_title: string;
+  starts_at: string;
+  ends_at: string | null;
+  time_tbd: boolean;
+  venue: string;
+  booking_whatsapp_number: string;
+  seats_left: number | null;
 };
 
 export type PickupPoint = { id: string; name: string; address: string; pickup_time: string | null };
@@ -74,6 +113,8 @@ export type TripDetail = TripSummary & {
   duration_hours: number | null;
   difficulty: string;
   min_age: number | null;
+  seo_title?: string;
+  seo_description?: string;
 };
 
 export type Participant = {

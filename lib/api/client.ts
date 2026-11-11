@@ -61,7 +61,7 @@ export function createApiClient({ baseUrl, storageKey }: { baseUrl: string; stor
     try {
       res = await fetch(`${baseUrl}${path}`, { ...rest, headers: h, body: json === undefined ? rest.body : isForm ? (json as FormData) : JSON.stringify(json) });
     } catch {
-      throw new ApiError(0, `Can't reach the server at ${new URL(baseUrl).origin}. Check that the Django backend is running.`);
+      throw new ApiError(0, `Can't reach the API at ${new URL(baseUrl).origin}. Check that Django is running and CORS_ALLOWED_ORIGINS includes this site's origin.`);
     }
     if (res.status === 401 && auth && retry && (await refresh())) return api<T>(path, init, false);
     if (res.status === 204) return undefined as T;

@@ -46,7 +46,7 @@ export function Hero() {
       </aside>
       <div className="hero-foot">
         <span>Meet · Explore · Experience</span>
-        <a className="scroll-cue" href="#about">
+        <a className="scroll-cue" href="#events">
           Scroll
           <Icon name="down" />
         </a>

@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import Motion from "@/components/Motion";
+import { pageMetadata } from "@/lib/site";
 import PageBehavior from "@/components/PageBehavior";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
@@ -14,6 +16,9 @@ import { How } from "@/components/site/sections/How";
 import { Stats } from "@/components/site/sections/Stats";
 import { Upcoming } from "@/components/site/sections/Upcoming";
 import { Voices } from "@/components/site/sections/Voices";
+import { UpcomingEventsPopup } from "@/components/site/UpcomingEventsPopup";
+
+export const metadata: Metadata = pageMetadata({ path: "/" });
 
 export default function Home() {
   return (
@@ -27,10 +32,10 @@ export default function Home() {
       <main id="main">
         <Hero />
         <ArchEdge />
-        <Upcoming />
+        <Events />
         <Stats />
         <Experiences />
-        <Events />
+        <Upcoming />
         <Explore />
         <Community />
         <How />
@@ -38,6 +43,7 @@ export default function Home() {
         <Closing />
       </main>
       <SiteFooter />
+      <UpcomingEventsPopup />
       <PageBehavior />
       <Motion />
     </>

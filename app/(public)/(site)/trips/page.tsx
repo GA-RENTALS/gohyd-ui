@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { TripCard } from "@/components/booking/TripCard";
 import { listTrips } from "@/lib/customer/server";
+import { pageMetadata } from "@/lib/site";
 import type { TripSummary } from "@/lib/customer/types";
 
-export const metadata: Metadata = {
-  title: "Trips · GoHyderabad",
-  description: "Weekend treks, rides, day trips and experiences around Hyderabad. Pick a date and book your spot.",
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Weekend Trips from Hyderabad — Treks, Rides & Day Trips",
+  description: "Book weekend treks, bike rides, day trips and getaways from Hyderabad. See dates, prices and seats left, pay a small advance, and travel with the GoHyderabad community.",
+  path: "/trips",
+});
 export const dynamic = "force-dynamic";
 
 export default async function TripsPage() {

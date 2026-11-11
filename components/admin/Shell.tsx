@@ -1,6 +1,6 @@
 "use client";
 import {
-  RiBankLine, RiGroupLine, RiHomeLine, RiMegaphoneLine, RiMenuLine, RiRoadMapLine, RiTicket2Line, RiTruckLine,
+  RiBankLine, RiCalendarEventLine, RiGroupLine, RiHomeLine, RiMegaphoneLine, RiMenuLine, RiRoadMapLine, RiTicket2Line, RiTruckLine,
 } from "@remixicon/react";
 import { usePathname, useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useMemo, useState, type ComponentType, type ReactNode } from "react";
@@ -18,7 +18,7 @@ const AdminCtx = createContext<Ctx | null>(null);
 export const useAdmin = () => useContext(AdminCtx)!;
 
 const ICONS: Record<string, ComponentType<{ className?: string; "aria-hidden"?: boolean | "true" | "false" }>> = {
-  home: RiHomeLine, map: RiRoadMapLine, ticket: RiTicket2Line, landmark: RiBankLine, users: RiGroupLine, truck: RiTruckLine, megaphone: RiMegaphoneLine,
+  home: RiHomeLine, map: RiRoadMapLine, calendar: RiCalendarEventLine, ticket: RiTicket2Line, landmark: RiBankLine, users: RiGroupLine, truck: RiTruckLine, megaphone: RiMegaphoneLine,
 };
 
 export function AdminShell({ children }: { children: ReactNode }) {

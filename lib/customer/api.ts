@@ -1,7 +1,7 @@
 "use client";
 import { createApiClient, type Tokens } from "@/lib/api/client";
 import { API_URL } from "@/lib/config";
-import type { Booking, Checkout, Participant, PayKind, PaymentOrder, Profile } from "./types";
+import type { Booking, Checkout, EventBooking, Participant, PayKind, PaymentOrder, Profile } from "./types";
 
 const client = createApiClient({ baseUrl: API_URL, storageKey: "gh_customer_tokens" });
 export const { api, tokenStore } = client;
@@ -30,6 +30,13 @@ export const customerApi = {
   /** Sends an event or plan booking request to the staff CRM inbox; this does not reserve a seat or take payment. */
   submitEventEnquiry: (data: { name: string; phone: string; event?: string; event_schedule?: string; preferred_date?: string; group_size: number; source: string; message: string; consent_to_contact: boolean }) =>
     api<{ status: string }>("/enquiries/", { method: "POST", auth: false, json: data }),
+
+  /** Holds slots on an event date (capacity-checked on the server). Staff confirm it afterwards. */
+  createEventBooking: (data: { event: string; schedule: string; name: string; phone: string; email?: string; participant_count: number; note?: string; consent_to_contact: boolean }) =>
+    api<EventBooking>("/event-bookings/", { method: "POST", auth: false, json: data }),
+  /** Reference + the phone used to book. */
+  eventBookingStatus: (reference: string, phone: string) =>
+    api<EventBooking>(`/event-bookings/${encodeURIComponent(reference.trim().toUpperCase())}/?phone=${encodeURIComponent(phone)}`, { auth: false }),
 
   /** One trip date, N people. All-or-nothing; the same idempotency key never creates two checkouts. */
   createCheckout: (schedule: string, participant_count: number, pickup_point: string | null, key = newKey()) =>

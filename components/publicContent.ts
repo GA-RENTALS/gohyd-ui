@@ -1,5 +1,5 @@
 import { BACKEND_URL as API_BASE_URL } from "@/lib/config";
-import { FEATURED_EVENT_PLAN, FEATURED_EVENT_SLUG, FEATURED_EVENT_STARTS_AT, FEATURED_EVENT_WHATSAPP } from "@/components/site/data/featured-event";
+import { eventImage, fallbackFeaturedEvent, upcomingEvents, type PublicEvent } from "@/components/site/upcomingEvents";
 
 type PublicTrip = {
   slug: string;
@@ -10,20 +10,6 @@ type PublicTrip = {
   next_departure: string | null;
   from_price: string | number | null;
   cover_url: string | null;
-};
-
-type PublicEvent = {
-  slug: string;
-  title: string;
-  summary: string;
-  category: string;
-  category_slug: string | null;
-  price: string | number;
-  cover_url: string | null;
-  next_date: string | null;
-  next_time_tbd?: boolean;
-  is_featured?: boolean;
-  booking_whatsapp_number?: string;
 };
 
 type PublicDestination = {
@@ -37,6 +23,9 @@ type PublicDestination = {
   body: string;
   cover_url: string | null;
 };
+
+type PublicTestimonial = { id: number | string; author_name: string; author_role: string; quote: string };
+type HomepageStat = { value: number; label: string; suffix: string; decimals: number };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -72,6 +61,24 @@ function isEvent(value: unknown): value is PublicEvent {
     && (value.next_time_tbd === undefined || typeof value.next_time_tbd === "boolean")
     && (value.is_featured === undefined || typeof value.is_featured === "boolean")
     && (value.booking_whatsapp_number === undefined || typeof value.booking_whatsapp_number === "string");
+}
+
+function isTestimonial(value: unknown): value is PublicTestimonial {
+  return isRecord(value)
+    && (typeof value.id === "number" || typeof value.id === "string")
+    && typeof value.author_name === "string"
+    && typeof value.author_role === "string"
+    && typeof value.quote === "string";
+}
+
+async function fetchSiteSettings(): Promise<HomepageStat[]> {
+  const response = await fetch(new URL("/api/v1/site-settings/", API_BASE_URL), { cache: "no-store" });
+  if (!response.ok) throw new Error(`Site settings request failed (${response.status}).`);
+  const payload: unknown = await response.json();
+  if (!isRecord(payload) || !Array.isArray(payload.homepage_stats)) throw new Error("Invalid site settings response.");
+  return payload.homepage_stats.filter((s): s is HomepageStat => isRecord(s)
+    && typeof s.value === "number" && typeof s.label === "string"
+    && typeof s.suffix === "string" && typeof s.decimals === "number");
 }
 
 function isDestination(value: unknown): value is PublicDestination {
@@ -203,10 +210,12 @@ function renderEventCard(event: PublicEvent): HTMLElement {
 
   const photo = element("div", "ph");
   photo.dataset.label = event.title;
-  if (event.cover_url) {
+  const cover = eventImage(event);
+  if (cover) {
     const image = element("img");
-    image.src = event.cover_url;
+    image.src = cover;
     image.alt = event.title;
+    markPortraitPoster(image, photo);
     image.loading = "lazy";
     image.decoding = "async";
     photo.append(image);
@@ -232,46 +241,36 @@ function renderEventCard(event: PublicEvent): HTMLElement {
     element("dt", undefined, "Date"), element("dd", undefined, dateText),
     element("dt", undefined, "Price"), element("dd", undefined, price),
   );
-  body.append(details, element("span", "link", "Explore event"));
+  body.append(details, element("span", "link", "Book your spot"));
   card.append(photo, body);
   return card;
 }
 
-function renderEvents(events: PublicEvent[]): void {
-  if (!events.length) return;
-  const featuredEvent: PublicEvent = {
-    slug: FEATURED_EVENT_SLUG,
-    title: FEATURED_EVENT_PLAN.title,
-    summary: FEATURED_EVENT_PLAN.summary,
-    category: "Sports · KPHB, Hyderabad",
-    category_slug: "sports",
-    price: 499,
-    cover_url: "/assets/img/cricket-morning-1200.jpg",
-    next_date: FEATURED_EVENT_STARTS_AT,
-    next_time_tbd: true,
-    is_featured: true,
-    booking_whatsapp_number: FEATURED_EVENT_WHATSAPP,
-  };
-  const liveFeatured = events.find((event) => event.slug === FEATURED_EVENT_SLUG);
-  const visibleEvents = [liveFeatured || featuredEvent, ...events.filter((event) => event.slug !== FEATURED_EVENT_SLUG)];
-  document.getElementById("ev-grid")?.replaceChildren(...visibleEvents.map(renderEventCard));
-  const eventCount = document.querySelector(".events .rail-title span");
-  if (eventCount) eventCount.textContent = `${visibleEvents.length} events listed`;
-  const notice = document.querySelector(".notice span");
-  if (notice) {
-    notice.textContent = "Published events are listed here. Open an event to review its itinerary and send a booking request; our team will confirm the date and availability.";
-  }
+/** Portrait posters (e.g. event flyers) are shown whole instead of being cropped to the card's landscape frame. */
+function markPortraitPoster(image: HTMLImageElement, frame: HTMLElement): void {
+  const check = () => { if (image.naturalHeight > image.naturalWidth * 1.05) frame.classList.add("ph-poster"); };
+  if (image.complete && image.naturalWidth) check();
+  else image.addEventListener("load", check, { once: true });
+}
 
-  const chips = document.querySelector(".chips");
-  if (!chips) return;
-  const existing = new Set(Array.from(chips.querySelectorAll<HTMLButtonElement>("[data-chip]")).map((chip) => chip.dataset.chip));
-  for (const category of new Set(events.map((event) => event.category_slug).filter((slug): slug is string => Boolean(slug)))) {
-    if (existing.has(category)) continue;
-    const chip = element("button", "chip", categoryLabel(category));
-    chip.type = "button";
-    chip.dataset.chip = category;
-    chip.setAttribute("aria-pressed", "false");
-    chips.append(chip);
+function renderEvents(events: PublicEvent[]): void {
+  const visibleEvents = upcomingEvents(events);
+  const fallback = fallbackFeaturedEvent(events);
+  if (fallback) visibleEvents.unshift(fallback);
+
+  const grid = document.getElementById("ev-grid");
+  if (!grid) return;
+  if (visibleEvents.length) {
+    grid.replaceChildren(...visibleEvents.map(renderEventCard));
+  } else {
+    const empty = element("p", "ev-empty", "No upcoming events are scheduled right now. Check back soon, or follow @go_hyderabad on Instagram for the next one.");
+    grid.replaceChildren(empty);
+  }
+  const count = document.getElementById("events-count");
+  if (count) {
+    count.textContent = visibleEvents.length === 1
+      ? "1 upcoming event in Hyderabad"
+      : `${visibleEvents.length || "No"} upcoming events in Hyderabad`;
   }
 }
 
@@ -290,6 +289,8 @@ function renderTrips(trips: PublicTrip[]): boolean {
     document.getElementById("upcomingRail")?.replaceChildren(
       ...upcoming.slice(0, 6).map((trip) => renderTripCard(trip, true)),
     );
+    const section = document.getElementById("upcoming-trips");
+    if (section) section.hidden = false;
   }
   return upcoming.length > 0;
 }
@@ -356,10 +357,70 @@ function renderDestinations(destinations: PublicDestination[]): void {
   list.replaceChildren(...rows);
 
   const count = places.length;
-  const countLine = document.querySelector(".count-line");
-  if (countLine) countLine.textContent = `${count} published destinations around Hyderabad`;
   const mapSub = document.querySelector(".map-sub");
   if (mapSub) mapSub.textContent = `${count} published destinations and escapes, pinned. Tap a pin or a name to see where it sits.`;
+}
+
+/** Admin → Settings → Business settings → homepage.stats. The section stays hidden when the list is empty. */
+function renderStats(stats: HomepageStat[]): void {
+  const section = document.getElementById("stats");
+  const grid = document.getElementById("stats-grid");
+  if (!section || !grid) return;
+  if (!stats.length) { section.hidden = true; return; }
+  const format = (n: number, d: number) => n.toLocaleString("en-IN", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const numbers: { el: HTMLElement; stat: HomepageStat }[] = [];
+  grid.replaceChildren(...stats.map((stat) => {
+    const wrap = element("div", "stat");
+    const num = element("b", "num", format(stat.value, stat.decimals) + stat.suffix);
+    numbers.push({ el: num, stat });
+    wrap.append(num, element("span", undefined, stat.label));
+    return wrap;
+  }));
+  section.hidden = false;
+
+  // Count up once when the numbers scroll into view (skipped for reduced motion).
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) return;
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      observer.unobserve(entry.target);
+      const item = numbers.find((n) => n.el === entry.target);
+      if (!item) return;
+      const t0 = performance.now();
+      const tick = (now: number) => {
+        const p = Math.min(1, (now - t0) / 1900);
+        item.el.textContent = format(item.stat.value * (1 - Math.pow(1 - p, 3)), item.stat.decimals) + item.stat.suffix;
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+  }, { threshold: 0.6 });
+  numbers.forEach((n) => observer.observe(n.el));
+}
+
+/** Admin → Marketing → CMS → Testimonials (published only). The section stays hidden when there are none. */
+function renderTestimonials(testimonials: PublicTestimonial[]): void {
+  const section = document.getElementById("voices");
+  const track = document.getElementById("voice-track");
+  if (!section || !track) return;
+  const items = testimonials.filter((t) => t.quote.trim() && t.author_name.trim());
+  if (!items.length) { section.hidden = true; return; }
+  track.replaceChildren(...items.map((t) => {
+    const figure = element("figure", "voice");
+    const quote = element("blockquote", undefined, `“${t.quote.trim()}”`);
+    const caption = element("figcaption");
+    const avatar = element("span", "avatar", t.author_name.trim().charAt(0).toUpperCase());
+    avatar.setAttribute("aria-hidden", "true");
+    const who = element("span");
+    who.append(element("b", undefined, t.author_name.trim()));
+    if (t.author_role.trim()) who.append(element("small", undefined, t.author_role.trim()));
+    caption.append(avatar, who);
+    figure.append(quote, caption);
+    return figure;
+  }));
+  section.hidden = false;
+  const controls = section.querySelector<HTMLElement>(".voice-ctrl");
+  if (controls) controls.style.display = items.length < 2 ? "none" : "";
 }
 
 function setContentStatus(message: string): void {
@@ -374,24 +435,22 @@ export async function loadPublicContent(): Promise<void> {
     fetchAll("/api/v1/trips/?lang=en", isTrip),
     fetchAll("/api/v1/events/?lang=en", isEvent),
     fetchAll("/api/v1/destinations/?is_hyderabad_explore=true&lang=en", isDestination),
+    fetchAll("/api/v1/testimonials/?lang=en", isTestimonial),
+    fetchSiteSettings(),
   ]);
   const notices: string[] = [];
 
   if (results[0].status === "fulfilled") {
-    const hasUpcoming = renderTrips(results[0].value);
-    if (results[0].value.length && !hasUpcoming) {
-      notices.push("No published trip has a future departure yet; the clearly labelled preview cards remain visible.");
-    }
+    renderTrips(results[0].value);
   } else {
-    console.error("Could not load published trips from the backend.", results[0].reason);
-    notices.push("Live trips are unavailable; preview cards remain visible.");
+    console.error("Could not load published trips from the backend; the Upcoming trips section stays hidden.", results[0].reason);
   }
 
   if (results[1].status === "fulfilled") {
     renderEvents(results[1].value);
   } else {
     console.error("Could not load published events from the backend.", results[1].reason);
-    notices.push("Live events are unavailable; plan formats remain visible.");
+    notices.push("Live events are unavailable right now; showing the featured event.");
   }
 
   if (results[2].status === "fulfilled") {
@@ -400,6 +459,12 @@ export async function loadPublicContent(): Promise<void> {
     console.error("Could not load published destinations from the backend.", results[2].reason);
     notices.push("Live destinations are unavailable; the current map remains visible.");
   }
+
+  if (results[3].status === "fulfilled") renderTestimonials(results[3].value);
+  else console.error("Could not load testimonials; the section stays hidden.", results[3].reason);
+
+  if (results[4].status === "fulfilled") renderStats(results[4].value);
+  else console.error("Could not load homepage stats; the section stays hidden.", results[4].reason);
 
   setContentStatus(notices.join(" "));
 }

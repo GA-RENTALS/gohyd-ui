@@ -7,7 +7,7 @@ The home page used to be one 135 KB HTML file. It is now small React components 
 | Page order | `app/(public)/page.tsx` | which sections appear and in what order |
 | One section each | `sections/*.tsx` | the copy and layout of that section |
 | Repeated items | `data/*.ts` (`plans`, `upcoming`, `map-places`, `credits`) | the 50 plan cards, 8 sample cards, 53 map pins, photo credits |
-| Card layouts | `PlanCard`, `UpcomingCard`, `MapPlaceItem`, `CreditItem` | how one item looks |
+| Card layouts | `PlanCard`, `MapPlaceItem`, `CreditItem` | how one item looks |
 | Shared bits | `Icon`, `SitePhoto`, `SiteSprite`, `SiteHeader`, `SiteFooter`, `types.ts` | icons, image loading, header and footer |
 
 `SiteHeader` also contains the account avatar (`components/booking/AccountMenu.tsx`): "Sign in" when signed out, the customer's initial with a small menu when signed in.

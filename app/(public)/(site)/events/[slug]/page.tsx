@@ -1,46 +1,96 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { EventBookingPanel } from "@/components/booking/EventBookingPanel";
 import { EventEnquiryPanel } from "@/components/booking/EventEnquiryPanel";
+import { EventHeroImage } from "@/components/booking/EventHeroImage";
 import { MobileBookBar } from "@/components/booking/MobileBookBar";
 import { getEvent } from "@/lib/customer/server";
-import type { EventDetail } from "@/lib/customer/types";
+import type { EventDetail, EventSchedule } from "@/lib/customer/types";
 import { getPlanBySlug } from "@/components/site/plan-slug";
-import { money } from "@/lib/customer/format";
-import { FEATURED_EVENT_SLUG, FEATURED_EVENT_STARTS_AT, FEATURED_EVENT_WHATSAPP } from "@/components/site/data/featured-event";
+import { money, time as timeLower } from "@/lib/customer/format";
+
+const time = (iso: string) => timeLower(iso).toUpperCase();
+import {
+  FEATURED_EVENT_CAPACITY, FEATURED_EVENT_CONTENT, FEATURED_EVENT_ENDS_AT, FEATURED_EVENT_POSTER, FEATURED_EVENT_SLUG,
+  FEATURED_EVENT_STARTS_AT, FEATURED_EVENT_WHATSAPP,
+} from "@/components/site/data/featured-event";
+import "./event-details.css";
+import { SITE_NAME, SITE_URL, absoluteUrl, jsonLd, metaDescription, pageMetadata } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ slug: string }> };
 
 type EventPageData = Omit<EventDetail, "id" | "category_slug"> & { is_live: boolean };
 
+/** Admin bodies are rich text; show them as plain paragraphs (no raw HTML injected into the page). */
+function paragraphs(html: string): string[] {
+  return html
+    .replace(/<\/(p|div|h[1-6]|li)>|<br\s*\/?>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&#39;|&apos;/g, "'").replace(/&quot;/g, '"')
+    .split(/\n+/).map((line) => line.trim()).filter(Boolean);
+}
+
+const factDate = (iso: string) =>
+  new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" });
+
+function durationLabel(schedule: EventSchedule): string | null {
+  if (!schedule.ends_at || schedule.time_tbd) return null;
+  const minutes = Math.round((Date.parse(schedule.ends_at) - Date.parse(schedule.starts_at)) / 60000);
+  if (!Number.isFinite(minutes) || minutes <= 0) return null;
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return [h ? `${h} Hour${h === 1 ? "" : "s"}` : "", m ? `${m} Min` : ""].filter(Boolean).join(" ");
+}
+
+function eveningOrDay(schedule: EventSchedule | undefined) {
+  if (!schedule || schedule.time_tbd) return "Plan for the day";
+  const hour = Number(new Date(schedule.starts_at).toLocaleString("en-GB", { hour: "2-digit", hour12: false, timeZone: "Asia/Kolkata" }));
+  return hour >= 16 ? "Plan for the evening" : "Plan for the day";
+}
+
 async function loadPageData(slug: string): Promise<EventPageData | null> {
   const event = await getEvent(slug).catch(() => null);
-  if (event) return { ...event, is_live: true };
+  if (event) {
+    // No poster uploaded yet for the featured event (e.g. seeded without file storage): use the bundled one.
+    const cover_url = event.cover_url || (event.slug === FEATURED_EVENT_SLUG ? FEATURED_EVENT_POSTER : null);
+    return { ...event, cover_url, is_live: true };
+  }
 
   const plan = getPlanBySlug(slug);
   if (!plan) return null;
   const featured = slug === FEATURED_EVENT_SLUG;
+  const content = featured ? FEATURED_EVENT_CONTENT : null;
   return {
     slug,
     title: plan.title,
     summary: plan.summary,
-    body: featured
-      ? "Meet new people through a community box cricket play day in KPHB. The flyer lists three pool-play matches, 10 overs per match, and about three hours of play."
-      : "",
-    category: plan.eyebrow,
+    body: content?.body ?? "",
+    category: featured ? "Sports" : plan.eyebrow,
     price: featured ? "499.00" : null,
     cover_url: `/${plan.photo.src.replace(/^\//, "")}`,
     next_date: featured ? FEATURED_EVENT_STARTS_AT : null,
-    next_time_tbd: featured,
+    next_time_tbd: false,
     is_featured: Boolean(plan.is_hot),
     booking_whatsapp_number: featured ? FEATURED_EVENT_WHATSAPP : "",
     venue_name: featured ? "KPHB" : "",
     venue_address: featured ? "KPHB, Hyderabad" : "",
-    schedules: featured ? [{ id: "box-cricket-fixed-date", starts_at: FEATURED_EVENT_STARTS_AT, ends_at: null, capacity: 15, is_date_locked: true, time_tbd: true }] : [],
-    itineraries: featured ? [{ id: 1, day_number: 1, title: "Pool play", items: [{ id: 1, time_label: "About 3 hours", text: "Three matches in pool play, with 10 overs per match." }] }] : [],
-    things_to_bring: [],
-    inclusions: [],
-    exclusions: [],
+    schedules: featured ? [{ id: "box-cricket-fixed-date", starts_at: FEATURED_EVENT_STARTS_AT, ends_at: FEATURED_EVENT_ENDS_AT, capacity: FEATURED_EVENT_CAPACITY, seats_left: null, is_date_locked: true, time_tbd: false }] : [],
+    itineraries: content ? [{ id: 1, day_number: 1, title: "Match day", items: content.timeline.map((item, i) => ({ id: i + 1, ...item })) }] : [],
+    things_to_bring: content?.things_to_bring ?? [],
+    inclusions: content?.inclusions ?? [],
+    exclusions: content?.exclusions ?? [],
+    format_details: content?.format_details ?? [],
+    rules: content?.rules ?? [],
+    highlights: content?.highlights ?? [],
+    faqs: content?.faqs ?? [],
+    headline: content?.headline ?? "",
+    image_caption: content?.image_caption ?? "",
+    format_note: content?.format_note ?? "",
+    schedule_note: content?.schedule_note ?? "",
+    registration_type: "BOTH",
+    max_participants_per_booking: null,
+    reservation_hold_hours: 24,
     is_live: false,
   };
 }
@@ -48,92 +98,230 @@ async function loadPageData(slug: string): Promise<EventPageData | null> {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const event = await loadPageData(slug);
-  if (!event) return { title: "Event not found · GoHyderabad" };
-  return {
-    title: `${event.title} · GoHyderabad`,
-    description: event.summary || undefined,
-    openGraph: { title: event.title, description: event.summary || undefined, images: event.cover_url ? [event.cover_url] : undefined },
-  };
+  if (!event) return { title: "Event not found", robots: { index: false } };
+  const next = event.schedules[0];
+  const when = next ? ` — ${factDate(next.starts_at)}` : "";
+  const where = event.venue_address || event.venue_name;
+  return pageMetadata({
+    title: event.seo_title || `${event.title}${where ? ` in ${where}` : ""}${when}`,
+    description: metaDescription(event.seo_description, event.summary, event.body),
+    path: `/events/${event.slug}`,
+    image: event.cover_url,
+    imageAlt: `${event.title} poster`,
+    // Old sample plan pages (no live event, not the featured fallback) are thin placeholder content.
+    noindex: !event.is_live && !event.is_featured,
+  });
 }
 
-const sections = [
-  { id: "event-about", label: "About" },
-  { id: "event-itinerary", label: "Itinerary" },
-  { id: "event-bring", label: "Things to bring" },
-  { id: "event-includes", label: "Includes" },
-  { id: "event-excludes", label: "Excludes" },
-];
+/** schema.org Event (SportsEvent for sports) per upcoming date, plus breadcrumbs. */
+function eventJsonLd(event: EventPageData) {
+  const url = `${SITE_URL}/events/${event.slug}`;
+  const isSport = /sport|cricket|football|badminton|volley|tennis|run|ride/i.test(`${event.category} ${event.title}`);
+  const where = event.venue_address || event.venue_name || "Hyderabad";
+  const description = metaDescription(event.summary, event.body);
+  const events = event.schedules.slice(0, 5).map((s) => ({
+    "@context": "https://schema.org",
+    "@type": isSport ? "SportsEvent" : "Event",
+    name: event.title,
+    description,
+    url,
+    ...(event.cover_url ? { image: [absoluteUrl(event.cover_url)] } : {}),
+    // Date only when the time is not confirmed yet.
+    startDate: s.time_tbd ? s.starts_at.slice(0, 10) : s.starts_at,
+    ...(s.ends_at && !s.time_tbd ? { endDate: s.ends_at } : {}),
+    eventStatus: "https://schema.org/EventScheduled",
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    location: {
+      "@type": "Place",
+      name: event.venue_name || where,
+      address: { "@type": "PostalAddress", streetAddress: where, addressLocality: "Hyderabad", addressRegion: "Telangana", addressCountry: "IN" },
+    },
+    organizer: { "@type": "Organization", "@id": `${SITE_URL}/#organization`, name: SITE_NAME, url: SITE_URL },
+    ...(s.capacity ? { maximumAttendeeCapacity: s.capacity } : {}),
+    ...(s.seats_left !== null && s.seats_left !== undefined ? { remainingAttendeeCapacity: s.seats_left } : {}),
+    ...(event.price !== null ? {
+      offers: {
+        "@type": "Offer",
+        url: `${url}#book`,
+        price: Number(event.price).toFixed(2),
+        priceCurrency: "INR",
+        availability: s.seats_left === 0 ? "https://schema.org/SoldOut" : "https://schema.org/InStock",
+      },
+    } : {}),
+  }));
+  return [
+    ...events,
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+        { "@type": "ListItem", position: 2, name: "Events", item: `${SITE_URL}/#events` },
+        { "@type": "ListItem", position: 3, name: event.title, item: url },
+      ],
+    },
+    ...(event.faqs.length ? [{
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: event.faqs.map((f) => ({ "@type": "Question", name: f.question, acceptedAnswer: { "@type": "Answer", text: f.answer } })),
+    }] : []),
+  ];
+}
 
+function Section({ id, kicker, title, children, className }: { id: string; kicker: string; title: string; children: React.ReactNode; className?: string }) {
+  return (
+    <section className={`evd-section-card${className ? ` ${className}` : ""}`} id={id} aria-labelledby={`${id}-title`}>
+      <div className="evd-section-kicker">{kicker}</div>
+      <h2 id={`${id}-title`}>{title}</h2>
+      {children}
+    </section>
+  );
+}
+
+/**
+ * Event Details template (from the approved GoHyderabad event page design). One template for every event:
+ * cricket, badminton, football, meetups. Sections without content are skipped and the numbering follows.
+ */
 export default async function EventPage({ params }: Props) {
   const { slug } = await params;
   const event = await loadPageData(slug);
   if (!event) notFound();
 
+  const isEvent = event.is_live || event.is_featured;
+  const next = event.schedules[0];
+  const timeline = event.itineraries.flatMap((day) => day.items.map((item) => ({ ...item, day: day.title, dayNumber: day.day_number })));
+  const multiDay = new Set(timeline.map((item) => item.dayNumber)).size > 1;
+  const body = paragraphs(event.body || "");
+  const isSport = /sport|cricket|football|badminton|volley|tennis/i.test(`${event.category} ${event.title}`);
+  const duration = next ? durationLabel(next) : null;
+  const venue = event.venue_address || event.venue_name;
+
+  const facts = [
+    { label: "Date", value: next ? factDate(next.starts_at) : "To be announced" },
+    { label: "Time", value: !next ? "To be announced" : next.time_tbd ? "To be confirmed" : `${time(next.starts_at)}${next.ends_at ? ` – ${time(next.ends_at)}` : ""}` },
+    { label: "Duration", value: duration ?? "To be confirmed" },
+    { label: "Capacity", value: next?.capacity ? `${next.capacity} Participants` : "Open" },
+  ];
+
+  // Build sections in order; only the ones with content are shown, and the kicker numbers follow.
+  const blocks: { id: string; kicker: string; title: string; node: React.ReactNode; className?: string }[] = [];
+  blocks.push({
+    id: "event-about", kicker: isEvent ? "About this event" : "About this plan", title: event.headline || event.title,
+    node: (
+      <>
+        {body.length ? body.map((line, i) => <p key={i}>{line}</p>) : event.summary && <p>{event.summary}</p>}
+        {event.highlights.length > 0 && (
+          <div className="evd-feature-list">{event.highlights.map((h, i) => <div className="evd-feature" key={`${h}-${i}`}>{h}</div>)}</div>
+        )}
+      </>
+    ),
+  });
+  if (event.format_details.length) {
+    blocks.push({
+      id: "event-format", kicker: "Event format", title: isSport ? "How the game works" : "How it works",
+      node: (
+        <>
+          <div className="evd-format-grid">
+            {event.format_details.map((d, i) => <div className="evd-format-row" key={`${d.label}-${i}`}><span>{d.label}</span><strong>{d.value}</strong></div>)}
+          </div>
+          {event.format_note && <p style={{ marginTop: 14 }}>{event.format_note}</p>}
+        </>
+      ),
+    });
+  }
+  blocks.push({
+    id: "event-schedule", kicker: "Event schedule", title: eveningOrDay(next),
+    node: (
+      <>
+        {timeline.length > 0 ? (
+          <ul className="evd-schedule">
+            {timeline.map((item) => (
+              <li key={item.id}>
+                <time>{multiDay ? `${item.day || `Day ${item.dayNumber}`} · ` : ""}{item.time_label || "—"}</time>
+                <div><strong>{item.text}</strong>{item.detail && <small>{item.detail}</small>}</div>
+              </li>
+            ))}
+          </ul>
+        ) : event.schedules.length > 0 ? (
+          <ul className="evd-schedule">
+            {event.schedules.map((s) => (
+              <li key={s.id}>
+                <time>{factDate(s.starts_at)}</time>
+                <div><strong>{s.time_tbd ? "Time to be confirmed" : `${time(s.starts_at)}${s.ends_at ? ` – ${time(s.ends_at)}` : ""}`}</strong>{durationLabel(s) && <small>{durationLabel(s)}</small>}</div>
+              </li>
+            ))}
+          </ul>
+        ) : <p>The next date will be announced soon.</p>}
+        {event.schedule_note && <p style={{ marginTop: 14, fontSize: 12 }}>{event.schedule_note}</p>}
+      </>
+    ),
+  });
+  if (event.things_to_bring.length) blocks.push({ id: "event-bring", kicker: "Things to bring", title: "Come prepared", node: <ul className="evd-bring-list">{event.things_to_bring.map((t, i) => <li key={i}>{t}</li>)}</ul> });
+  if (event.inclusions.length) blocks.push({ id: "event-includes", kicker: "What's included", title: "Your registration includes", node: <ul className="evd-plain-list">{event.inclusions.map((t, i) => <li key={i}>{t}</li>)}</ul> });
+  if (event.exclusions.length) blocks.push({ id: "event-excludes", kicker: "What's not included", title: "Additional expenses", node: <ul className="evd-plain-list">{event.exclusions.map((t, i) => <li key={i}>{t}</li>)}</ul> });
+  if (event.rules.length) blocks.push({ id: "event-rules", kicker: "Rules & guidelines", title: "Let's keep it fun and fair", node: <ul className="evd-plain-list">{event.rules.map((t, i) => <li key={i}>{t}</li>)}</ul> });
+  if (event.faqs.length) {
+    blocks.push({
+      id: "event-faq", kicker: "Frequently asked questions", title: "Good to know", className: "evd-faq",
+      node: event.faqs.map((f, i) => <details key={i}><summary>{f.question}</summary><p>{f.answer}</p></details>),
+    });
+  }
+
   return (
-    <div className="wrap">
-      <div className="eyebrow">{event.is_live || event.is_featured ? "Event" : "Plan"}</div>
-      <h1 className="bk-title">{event.title}</h1>
-      {event.is_featured && <div className="bk-chips"><span className="bk-chip bk-chip-hot">Hot event</span></div>}
-      {event.category && <div className="bk-chips"><span className="bk-chip">{event.category}</span></div>}
+    <div className="evd">
+      {(event.is_live || event.is_featured) && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(eventJsonLd(event)) }} />}
+      <div className="evd-container">
+        <section className="evd-hero">
+          <div className="evd-eyebrow">{isEvent ? "Community event" : "Plan"}</div>
+          <h1>{event.title}</h1>
+          <div className="evd-pills">
+            {event.is_featured && <span className="evd-pill hot">HOT EVENT</span>}
+            {event.category && <span className="evd-pill">{event.category}</span>}
+            {venue && <span className="evd-pill">{venue}</span>}
+          </div>
+        </section>
 
-      <nav className="bk-section-tabs" aria-label="Event details">
-        {sections.map((section) => <a key={section.id} href={`#${section.id}`}>{section.label}</a>)}
-      </nav>
+        <div className="evd-hero-grid">
+          <div className="evd-main-column" id="event-details">
+            {event.cover_url && <EventHeroImage src={event.cover_url} alt={`${event.title} cover`} />}
+            {event.image_caption && <div className="evd-image-caption">{event.image_caption}</div>}
 
-      <div className="bk-detail">
-        <div className="bk-detail-content">
-          <section className="bk-card bk-detail-section" id="event-about" aria-labelledby="event-about-title">
-            <h2 id="event-about-title">About this {event.is_live || event.is_featured ? "event" : "plan"}</h2>
-            {event.cover_url && <img className="bk-hero-img" src={event.cover_url} alt={event.title} />}
-            {event.summary && <p className="bk-lede" style={{ marginTop: 18 }}>{event.summary}</p>}
-            {event.body && <div className="bk-prose">{event.body}</div>}
-            {(event.venue_name || event.venue_address) && (
-              <div className="bk-event-venue">
-                {event.venue_name && <strong>{event.venue_name}</strong>}
-                {event.venue_address && <p>{event.venue_address}</p>}
-              </div>
-            )}
-          </section>
+            <div className="evd-quick-facts" aria-label="Event information">
+              {facts.map((f) => (
+                <div className="evd-fact" key={f.label}><div className="evd-fact-label">{f.label}</div><div className="evd-fact-value">{f.value}</div></div>
+              ))}
+            </div>
 
-          <section className="bk-card bk-detail-section" id="event-itinerary" aria-labelledby="event-itinerary-title">
-            <h2 id="event-itinerary-title">Itinerary</h2>
-            {event.itineraries.length > 0 ? (
-              <div className="bk-itinerary">
-                {event.itineraries.map((day) => (
-                  <article key={day.id} className="bk-itinerary-day">
-                    <h3>{day.title || `Day ${day.day_number}`}</h3>
-                    {day.items.length > 0 ? (
-                      <ol className="bk-itinerary-list">
-                        {day.items.map((item) => <li key={item.id}><span>{item.time_label || "Plan"}</span><p>{item.text}</p></li>)}
-                      </ol>
-                    ) : <p className="bk-note">The schedule will be shared when this event date is confirmed.</p>}
-                  </article>
-                ))}
-              </div>
-            ) : <p className="bk-note">The itinerary will be shared when the next date is announced.</p>}
-          </section>
+            {blocks.map((b, i) => (
+              <Section key={b.id} id={b.id} kicker={`${String(i + 1).padStart(2, "0")} / ${b.kicker}`} title={b.title} className={b.className}>
+                {b.node}
+              </Section>
+            ))}
+          </div>
 
-          <section className="bk-card bk-detail-section" id="event-bring" aria-labelledby="event-bring-title">
-            <h2 id="event-bring-title">Things to bring</h2>
-            {event.things_to_bring.length > 0
-              ? <ul className="bk-list">{event.things_to_bring.map((item, index) => <li key={`${item}-${index}`}>{item}</li>)}</ul>
-              : <p className="bk-note">We'll share a packing list when the event date is confirmed.</p>}
-          </section>
-
-          <section className="bk-card bk-detail-section" id="event-includes" aria-labelledby="event-includes-title">
-            <h2 id="event-includes-title">What's included</h2>
-            {event.inclusions.length > 0 ? <ul className="bk-list">{event.inclusions.map((item, index) => <li key={`${item}-${index}`}>{item}</li>)}</ul> : <p className="bk-note">Inclusions will be confirmed by the event team.</p>}
-          </section>
-
-          <section className="bk-card bk-detail-section" id="event-excludes" aria-labelledby="event-excludes-title">
-            <h2 id="event-excludes-title">What's not included</h2>
-            {event.exclusions.length > 0 ? <ul className="bk-list">{event.exclusions.map((item, index) => <li key={`${item}-${index}`}>{item}</li>)}</ul> : <p className="bk-note">Exclusions will be confirmed by the event team.</p>}
-          </section>
+          {event.is_live ? (
+            <EventBookingPanel
+              slug={event.slug}
+              title={event.title}
+              price={event.price}
+              schedules={event.schedules}
+              whatsappNumber={event.booking_whatsapp_number || ""}
+              venue={venue}
+              registrationType={event.registration_type}
+              maxPerBooking={event.max_participants_per_booking}
+              holdHours={event.reservation_hold_hours}
+            />
+          ) : (
+            <EventEnquiryPanel slug={event.slug} title={event.title} price={event.price} schedules={event.schedules} whatsappNumber={event.booking_whatsapp_number || ""} venue={venue} />
+          )}
         </div>
-
-        <EventEnquiryPanel slug={event.slug} eventSlug={event.is_live ? event.slug : undefined} title={event.title} price={event.price} schedules={event.schedules} whatsappNumber={event.booking_whatsapp_number || ""} venue={event.venue_name || event.venue_address} />
       </div>
-      <MobileBookBar price={event.price !== null ? money(event.price) : "Ask for price"} label={event.price === null ? "Price" : "From"} />
+      <MobileBookBar
+        price={event.price !== null ? money(event.price) : "Ask for price"}
+        label={event.price === null ? "Price" : "Entry fee"}
+        suffix={event.price !== null ? "/ person" : undefined}
+        cta="Reserve your spot"
+      />
     </div>
   );
 }

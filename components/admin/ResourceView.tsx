@@ -49,7 +49,18 @@ function Cell({ field, value }: { field: Field; value: any }) {
   if (field.type === "datetime") return <span className="whitespace-nowrap">{new Date(value).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}</span>;
   if (field.type === "date") return <span className="whitespace-nowrap">{new Date(value).toLocaleDateString("en-IN", { dateStyle: "medium" })}</span>;
   if (field.type === "decimal") return <Chip variant="caption" color="gray">{Number(value).toLocaleString("en-IN")}</Chip>;
-  if (field.type === "relation") return <>{field.options?.find((o) => o.value === String(value))?.label ?? String(value)}</>;
+  if (field.type === "relation") {
+    const option = field.options?.find((o) => o.value === String(value));
+    if (option?.image_preview_url) {
+      return (
+        <span className="flex min-w-0 items-center gap-2">
+          <img src={option.image_preview_url} alt="" className="size-10 shrink-0 rounded-md border border-border-button-default object-cover" />
+          <span className="truncate">{option.label}</span>
+        </span>
+      );
+    }
+    return <>{option?.label ?? String(value)}</>;
+  }
   return <span className="truncate">{String(value)}</span>;
 }
 
@@ -113,7 +124,21 @@ export function ResourceView({ moduleKey, resourceKey }: { moduleKey: string; re
     if (resourceKey === "refunds" && /(PENDING|REQUESTED)/.test(String(row.status))) a.push({ label: "Approve refund", run: () => run(() => adminApi.action("approve-refund", { refund_id: id }), "Refund approved").catch(() => {}) });
     if (resourceKey === "bookings") a.push({ label: "Grant departure exception", run: () => setPrompt({ title: "Departure exception", label: "Reason", run: (reason) => run(() => adminApi.action("departure-exception", { booking_id: id, reason }), "Exception granted") }) });
     if (resourceKey === "participants" && !row.checked_in_at) a.push({ label: "Check in", run: () => run(() => adminApi.action("participant-check-in", { participant_id: id }), "Checked in").catch(() => {}) });
-    if (schema?.fields.some((f) => f.name === "status" && f.choices?.some((c) => c.value === "PUBLISHED")) && row.status !== "PUBLISHED" && schema.actions.update)
+    const isTranslation = resourceKey.endsWith("-translations");
+    if (isTranslation && schema?.actions.update) {
+      // Review workflow for one language: Draft → Submitted → Under review → Approved. The parent's "Publish" then
+      // publishes every approved language at once.
+      const move = (label: string, status: string, done: string, danger = false) =>
+        a.push({ label, danger, run: () => run(() => adminApi.action("content-transition", { resource: resourceKey, id, status }), done).catch(() => {}) });
+      const st = String(row.status);
+      if (st === "DRAFT" || st === "CHANGES_REQUESTED") move("Submit for review", "SUBMITTED", "Submitted for review");
+      if (st === "SUBMITTED") move("Start review", "UNDER_REVIEW", "Review started");
+      if (st === "UNDER_REVIEW") {
+        move("Approve", "APPROVED", "Approved");
+        move("Request changes", "CHANGES_REQUESTED", "Changes requested", true);
+      }
+      if (st === "REJECTED") move("Back to draft", "DRAFT", "Moved back to draft");
+    } else if (schema?.fields.some((f) => f.name === "status" && f.choices?.some((c) => c.value === "PUBLISHED")) && row.status !== "PUBLISHED" && schema.actions.update)
       a.push({ label: "Publish", run: () => run(() => adminApi.action("content-transition", { resource: resourceKey, id, status: "PUBLISHED" }), "Published").catch(() => {}) });
     return a;
   };
@@ -382,6 +407,11 @@ function RecordForm({ schema, row, onClose, onSaved }: { schema: Schema; row: an
                   );
                 } else if (f.type === "file") {
                   const current = typeof row?.[f.name] === "string" ? row[f.name] : "";
+                  const allowedExtensions = schema.key === "media-assets" && f.name === "file"
+                    ? vals.kind === "image" ? ["jpg", "jpeg", "png", "webp", "gif"]
+                      : vals.kind === "video" ? ["mp4"]
+                        : ["pdf", "csv", "txt", "doc", "docx", "xls", "xlsx"]
+                    : (f.accept || "").split(",").map((x) => x.replace(".", "")).filter(Boolean);
                   input = (
                     <div className="flex flex-col gap-2">
                       <span className="text-body-medium text-text-secondary">{label}</span>
@@ -390,7 +420,7 @@ function RecordForm({ schema, row, onClose, onSaved }: { schema: Schema; row: an
                       )}
                       {v instanceof File && <p className="text-body-medium text-text-primary">Ready to upload: {v.name}</p>}
                       <FileUpload
-                        allowedExtensions={(f.accept || "").split(",").map((x) => x.replace(".", "")).filter(Boolean)}
+                        allowedExtensions={allowedExtensions}
                         maxBytes={(f.max_mb || 5) * 1024 * 1024}
                         onUploadComplete={(file) => set(f.name, file)}
                       />

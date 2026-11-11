@@ -1,7 +1,9 @@
 "use client";
 import { useState } from "react";
 import { customerApi } from "@/lib/customer/api";
-import { longDate, money, time } from "@/lib/customer/format";
+import { longDate, money, time as timeLower } from "@/lib/customer/format";
+
+const time = (iso: string) => timeLower(iso).toUpperCase();
 import type { EventSchedule } from "@/lib/customer/types";
 
 function isoDateInHyderabad(value: string) {
