@@ -143,6 +143,7 @@ export function CheckoutView({ id }: { id: string }) {
           </div>
         ))}
         {Number(order.bookings[0]?.tax_amount) > 0 && <div className="bk-total" style={{ borderTop: 0, margin: 0 }}><span>Includes tax</span><span>{money(order.bookings.reduce((a, b) => a + Number(b.tax_amount), 0))}</span></div>}
+        {Number(order.discount_total) > 0 && <div className="bk-total" style={{ borderTop: 0, margin: 0 }}><span>Coupon {order.coupon_code}</span><span>− {money(order.discount_total)}</span></div>}
         <div className="bk-total"><span>Total</span><strong>{money(order.total_amount)}</strong></div>
         <div className="bk-total" style={{ borderTop: 0, margin: "0 0 16px" }}><span>Due now (advance)</span><strong>{money(order.advance_total)}</strong></div>
         {error && <p className="bk-error" role="alert">{error}</p>}

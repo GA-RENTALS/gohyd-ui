@@ -142,9 +142,11 @@ export type Booking = {
   starts_at: string;
   participant_count: number;
   currency: string;
+  discount_amount: string;
   subtotal: string;
   tax_amount: string;
   total_amount: string;
+  invoice_number: string | null;
   advance_basis_points: number;
   advance_amount: string;
   balance_amount: string;
@@ -160,6 +162,8 @@ export type Checkout = {
   reference: string;
   status: string;
   currency: string;
+  coupon_code: string | null;
+  discount_total: string;
   total_amount: string;
   advance_total: string;
   created_at: string;
@@ -178,3 +182,38 @@ export type Profile = {
 
 export type PaymentOrder = { payment: string; order_id: string; amount: string | number; currency: string; key_id: string };
 export type PayKind = "ADVANCE" | "BALANCE" | "FULL";
+
+export type CartItem = {
+  id: string;
+  schedule: string;
+  participant_count: number;
+  pickup_point: string | null;
+  trip: string;
+  trip_title: string;
+  starts_at: string;
+  ends_at: string | null;
+  price_per_participant: string;
+  seats_left: number;
+  is_bookable: boolean;
+  pickup_point_name: string;
+};
+
+export type CouponPreview = { code: string; discount: string; total_before: string; total_after: string };
+export type CheckoutLineInput = { schedule: string; participant_count: number; pickup_point: string | null };
+
+export type Invoice = {
+  number: string;
+  issued_at: string;
+  currency: string;
+  seller: { legal_name?: string; gstin?: string; address?: string; state_code?: string };
+  billing_name: string;
+  billing_gstin: string;
+  billing_address: string;
+  subtotal: string;
+  tax_amount: string;
+  total: string;
+  tax: { enabled?: boolean; rate_basis_points?: number; price_includes_tax?: boolean; sac_code?: string; components?: { name: string; bp: number }[] };
+  booking_reference: string;
+  discount_amount: string;
+  items: { description: string; quantity: number; unit_amount: string; tax_amount: string; total: string }[];
+};

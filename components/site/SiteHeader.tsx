@@ -1,7 +1,10 @@
+import { serverT } from "@/lib/lang-server";
 import { HeaderAccount } from "@/components/booking/AccountMenu";
 import { Icon } from "./Icon";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
-export function SiteHeader() {
+export async function SiteHeader() {
+  const t = await serverT();
   return (
     <>
       <header className="header" id="header">
@@ -12,27 +15,28 @@ export function SiteHeader() {
             {" "}
             <span>
               <b>GoHyderabad</b>
-              <small>Meet · Explore · Experience</small>
+              <small>{t("Meet · Explore · Experience")}</small>
             </span>
           </a>
           <nav className="nav-links" id="nav-links" aria-label="Main navigation">
-            <a href="#experiences">Experiences</a>
+            <a href="#experiences">{t("Experiences")}</a>
             {" "}
-            <a href="#events">Events</a>
+            <a href="#events">{t("Events")}</a>
             {" "}
-            <a href="#explore">Explore Hyderabad</a>
+            <a href="#explore">{t("Explore Hyderabad")}</a>
             {" "}
-            <a href="#community">Community</a>
+            <a href="#community">{t("Community")}</a>
             {" "}
-            <a href="#how">How it works</a>
+            <a href="#how">{t("How it works")}</a>
             {" "}
-            <a className="nav-book" href="/trips">Book a trip</a>
+            <a className="nav-book" href="/trips">{t("Book a trip")}</a>
           </nav>
           <a className="btn" href="/trips">
-            Book a trip
+            {t("Book a trip")}
             <Icon name="up-right" />
           </a>
           {" "}
+          <LanguageSwitcher />
           <HeaderAccount />
           <button className="menu-btn" id="menu-btn" type="button" aria-label="Open navigation" aria-controls="nav-links" aria-expanded="false">
             <svg aria-hidden="true" id="menu-icon">

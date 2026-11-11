@@ -1,20 +1,22 @@
+import { serverT } from "@/lib/lang-server";
 import { Icon } from "../Icon";
 
 /**
  * Testimonials. Edited in Admin → Marketing → CMS → Testimonials; only rows with "Is published" ticked are shown.
  * Hidden until publicContent.ts loads them from /api/v1/testimonials/ (and stays hidden when there are none).
  */
-export function Voices() {
+export async function Voices() {
+  const t = await serverT();
   return (
     <section className="voices on-light pad" id="voices" aria-labelledby="voices-title" hidden>
       <div className="wrap">
         <div className="voices-head" data-reveal="">
           <div>
-            <div className="eyebrow">07 · Kind words</div>
+            <div className="eyebrow">{t("07 · Kind words")}</div>
             <h2 className="h-section" id="voices-title">
-              Heard on
+              {t("h.voices.1")}
               <br />
-              <em>the road.</em>
+              <em>{t("h.voices.2")}</em>
             </h2>
           </div>
           <div className="voice-ctrl">

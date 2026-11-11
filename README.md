@@ -76,6 +76,11 @@ Use `127.0.0.1`, not `localhost`, for the backend address in development. Django
 | `/` | Home page | No |
 | `/trips` | Published trips | No |
 | `/trips/<name>` | Trip detail with dates, price, pickup, refund policy, booking panel | No (booking needs it) |
+| `/experiences` | Published events and activities | No |
+| `/explore` | Hyderabad city guide | No |
+| `/destinations`, `/destinations/<name>` | Published place guides | No |
+| `/blogs`, `/blogs/<name>` | Published stories and guides | No |
+| `/about`, `/how-it-works`, `/faqs`, `/contact`, `/corporate`, `/community`, `/membership` | Public information pages and enquiry forms | No |
 | `/events/<slug>` | Event or sample-plan detail, itinerary, event date request and CRM follow-up form | No |
 | `/login` | Customer sign in with a WhatsApp code | No |
 | `/checkout/<id>` | Participants, waiver, payment, confirmation | Customer |

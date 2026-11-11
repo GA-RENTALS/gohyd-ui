@@ -1,7 +1,8 @@
 "use client";
 import { createApiClient, type Tokens } from "@/lib/api/client";
 import { API_URL } from "@/lib/config";
-import type { Booking, Checkout, EventBooking, Participant, PayKind, PaymentOrder, Profile } from "./types";
+import { clientLang } from "@/lib/lang";
+import type { Booking, CartItem, Checkout, CheckoutLineInput, CouponPreview, EventBooking, Invoice, Participant, PayKind, PaymentOrder, Profile } from "./types";
 
 const client = createApiClient({ baseUrl: API_URL, storageKey: "gh_customer_tokens" });
 export const { api, tokenStore } = client;
@@ -39,8 +40,22 @@ export const customerApi = {
     api<EventBooking>(`/event-bookings/${encodeURIComponent(reference.trim().toUpperCase())}/?phone=${encodeURIComponent(phone)}`, { auth: false }),
 
   /** One trip date, N people. All-or-nothing; the same idempotency key never creates two checkouts. */
-  createCheckout: (schedule: string, participant_count: number, pickup_point: string | null, key = newKey()) =>
-    api<Checkout>("/checkouts/", { method: "POST", json: { items: [{ schedule, participant_count, pickup_point }] }, headers: { "Idempotency-Key": key } }),
+  createCheckout: (schedule: string, participant_count: number, pickup_point: string | null, coupon = "", key = newKey()) =>
+    api<Checkout>("/checkouts/", { method: "POST", json: { items: [{ schedule, participant_count, pickup_point }], ...(coupon ? { coupon } : {}) }, headers: { "Idempotency-Key": key } }),
+  /** Several trips at once (from the cart). All-or-nothing on the server. */
+  createCheckoutFor: (items: CheckoutLineInput[], coupon = "", key = newKey()) =>
+    api<Checkout>("/checkouts/", { method: "POST", json: { items, ...(coupon ? { coupon } : {}) }, headers: { "Idempotency-Key": key } }),
+  /** What a coupon takes off these trips. Checkout checks it again. */
+  previewCoupon: (code: string, items: CheckoutLineInput[]) =>
+    api<CouponPreview>("/coupons/preview/", { method: "POST", json: { code, items } }),
+
+  cart: () => api<CartItem[]>(`/cart/?lang=${clientLang()}`),
+  addToCart: (schedule: string, participant_count: number, pickup_point: string | null) =>
+    api<CartItem>("/cart/", { method: "POST", json: { schedule, participant_count, pickup_point } }),
+  removeFromCart: (itemId: string) => api<void>(`/cart/?item=${encodeURIComponent(itemId)}`, { method: "DELETE" }),
+
+  /** GST invoice for a booking (404 until the booking is paid and the invoice is issued). */
+  bookingInvoice: (bookingId: string) => api<Invoice>(`/bookings/${bookingId}/invoice/`),
   checkout: (id: string) => api<Checkout>(`/checkouts/${id}/`),
   startPayment: (checkoutId: string, kind: PayKind, bookings?: string[]) =>
     api<PaymentOrder>(`/checkouts/${checkoutId}/pay/`, { method: "POST", json: { kind, ...(bookings ? { bookings } : {}) }, headers: { "Idempotency-Key": newKey() } }),

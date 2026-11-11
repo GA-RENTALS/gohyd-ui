@@ -4,6 +4,10 @@ import "./globals.css";
 import "./animations.css";
 import "./sections.css";
 import { OG_IMAGE, SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_TITLE, SITE_URL, SOCIAL_PROFILES, absoluteUrl, jsonLd } from "@/lib/site";
+import { LANGS } from "@/lib/lang";
+import { serverLang } from "@/lib/lang-server";
+import { LangProvider } from "@/components/site/LangProvider";
+import { VisitorTracking } from "@/components/site/VisitorTracking";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -68,9 +72,10 @@ const siteJsonLd = [
   },
 ];
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const lang = await serverLang();
   return (
-    <html lang="en-IN" suppressHydrationWarning>
+    <html lang={LANGS.find((l) => l.code === lang)?.html ?? "en-IN"} suppressHydrationWarning>
       <head>
         <link
           rel="preload"
@@ -89,7 +94,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('motion-ready');setTimeout(function(){document.documentElement.classList.add('motion-go')},5000)" }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(siteJsonLd) }} />
       </head>
-      <body>{children}</body>
+      <body><LangProvider lang={lang}>{children}<VisitorTracking /></LangProvider></body>
     </html>
   );
 }

@@ -132,6 +132,7 @@
   .bk-field input, .bk-field select { min-height: 48px; }
 }
 @media (max-width: 380px) { .bk-nav { gap: 12px; } .bk-nav a { font-size: 11px; letter-spacing: .08em; } }
+@media (max-width: 860px) { .bk-nav a:nth-child(n+3) { display: none; } }
 @media (max-width: 520px) { .bk-row2.is-keep { grid-template-columns: 1fr 1fr; } }
 .bk-row2.is-keep, .bk-row-age { align-items: end; }
 

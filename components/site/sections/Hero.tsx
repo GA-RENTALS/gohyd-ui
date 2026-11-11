@@ -1,6 +1,9 @@
+import { serverLang, serverT } from "@/lib/lang-server";
 import { Icon } from "../Icon";
 
-export function Hero() {
+export async function Hero() {
+  const t = await serverT();
+  const lang = await serverLang();
   return (
     <section className="hero" id="home" aria-labelledby="hero-title">
       <div className="hero-photo" id="hero-photo">
@@ -12,25 +15,27 @@ export function Hero() {
         <div className="hero-copy">
           <p className="hero-place">
             <Icon name="pin" />
-            Hyderabad, India
+            {t("Hyderabad, India")}
           </p>
           <h1 id="hero-title">
-            <span>Your weekends,</span>
-            <span>
-              <em>re</em>
-              imagined.
-            </span>
+            <span>{t("h.hero.1")}</span>
+            {lang === "en" ? (
+              <span>
+                <em>re</em>
+                imagined.
+              </span>
+            ) : <span><em>{t("h.hero.2")}</em></span>}
           </h1>
           <p>
-            Discover a different side of Hyderabad. Ride out, play hard, explore hidden gems, and meet your kind of people.
+            {t("Discover a different side of Hyderabad. Ride out, play hard, explore hidden gems, and meet your kind of people.")}
           </p>
           <div className="hero-actions">
             <a className="btn" href="#experiences">
-              Explore experiences
+              {t("Explore experiences")}
               <Icon name="arrow" />
             </a>
             {" "}
-            <a className="btn btn-ghost" href="#events">Upcoming events</a>
+            <a className="btn btn-ghost" href="#events">{t("Upcoming events")}</a>
           </div>
         </div>
       </div>
@@ -45,9 +50,9 @@ export function Hero() {
         </p>
       </aside>
       <div className="hero-foot">
-        <span>Meet · Explore · Experience</span>
+        <span>{t("Meet · Explore · Experience")}</span>
         <a className="scroll-cue" href="#events">
-          Scroll
+          {t("Scroll")}
           <Icon name="down" />
         </a>
       </div>

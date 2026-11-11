@@ -1,3 +1,7 @@
+import { clientLang } from "@/lib/lang";
+import { translate } from "@/lib/i18n";
+
+const tx = (english: string) => translate(clientLang(), english);
 import { BACKEND_URL as API_BASE_URL } from "@/lib/config";
 import { eventImage, fallbackFeaturedEvent, upcomingEvents, type PublicEvent } from "@/components/site/upcomingEvents";
 
@@ -167,7 +171,7 @@ function renderTripCard(trip: PublicTrip, upcoming: boolean): HTMLElement {
     photo.append(image);
   }
   photo.append(element("span", "ptag", categoryLabel(category)));
-  if (upcoming) photo.append(element("span", "badge", "Live"));
+  if (upcoming) photo.append(element("span", "badge", tx("Live")));
 
   const body = element("div", "ebody");
   body.append(element("span", "ecat", categoryLabel(category)));
@@ -178,25 +182,25 @@ function renderTripCard(trip: PublicTrip, upcoming: boolean): HTMLElement {
     const details = element("dl", "edl");
     const date = new Date(trip.next_departure);
     const dateText = Number.isNaN(date.getTime())
-      ? "To be announced"
+      ? tx("To be announced")
       : new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", timeStyle: "short" }).format(date);
     const amount = trip.from_price === null ? Number.NaN : Number(trip.from_price);
     const price = Number.isFinite(amount)
       ? new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 2 }).format(amount)
-      : "To be announced";
+      : tx("To be announced");
 
     details.append(
-      element("dt", undefined, "Date"),
+      element("dt", undefined, tx("Date")),
       element("dd", undefined, dateText),
-      element("dt", undefined, "Price"),
+      element("dt", undefined, tx("Price")),
       element("dd", undefined, price),
-      element("dt", undefined, "Status"),
+      element("dt", undefined, tx("Status")),
       element("dd", undefined, categoryLabel(trip.operational_status)),
     );
     body.append(details);
   }
 
-  const link = element("span", "link", "View trip details");
+  const link = element("span", "link", tx("View trip details"));
   body.append(link);
   card.append(photo, body);
   return card;
@@ -223,8 +227,8 @@ function renderEventCard(event: PublicEvent): HTMLElement {
     photo.append(image);
   }
   photo.append(element("span", "ptag", categoryLabel(category)));
-  if (event.is_featured) photo.append(element("span", "badge hot-event-badge", "Hot event"));
-  else if (event.next_date) photo.append(element("span", "badge", "Upcoming"));
+  if (event.is_featured) photo.append(element("span", "badge hot-event-badge", tx("Hot event")));
+  else if (event.next_date) photo.append(element("span", "badge", tx("Upcoming")));
 
   const body = element("div", "ebody");
   body.append(element("span", "ecat", event.category || categoryLabel(category)));
@@ -233,17 +237,17 @@ function renderEventCard(event: PublicEvent): HTMLElement {
   const details = element("dl", "edl");
   const date = event.next_date ? new Date(event.next_date) : null;
   const dateText = date && !Number.isNaN(date.getTime())
-    ? `${new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", ...(event.next_time_tbd ? {} : { timeStyle: "short" }), timeZone: "Asia/Kolkata" }).format(date)}${event.next_time_tbd ? " · Time to be confirmed" : ""}`
-    : "Date to be announced";
+    ? `${new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", ...(event.next_time_tbd ? {} : { timeStyle: "short" }), timeZone: "Asia/Kolkata" }).format(date)}${event.next_time_tbd ? ` · ${tx("Time to be confirmed")}` : ""}`
+    : tx("Date to be announced");
   const amount = Number(event.price);
   const price = Number.isFinite(amount)
     ? new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 2 }).format(amount)
-    : "To be confirmed";
+    : tx("To be confirmed");
   details.append(
-    element("dt", undefined, "Date"), element("dd", undefined, dateText),
-    element("dt", undefined, "Price"), element("dd", undefined, price),
+    element("dt", undefined, tx("Date")), element("dd", undefined, dateText),
+    element("dt", undefined, tx("Price")), element("dd", undefined, price),
   );
-  body.append(details, element("span", "link", "Book your spot"));
+  body.append(details, element("span", "link", tx("Book your spot")));
   card.append(photo, body);
   return card;
 }
@@ -278,14 +282,14 @@ function renderEvents(events: PublicEvent[]): void {
   if (visibleEvents.length) {
     grid.replaceChildren(...visibleEvents.map(renderEventCard));
   } else {
-    const empty = element("p", "ev-empty", "No upcoming events are scheduled right now. Check back soon, or follow @go_hyderabad on Instagram for the next one.");
+    const empty = element("p", "ev-empty", tx("No upcoming events are scheduled right now. Check back soon, or follow @go_hyderabad on Instagram for the next one."));
     grid.replaceChildren(empty);
   }
   const count = document.getElementById("events-count");
   if (count) {
     count.textContent = visibleEvents.length === 1
-      ? "1 upcoming event in Hyderabad"
-      : `${visibleEvents.length || "No"} upcoming events in Hyderabad`;
+      ? tx("1 upcoming event in Hyderabad")
+      : tx("count.events").replace("{n}", String(visibleEvents.length || (clientLang() === "en" ? "No" : 0)));
   }
 }
 
@@ -448,10 +452,10 @@ function setContentStatus(message: string): void {
 
 export async function loadPublicContent(): Promise<void> {
   const results = await Promise.allSettled([
-    fetchAll("/api/v1/trips/?lang=en", isTrip),
-    fetchAll("/api/v1/events/?lang=en", isEvent),
-    fetchAll("/api/v1/destinations/?is_hyderabad_explore=true&lang=en", isDestination),
-    fetchAll("/api/v1/testimonials/?lang=en", isTestimonial),
+    fetchAll(`/api/v1/trips/?lang=${clientLang()}`, isTrip),
+    fetchAll(`/api/v1/events/?lang=${clientLang()}`, isEvent),
+    fetchAll(`/api/v1/destinations/?is_hyderabad_explore=true&lang=${clientLang()}`, isDestination),
+    fetchAll(`/api/v1/testimonials/?lang=${clientLang()}`, isTestimonial),
     fetchSiteSettings(),
   ]);
   const notices: string[] = [];

@@ -1,4 +1,5 @@
 import { API_URL } from "@/lib/config";
+import { serverLang } from "@/lib/lang-server";
 import type { EventDetail, TripDetail, TripSummary } from "./types";
 
 /** Public, signed-out reads done on the server so trip pages arrive fully rendered (good for search engines and slow phones). */
@@ -15,14 +16,14 @@ async function getJson<T>(path: string): Promise<T | null> {
 }
 
 export async function listTrips(): Promise<TripSummary[]> {
-  const data = await getJson<{ results: TripSummary[]; next: string | null }>("/trips/?lang=en");
+  const data = await getJson<{ results: TripSummary[]; next: string | null }>(`/trips/?lang=${await serverLang()}`);
   return data?.results ?? [];
 }
 
 export async function getTrip(slug: string): Promise<TripDetail | null> {
-  return getJson<TripDetail>(`/trips/${encodeURIComponent(slug)}/?lang=en`);
+  return await getJson<TripDetail>(`/trips/${encodeURIComponent(slug)}/?lang=${await serverLang()}`);
 }
 
 export async function getEvent(slug: string): Promise<EventDetail | null> {
-  return getJson<EventDetail>(`/events/${encodeURIComponent(slug)}/?lang=en`);
+  return getJson<EventDetail>(`/events/${encodeURIComponent(slug)}/?lang=${await serverLang()}`);
 }

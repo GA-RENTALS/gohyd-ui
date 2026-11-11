@@ -1,4 +1,5 @@
 "use client";
+import { useT } from "@/components/site/LangProvider";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -17,6 +18,7 @@ function PersonIcon() {
 
 /** "Sign in" when signed out, otherwise the customer's avatar with a small menu. Must sit inside <CustomerProvider>. */
 export function AccountMenu() {
+  const t = useT();
   const { user, loading, signOut } = useCustomer();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -53,9 +55,10 @@ export function AccountMenu() {
             <strong>{user.full_name || "Welcome"}</strong>
             <small>{user.phone_number}</small>
           </div>
-          <Link role="menuitem" href="/account" onClick={() => setOpen(false)}>My bookings</Link>
-          <Link role="menuitem" href="/trips" onClick={() => setOpen(false)}>Book a trip</Link>
-          <button role="menuitem" type="button" onClick={async () => { setOpen(false); await signOut(); router.push("/"); }}>Sign out</button>
+          <Link role="menuitem" href="/account" onClick={() => setOpen(false)}>{t("My bookings")}</Link>
+          <Link role="menuitem" href="/cart" onClick={() => setOpen(false)}>{t("My cart")}</Link>
+          <Link role="menuitem" href="/trips" onClick={() => setOpen(false)}>{t("Book a trip")}</Link>
+          <button role="menuitem" type="button" onClick={async () => { setOpen(false); await signOut(); router.push("/"); }}>{t("Sign out")}</button>
         </div>
       )}
     </div>

@@ -1,3 +1,4 @@
+import { serverT } from "@/lib/lang-server";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { EventBookingPanel } from "@/components/booking/EventBookingPanel";
@@ -166,6 +167,7 @@ function eventJsonLd(event: EventPageData) {
  * content cards on the left and the booking card on the right. Sections without content are skipped.
  */
 export default async function EventPage({ params }: Props) {
+  const t = await serverT();
   const { slug } = await params;
   const event = await loadPageData(slug);
   if (!event) notFound();
@@ -188,7 +190,7 @@ export default async function EventPage({ params }: Props) {
 
   const sections: { id: string; label: string; title: string; node: React.ReactNode }[] = [];
   sections.push({
-    id: "event-about", label: "About", title: `About this ${isEvent ? "event" : "plan"}`,
+    id: "event-about", label: t("tab.about"), title: isEvent ? t("About this event") : t("About this plan"),
     node: (
       <>
         {event.cover_url && <EventHeroImage src={event.cover_url} alt={`${event.title} poster`} />}
@@ -209,7 +211,7 @@ export default async function EventPage({ params }: Props) {
   });
   if (event.format_details.length) {
     sections.push({
-      id: "event-format", label: "Format", title: isSport ? "Game format" : "Format",
+      id: "event-format", label: t("Format"), title: isSport ? t("Game format") : t("Format"),
       node: (
         <>
           <dl className="bk-format-grid">
@@ -221,7 +223,7 @@ export default async function EventPage({ params }: Props) {
     });
   }
   sections.push({
-    id: "event-itinerary", label: "Itinerary", title: "Itinerary",
+    id: "event-itinerary", label: t("Itinerary"), title: t("Itinerary"),
     node: (
       <>
         {event.itineraries.length > 0 ? (
@@ -231,30 +233,30 @@ export default async function EventPage({ params }: Props) {
                 <h3>{day.title || `Day ${day.day_number}`}</h3>
                 {day.items.length > 0 ? (
                   <ol className="bk-itinerary-list">
-                    {day.items.map((item) => <li key={item.id}><span>{item.time_label || "Plan"}</span><p>{item.text}{item.detail && <><br /><small className="bk-hint">{item.detail}</small></>}</p></li>)}
+                    {day.items.map((item) => <li key={item.id}><span>{item.time_label || t("Plan")}</span><p>{item.text}{item.detail && <><br /><small className="bk-hint">{item.detail}</small></>}</p></li>)}
                   </ol>
-                ) : <p className="bk-note">The schedule will be shared when this event date is confirmed.</p>}
+                ) : <p className="bk-note">{t("The schedule will be shared when this event date is confirmed.")}</p>}
               </article>
             ))}
           </div>
         ) : event.schedules.length > 0 ? (
           <ul className="bk-schedule-list">
             {event.schedules.map((s) => (
-              <li key={s.id}><strong>{factDate(s.starts_at)}</strong><span>{s.time_tbd ? "Time to be confirmed" : `${time(s.starts_at)}${s.ends_at ? ` – ${time(s.ends_at)}` : ""}`}</span></li>
+              <li key={s.id}><strong>{factDate(s.starts_at)}</strong><span>{s.time_tbd ? t("Time to be confirmed") : `${time(s.starts_at)}${s.ends_at ? ` – ${time(s.ends_at)}` : ""}`}</span></li>
             ))}
           </ul>
-        ) : <p className="bk-note">The itinerary will be shared when the next date is announced.</p>}
+        ) : <p className="bk-note">{t("The itinerary will be shared when the next date is announced.")}</p>}
         {event.schedule_note && <p className="bk-hint" style={{ marginTop: 14 }}>{event.schedule_note}</p>}
       </>
     ),
   });
-  if (event.things_to_bring.length) sections.push({ id: "event-bring", label: "Things to bring", title: "Things to bring", node: list(event.things_to_bring) });
-  if (event.inclusions.length) sections.push({ id: "event-includes", label: "Includes", title: "What's included", node: list(event.inclusions) });
-  if (event.exclusions.length) sections.push({ id: "event-excludes", label: "Excludes", title: "What's not included", node: list(event.exclusions) });
-  if (event.rules.length) sections.push({ id: "event-rules", label: "Rules", title: "Rules", node: <ul className="bk-list bk-rules">{event.rules.map((t, i) => <li key={i}>{t}</li>)}</ul> });
+  if (event.things_to_bring.length) sections.push({ id: "event-bring", label: t("Things to bring"), title: t("Things to bring"), node: list(event.things_to_bring) });
+  if (event.inclusions.length) sections.push({ id: "event-includes", label: t("Includes"), title: t("What's included"), node: list(event.inclusions) });
+  if (event.exclusions.length) sections.push({ id: "event-excludes", label: t("Excludes"), title: t("What's not included"), node: list(event.exclusions) });
+  if (event.rules.length) sections.push({ id: "event-rules", label: t("Rules"), title: t("Rules"), node: <ul className="bk-list bk-rules">{event.rules.map((t, i) => <li key={i}>{t}</li>)}</ul> });
   if (event.faqs.length) {
     sections.push({
-      id: "event-faq", label: "FAQs", title: "FAQs",
+      id: "event-faq", label: t("FAQs"), title: t("FAQs"),
       node: event.faqs.map((f, i) => <details key={i} className="bk-more"><summary>{f.question}</summary><p className="bk-note" style={{ margin: "0 0 8px" }}>{f.answer}</p></details>),
     });
   }
@@ -262,10 +264,10 @@ export default async function EventPage({ params }: Props) {
   return (
     <div className="wrap">
       {isEvent && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(eventJsonLd(event)) }} />}
-      <div className="eyebrow">{isEvent ? "Event" : "Plan"}</div>
+      <div className="eyebrow">{isEvent ? t("Event") : t("Plan")}</div>
       <h1 className="bk-title">{event.title}</h1>
       <div className="bk-chips">
-        {event.is_featured && <span className="bk-chip bk-chip-hot">Hot event</span>}
+        {event.is_featured && <span className="bk-chip bk-chip-hot">{t("Hot event")}</span>}
         {event.category && <span className="bk-chip">{event.category}</span>}
         {venue && <span className="bk-chip">{venue}</span>}
       </div>
@@ -301,10 +303,10 @@ export default async function EventPage({ params }: Props) {
         )}
       </div>
       <MobileBookBar
-        price={event.price !== null ? money(event.price) : "Ask for price"}
-        label={event.price === null ? "Price" : "Entry fee"}
-        suffix={event.price !== null ? "/ person" : undefined}
-        cta="Reserve your spot"
+        price={event.price !== null ? money(event.price) : t("Ask for price")}
+        label={event.price === null ? t("Price") : t("Entry fee")}
+        suffix={event.price !== null ? t("/ person") : undefined}
+        cta={t("Reserve your spot")}
       />
     </div>
   );

@@ -1,4 +1,5 @@
 "use client";
+import { useT } from "@/components/site/LangProvider";
 import { useState } from "react";
 import { customerApi } from "@/lib/customer/api";
 import { longDate, money, time as timeLower } from "@/lib/customer/format";
@@ -27,6 +28,7 @@ const STATUS_NOTE: Record<EventBooking["status"], string> = {
 };
 
 function BookingResult({ booking, onReset }: { booking: EventBooking; onReset?: () => void }) {
+  const t = useT();
   const confirmText = [
     `Hello GoHyderabad, please confirm my booking ${booking.reference}.`,
     `Event: ${booking.event_title}`,
@@ -41,9 +43,9 @@ function BookingResult({ booking, onReset }: { booking: EventBooking; onReset?: 
       <div className={`bk-status bk-status-${booking.status.toLowerCase()}`}>{booking.status_label}</div>
       <dl className="bk-booking-facts">
         <dt>Booking reference</dt><dd><strong>{booking.reference}</strong></dd>
-        <dt>Date</dt><dd>{longDate(booking.starts_at)}{booking.time_tbd ? "" : ` · ${time(booking.starts_at)}`}</dd>
+        <dt>{t("Date")}</dt><dd>{longDate(booking.starts_at)}{booking.time_tbd ? "" : ` · ${time(booking.starts_at)}`}</dd>
         <dt>Participants</dt><dd>{booking.participant_count}</dd>
-        <dt>Total</dt><dd>{money(booking.total_amount)}</dd>
+        <dt>{t("Total")}</dt><dd>{money(booking.total_amount)}</dd>
         {booking.status === "PENDING" && booking.reserved_until && (
           <><dt>Held until</dt><dd>{longDate(booking.reserved_until)} · {time(booking.reserved_until)}</dd></>
         )}
@@ -59,6 +61,7 @@ function BookingResult({ booking, onReset }: { booking: EventBooking; onReset?: 
 }
 
 function StatusLookup() {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [reference, setReference] = useState("");
   const [phone, setPhone] = useState("");
@@ -74,7 +77,7 @@ function StatusLookup() {
     finally { setBusy(false); }
   }
 
-  if (!open) return <button type="button" className="bk-linkbtn" onClick={() => setOpen(true)}>Already booked? Check your booking status</button>;
+  if (!open) return <button type="button" className="bk-linkbtn" onClick={() => setOpen(true)}>{t("Already booked? Check your booking status")}</button>;
   return (
     <form className="bk-lookup" onSubmit={lookUp}>
       <h3>Check booking status</h3>
@@ -110,6 +113,7 @@ export function EventBookingPanel({
   maxPerBooking: number | null;
   holdHours: number;
 }) {
+  const t = useT();
   const minCount = registrationType === "GROUP" ? 2 : 1;
   const [scheduleId, setScheduleId] = useState(schedules[0]?.id ?? "");
   const [count, setCount] = useState(minCount);
@@ -171,9 +175,9 @@ export function EventBookingPanel({
         </>
       ) : (
         <>
-          <h2>Book your slot</h2>
-          <p className="bk-note">Register yourself or bring your friends along. Our team will confirm availability.</p>
-          <div className="bk-total"><span>Entry fee per person</span><strong>{price !== null ? money(price) : "TBC"}</strong></div>
+          <h2>{t("Book your slot")}</h2>
+          <p className="bk-note">{t("Register yourself or bring your friends along. Our team will confirm availability.")}</p>
+          <div className="bk-total"><span>{t("Entry fee per person")}</span><strong>{price !== null ? money(price) : "TBC"}</strong></div>
 
           {capacity !== null && (
             <p className={`bk-slots${soldOut ? " is-full" : seatsLeft !== null && seatsLeft <= 5 ? " is-low" : ""}`}>
@@ -194,7 +198,7 @@ export function EventBookingPanel({
           ) : (
             <form onSubmit={submit}>
               <div className="bk-field">
-                <label htmlFor="event-date">Event date</label>
+                <label htmlFor="event-date">{t("Event date")}</label>
                 {schedules.length === 1
                   ? <input id="event-date" value={scheduleLabel(schedules[0])} readOnly aria-readonly="true" />
                   : (
@@ -204,7 +208,7 @@ export function EventBookingPanel({
                   )}
               </div>
               <div className="bk-field">
-                <label htmlFor="participants">Number of participants</label>
+                <label htmlFor="participants">{t("Number of participants")}</label>
                 <input id="participants" type="number" inputMode="numeric" min={minCount} max={maxCount} value={participants}
                   readOnly={maxCount === minCount}
                   onChange={(e) => setCount(Math.max(minCount, Math.min(maxCount, Number(e.target.value) || minCount)))} required />
@@ -215,29 +219,29 @@ export function EventBookingPanel({
                   : `${capacity !== null ? `Maximum total event capacity is ${capacity}. ` : ""}Group requests are subject to remaining slots${seatsLeft !== null ? ` (up to ${maxCount} now)` : ""}.`}
               </p>
               <div className="bk-field">
-                <label htmlFor="name">{participants > 1 ? "Primary participant name" : "Your name"}</label>
-                <input id="name" type="text" autoComplete="name" maxLength={150} placeholder="Enter your full name" value={name} onChange={(e) => setName(e.target.value)} required />
+                <label htmlFor="name">{participants > 1 ? t("Primary participant name") : t("Your name")}</label>
+                <input id="name" type="text" autoComplete="name" maxLength={150} placeholder={t("Enter your full name")} value={name} onChange={(e) => setName(e.target.value)} required />
               </div>
               <div className="bk-field">
-                <label htmlFor="phone">Mobile number</label>
-                <input id="phone" type="tel" autoComplete="tel" inputMode="tel" maxLength={20} placeholder="Enter your mobile number" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+                <label htmlFor="phone">{t("Mobile number")}</label>
+                <input id="phone" type="tel" autoComplete="tel" inputMode="tel" maxLength={20} placeholder={t("Enter your mobile number")} value={phone} onChange={(e) => setPhone(e.target.value)} required />
               </div>
               <div className="bk-field">
-                <label htmlFor="email">Email address <span className="bk-label-optional">(optional)</span></label>
-                <input id="email" type="email" autoComplete="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                <label htmlFor="email">{t("Email address")} <span className="bk-label-optional">{t("(optional)")}</span></label>
+                <input id="email" type="email" autoComplete="email" placeholder={t("Enter your email")} value={email} onChange={(e) => setEmail(e.target.value)} />
               </div>
               <div className="bk-field">
-                <label htmlFor="notes">Anything else? <span className="bk-label-optional">Optional</span></label>
-                <textarea id="notes" maxLength={1000} placeholder="Add a note for the event team" value={note} onChange={(e) => setNote(e.target.value)} />
+                <label htmlFor="notes">{t("Anything else?")} <span className="bk-label-optional">{t("Optional")}</span></label>
+                <textarea id="notes" maxLength={1000} placeholder={t("Add a note for the event team")} value={note} onChange={(e) => setNote(e.target.value)} />
               </div>
               <div className="bk-total"><span>Estimated total{participants > 1 && unit !== null ? ` (${participants} × ${money(unit)})` : ""}</span><strong>{total !== null ? money(total) : "TBC"}</strong></div>
               <label className="bk-check">
                 <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} required />
-                <span>GoHyderabad may contact me about this registration request. I understand that submitting this form does not confirm my booking.</span>
+                <span>{t("GoHyderabad may contact me about this registration request. I understand that submitting this form does not confirm my booking.")}</span>
               </label>
               {error && <p className="bk-error" role="alert">{error}</p>}
-              <button className="btn" type="submit" disabled={busy}>{busy ? "Sending…" : "Request a booking"}</button>
-              {waRegister && <a className="btn event-whatsapp" href={waRegister} target="_blank" rel="noreferrer">Register on WhatsApp</a>}
+              <button className="btn" type="submit" disabled={busy}>{busy ? t("Sending…") : t("Request a booking")}</button>
+              {waRegister && <a className="btn event-whatsapp" href={waRegister} target="_blank" rel="noreferrer">{t("Register on WhatsApp")}</a>}
               <p className="bk-hint">This submits a registration request and holds your slots for up to {holdHours} hours. Your slot is confirmed after the event team verifies availability and sends confirmation. No payment is collected online.</p>
             </form>
           )}

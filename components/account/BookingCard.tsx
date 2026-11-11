@@ -85,6 +85,7 @@ export function BookingCard({ booking, onChanged }: { booking: Booking; onChange
       <aside className="ac-quick" aria-label="Quick links">
         <button type="button" className="ac-qlink" onClick={() => setOpen(true)}><Icon d={ICON.people} />People on this booking<Icon d={ICON.chevron} /></button>
         <Link className="ac-qlink" href={`/trips/${booking.trip}`}><Icon d={ICON.trip} />Trip page<Icon d={ICON.chevron} /></Link>
+        {booking.invoice_number && <Link className="ac-qlink" href={`/account/invoices/${booking.id}`}><Icon d={ICON.trip} /><span>GST invoice<small>{booking.invoice_number}</small></span><Icon d={ICON.chevron} /></Link>}
         <a className="ac-qlink" href="https://www.instagram.com/gohyderabad/" target="_blank" rel="noopener noreferrer"><Icon d={ICON.help} /><span>Need help?<small>Message us on Instagram</small></span><Icon d={ICON.chevron} /></a>
       </aside>
 
