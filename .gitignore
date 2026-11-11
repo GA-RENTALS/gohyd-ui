@@ -6,3 +6,6 @@ next-env.d.ts
 .next-verify
 *.tsbuildinfo
 .DS_Store
+.env
+.env.local
+.env.bak-*
