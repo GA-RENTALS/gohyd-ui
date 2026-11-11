@@ -1,6 +1,8 @@
 import type { PlanCardData } from "../types";
+import { FEATURED_EVENT_PLAN } from "./featured-event";
 
 export const PLANS: PlanCardData[] = [
+  FEATURED_EVENT_PLAN,
   {
     "cat": "trekking",
     "label": "Khajaguda",
@@ -14,8 +16,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Trekking · Hyderabad",
     "title": "Khajaguda",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -31,8 +31,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Forts · Telangana",
     "title": "Rachakonda",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -48,8 +46,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Day Trips · Vikarabad",
     "title": "Ananthagiri Hills – Day",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -65,8 +61,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Camping · Vikarabad",
     "title": "Ananthagiri Hills – Camping",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -82,8 +76,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Rides · Telangana",
     "title": "Pocharam – Ride",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -99,8 +91,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Trekking · Medak",
     "title": "Narsapur Forest Trek",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -116,8 +106,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Rides · Medak",
     "title": "Medak Bike Ride",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -133,8 +121,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Day Trips · Telangana",
     "title": "Somasila – Day",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -150,8 +136,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Camping · Telangana",
     "title": "Somasila Camping",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -167,8 +151,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Day Trips · Telangana",
     "title": "Vizag Colony – Day",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -184,8 +166,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Camping · Telangana",
     "title": "Vizag Colony – Camping",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -201,8 +181,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Lakes · Telangana",
     "title": "Koil Sagar",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -218,8 +196,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Forts · Telangana",
     "title": "Srirangapuram & Pangal Fort",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -235,8 +211,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Forts · Telangana",
     "title": "Killa Ganpur",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -252,8 +226,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Camping · Location to be confirmed",
     "title": "No Name – Camping",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -269,8 +241,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Adventure · Telangana",
     "title": "UTM – Day",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -286,8 +256,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Camping · Telangana",
     "title": "UTM – Camping",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -303,8 +271,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Day Trips · Telangana",
     "title": "Adilabad",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -320,8 +286,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Wildlife · Maharashtra",
     "title": "Tadoba-Andhari Tiger Reserve",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -337,8 +301,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Wildlife · Madhya Pradesh",
     "title": "Pench – Day Safari",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -354,8 +316,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Day Trips · Karnataka",
     "title": "Chincholi",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -371,8 +331,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Day Trips · Telangana",
     "title": "Srirangapuram + Pamapuram",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -388,8 +346,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Lakes · Telangana",
     "title": "Laknavaram Lake",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -405,8 +361,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Waterfalls · Telangana",
     "title": "Mallela Theertham",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -422,8 +376,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Adventure · Telangana",
     "title": "Koilsagar Dam – Trek & Rappelling",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -439,8 +391,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Lakes · Telangana",
     "title": "Nagarjuna Sagar",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -456,8 +406,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Temples · Telangana",
     "title": "Umamaheshwaram",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -473,8 +421,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Trekking · Khammam",
     "title": "Pandavula Gutta – Khammam",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -490,8 +436,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Forts · Karnataka",
     "title": "Bidar Fort",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -507,8 +451,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Temples · Telangana",
     "title": "Vemulawada",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -524,8 +466,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Waterfalls · Adilabad",
     "title": "Kuntala Falls",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -541,8 +481,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Temples · Medak",
     "title": "Edupayala Vana Durga Bhavani Temple",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -558,8 +496,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Lakes · Telangana",
     "title": "Jurala Dam",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -575,8 +511,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Forts · Telangana",
     "title": "Koilkonda Fort & Koilsagar Dam",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -592,8 +526,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Waterfalls · Andhra Pradesh",
     "title": "Ethipothala Falls",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -609,8 +541,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Wildlife · Telangana",
     "title": "Kinnerasani Dam & Wildlife Sanctuary",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -626,8 +556,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Waterfalls · Near Warangal",
     "title": "Bheemuni Paadam Waterfalls",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -643,8 +571,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Temples · Telangana",
     "title": "Damagundam Ramaklingeshwara Temple",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -660,8 +586,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Lakes · Telangana",
     "title": "Kotpally Reservoir",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -677,8 +601,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Lakes · Telangana",
     "title": "Vizag Colony Backwaters",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -694,8 +616,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Waterfalls · Telangana",
     "title": "Bogata Waterfall",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -711,8 +631,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Trekking · Telangana",
     "title": "Kavadipally Forest Trek",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -728,8 +646,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Lakes · Telangana",
     "title": "Kondapochamma Lake",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -745,8 +661,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Temples · Telangana",
     "title": "Dharmapuri",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -762,8 +676,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Waterfalls · Telangana",
     "title": "Muthyamdhara Waterfalls",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -779,8 +691,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Trekking · Hyderabad",
     "title": "Moula Ali Hill",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -796,8 +706,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Trekking · Telangana",
     "title": "Chityal Hills",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -813,8 +721,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Trekking · Hyderabad",
     "title": "Gunrock Hill",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -830,8 +736,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Trekking · Telangana",
     "title": "Kondamadugu Hills",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   },
   {
@@ -847,8 +751,6 @@ export const PLANS: PlanCardData[] = [
     "eyebrow": "Viewpoints · Telangana",
     "title": "Octopus View Point",
     "summary": "Explore this GoHyderabad trip plan. Detailed itinerary and event information can be added when announced.",
-    "href": "https://www.instagram.com/gohyderabad/",
-    "external": true,
     "cta": "Explore plan"
   }
 ];

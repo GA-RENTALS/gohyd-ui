@@ -27,6 +27,10 @@ export const customerApi = {
   me: () => api<Profile>("/me/"),
   saveProfile: (data: Partial<Pick<Profile, "full_name" | "email" | "preferred_language">>) => api<Profile>("/me/", { method: "PATCH", json: data }),
 
+  /** Sends an event or plan booking request to the staff CRM inbox; this does not reserve a seat or take payment. */
+  submitEventEnquiry: (data: { name: string; phone: string; event?: string; event_schedule?: string; preferred_date?: string; group_size: number; source: string; message: string; consent_to_contact: boolean }) =>
+    api<{ status: string }>("/enquiries/", { method: "POST", auth: false, json: data }),
+
   /** One trip date, N people. All-or-nothing; the same idempotency key never creates two checkouts. */
   createCheckout: (schedule: string, participant_count: number, pickup_point: string | null, key = newKey()) =>
     api<Checkout>("/checkouts/", { method: "POST", json: { items: [{ schedule, participant_count, pickup_point }] }, headers: { "Idempotency-Key": key } }),

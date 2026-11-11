@@ -1,4 +1,5 @@
 import { BACKEND_URL as API_BASE_URL } from "@/lib/config";
+import { FEATURED_EVENT_PLAN, FEATURED_EVENT_SLUG, FEATURED_EVENT_STARTS_AT, FEATURED_EVENT_WHATSAPP } from "@/components/site/data/featured-event";
 
 type PublicTrip = {
   slug: string;
@@ -9,6 +10,20 @@ type PublicTrip = {
   next_departure: string | null;
   from_price: string | number | null;
   cover_url: string | null;
+};
+
+type PublicEvent = {
+  slug: string;
+  title: string;
+  summary: string;
+  category: string;
+  category_slug: string | null;
+  price: string | number;
+  cover_url: string | null;
+  next_date: string | null;
+  next_time_tbd?: boolean;
+  is_featured?: boolean;
+  booking_whatsapp_number?: string;
 };
 
 type PublicDestination = {
@@ -44,6 +59,21 @@ function isTrip(value: unknown): value is PublicTrip {
     && isNullableString(value.cover_url);
 }
 
+function isEvent(value: unknown): value is PublicEvent {
+  return isRecord(value)
+    && typeof value.slug === "string"
+    && typeof value.title === "string"
+    && typeof value.summary === "string"
+    && typeof value.category === "string"
+    && isNullableString(value.category_slug)
+    && (typeof value.price === "string" || typeof value.price === "number")
+    && isNullableString(value.cover_url)
+    && isNullableString(value.next_date)
+    && (value.next_time_tbd === undefined || typeof value.next_time_tbd === "boolean")
+    && (value.is_featured === undefined || typeof value.is_featured === "boolean")
+    && (value.booking_whatsapp_number === undefined || typeof value.booking_whatsapp_number === "string");
+}
+
 function isDestination(value: unknown): value is PublicDestination {
   return isRecord(value)
     && typeof value.slug === "string"
@@ -74,7 +104,7 @@ async function fetchAll<T>(path: string, isItem: (value: unknown) => value is T)
 
     const response = await fetch(url, { cache: "no-store" });
     if (!response.ok) {
-      throw new Error(`Backend request failed (${response.status} ${response.statusText}).`);
+      throw new Error(`Backend request failed at ${url.origin}${url.pathname} (${response.status} ${response.statusText}).`);
     }
 
     const payload: unknown = await response.json();
@@ -113,7 +143,9 @@ function categoryLabel(slug: string): string {
 
 function renderTripCard(trip: PublicTrip, upcoming: boolean): HTMLElement {
   const category = trip.categories[0] || "experience";
-  const card = element("article", `ecard${upcoming ? " up-card" : ""}`);
+  const card = element("a", `ecard${upcoming ? " up-card" : ""}`);
+  card.href = `/trips/${encodeURIComponent(trip.slug)}`;
+  card.setAttribute("aria-label", `View ${trip.title} trip details`);
   card.dataset.cat = category;
 
   const photo = element("div", "ph");
@@ -156,44 +188,96 @@ function renderTripCard(trip: PublicTrip, upcoming: boolean): HTMLElement {
     body.append(details);
   }
 
-  const link = element("a", "link", "Follow for booking updates");
-  link.href = "https://www.instagram.com/gohyderabad/";
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
+  const link = element("span", "link", "View trip details");
   body.append(link);
   card.append(photo, body);
   return card;
 }
 
-function renderTrips(trips: PublicTrip[]): boolean {
-  const visibleTrips = trips.filter((trip) => !["CANCELLED", "COMPLETED"].includes(trip.operational_status));
-  if (!visibleTrips.length) return false;
+function renderEventCard(event: PublicEvent): HTMLElement {
+  const category = event.category_slug || "events";
+  const card = element("a", "ecard");
+  card.href = `/events/${encodeURIComponent(event.slug)}`;
+  card.setAttribute("aria-label", `View ${event.title} event details`);
+  card.dataset.cat = category;
 
-  const eventGrid = document.getElementById("ev-grid");
-  eventGrid?.replaceChildren(...visibleTrips.map((trip) => renderTripCard(trip, false)));
+  const photo = element("div", "ph");
+  photo.dataset.label = event.title;
+  if (event.cover_url) {
+    const image = element("img");
+    image.src = event.cover_url;
+    image.alt = event.title;
+    image.loading = "lazy";
+    image.decoding = "async";
+    photo.append(image);
+  }
+  photo.append(element("span", "ptag", categoryLabel(category)));
+  if (event.is_featured) photo.append(element("span", "badge hot-event-badge", "Hot event"));
+  else if (event.next_date) photo.append(element("span", "badge", "Upcoming"));
+
+  const body = element("div", "ebody");
+  body.append(element("span", "ecat", event.category || categoryLabel(category)));
+  body.append(element("h3", undefined, event.title));
+  if (event.summary) body.append(element("p", "blurb", event.summary));
+  const details = element("dl", "edl");
+  const date = event.next_date ? new Date(event.next_date) : null;
+  const dateText = date && !Number.isNaN(date.getTime())
+    ? `${new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", ...(event.next_time_tbd ? {} : { timeStyle: "short" }), timeZone: "Asia/Kolkata" }).format(date)}${event.next_time_tbd ? " · Time to be confirmed" : ""}`
+    : "Date to be announced";
+  const amount = Number(event.price);
+  const price = Number.isFinite(amount)
+    ? new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 2 }).format(amount)
+    : "To be confirmed";
+  details.append(
+    element("dt", undefined, "Date"), element("dd", undefined, dateText),
+    element("dt", undefined, "Price"), element("dd", undefined, price),
+  );
+  body.append(details, element("span", "link", "Explore event"));
+  card.append(photo, body);
+  return card;
+}
+
+function renderEvents(events: PublicEvent[]): void {
+  if (!events.length) return;
+  const featuredEvent: PublicEvent = {
+    slug: FEATURED_EVENT_SLUG,
+    title: FEATURED_EVENT_PLAN.title,
+    summary: FEATURED_EVENT_PLAN.summary,
+    category: "Sports · KPHB, Hyderabad",
+    category_slug: "sports",
+    price: 499,
+    cover_url: "/assets/img/cricket-morning-1200.jpg",
+    next_date: FEATURED_EVENT_STARTS_AT,
+    next_time_tbd: true,
+    is_featured: true,
+    booking_whatsapp_number: FEATURED_EVENT_WHATSAPP,
+  };
+  const liveFeatured = events.find((event) => event.slug === FEATURED_EVENT_SLUG);
+  const visibleEvents = [liveFeatured || featuredEvent, ...events.filter((event) => event.slug !== FEATURED_EVENT_SLUG)];
+  document.getElementById("ev-grid")?.replaceChildren(...visibleEvents.map(renderEventCard));
   const eventCount = document.querySelector(".events .rail-title span");
-  if (eventCount) eventCount.textContent = `${visibleTrips.length} published`;
+  if (eventCount) eventCount.textContent = `${visibleEvents.length} events listed`;
   const notice = document.querySelector(".notice span");
   if (notice) {
-    notice.textContent = "Published trips are listed here. Upcoming dates and prices are provided by GoHyderabad; follow the booking updates for current availability.";
+    notice.textContent = "Published events are listed here. Open an event to review its itinerary and send a booking request; our team will confirm the date and availability.";
   }
 
   const chips = document.querySelector(".chips");
-  if (chips) {
-    const existing = new Set(
-      Array.from(chips.querySelectorAll<HTMLButtonElement>("[data-chip]")).map((chip) => chip.dataset.chip),
-    );
-    const categories = new Set(visibleTrips.flatMap((trip) => trip.categories));
-    for (const category of categories) {
-      if (!existing.has(category)) {
-        const chip = element("button", "chip", categoryLabel(category));
-        chip.type = "button";
-        chip.dataset.chip = category;
-        chip.setAttribute("aria-pressed", "false");
-        chips.append(chip);
-      }
-    }
+  if (!chips) return;
+  const existing = new Set(Array.from(chips.querySelectorAll<HTMLButtonElement>("[data-chip]")).map((chip) => chip.dataset.chip));
+  for (const category of new Set(events.map((event) => event.category_slug).filter((slug): slug is string => Boolean(slug)))) {
+    if (existing.has(category)) continue;
+    const chip = element("button", "chip", categoryLabel(category));
+    chip.type = "button";
+    chip.dataset.chip = category;
+    chip.setAttribute("aria-pressed", "false");
+    chips.append(chip);
   }
+}
+
+function renderTrips(trips: PublicTrip[]): boolean {
+  const visibleTrips = trips.filter((trip) => !["CANCELLED", "COMPLETED"].includes(trip.operational_status));
+  if (!visibleTrips.length) return false;
 
   const upcoming = visibleTrips
     .map((trip) => ({ trip, departure: trip.next_departure ? Date.parse(trip.next_departure) : Number.NaN }))
@@ -288,6 +372,7 @@ function setContentStatus(message: string): void {
 export async function loadPublicContent(): Promise<void> {
   const results = await Promise.allSettled([
     fetchAll("/api/v1/trips/?lang=en", isTrip),
+    fetchAll("/api/v1/events/?lang=en", isEvent),
     fetchAll("/api/v1/destinations/?is_hyderabad_explore=true&lang=en", isDestination),
   ]);
   const notices: string[] = [];
@@ -303,9 +388,16 @@ export async function loadPublicContent(): Promise<void> {
   }
 
   if (results[1].status === "fulfilled") {
-    renderDestinations(results[1].value);
+    renderEvents(results[1].value);
   } else {
-    console.error("Could not load published destinations from the backend.", results[1].reason);
+    console.error("Could not load published events from the backend.", results[1].reason);
+    notices.push("Live events are unavailable; plan formats remain visible.");
+  }
+
+  if (results[2].status === "fulfilled") {
+    renderDestinations(results[2].value);
+  } else {
+    console.error("Could not load published destinations from the backend.", results[2].reason);
     notices.push("Live destinations are unavailable; the current map remains visible.");
   }
 

@@ -9,6 +9,12 @@ import type { PickupPoint, Schedule } from "@/lib/customer/types";
 import { useCustomer } from "./CustomerProvider";
 
 const MAX_PEOPLE = 10;
+const scheduleDateRange = (startsAt: string, endsAt: string) => {
+  const date = new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" });
+  const start = new Date(startsAt);
+  const end = new Date(endsAt);
+  return date.format(start) === date.format(end) ? longDate(startsAt) : `${date.format(start)} – ${date.format(end)}`;
+};
 
 /** Choose a date, how many people and a pickup point, then continue to checkout. */
 export function BookingPanel({ slug, schedules, pickups, isOpen }: { slug: string; schedules: Schedule[]; pickups: PickupPoint[]; isOpen: boolean }) {
@@ -29,7 +35,7 @@ export function BookingPanel({ slug, schedules, pickups, isOpen }: { slug: strin
   if (!isOpen || bookable.length === 0) {
     return (
       <div className="bk-card bk-sticky" id="book">
-        <h2>Book this trip</h2>
+        <h2>Book your slot</h2>
         <p className="bk-note">There are no dates open for booking right now. Follow <a href="https://www.instagram.com/gohyderabad/" target="_blank" rel="noopener noreferrer">our Instagram</a> for the next announcement.</p>
       </div>
     );
@@ -54,15 +60,16 @@ export function BookingPanel({ slug, schedules, pickups, isOpen }: { slug: strin
 
   return (
     <div className="bk-card bk-sticky" id="book">
-      <h2>Book this trip</h2>
+      <h2>Book your slot</h2>
       <fieldset className="bk-sched">
-        <legend className="bk-hint" style={{ marginBottom: 8 }}>Choose a date</legend>
+        <legend className="bk-hint" style={{ marginBottom: 8 }}>Trip dates</legend>
         {bookable.map((s) => (
           <label key={s.id}>
             <span>
               <input type="radio" name="schedule" value={s.id} checked={s.id === scheduleId} onChange={() => { setScheduleId(s.id); setCount((c) => Math.min(c, Math.min(MAX_PEOPLE, s.seats_left))); }} />{" "}
-              {longDate(s.starts_at)}
-              <small>{time(s.starts_at)} · {s.seats_left} seat{s.seats_left === 1 ? "" : "s"} left</small>
+              {s.ends_at ? scheduleDateRange(s.starts_at, s.ends_at)
+                : longDate(s.starts_at)}
+              <small>{time(s.starts_at)}{s.ends_at ? ` – ${time(s.ends_at)}` : ""} · {s.seats_left} seat{s.seats_left === 1 ? "" : "s"} left</small>
             </span>
             <strong>{money(s.price_per_participant)}</strong>
           </label>
@@ -70,8 +77,8 @@ export function BookingPanel({ slug, schedules, pickups, isOpen }: { slug: strin
       </fieldset>
 
       <div className="bk-field">
-        <span>People</span>
-        <div className="bk-stepper" role="group" aria-label="Number of people">
+        <span>Travellers</span>
+        <div className="bk-stepper" role="group" aria-label="Number of travellers">
           <button type="button" onClick={() => setCount((c) => Math.max(1, c - 1))} disabled={count <= 1} aria-label="One fewer">−</button>
           <output aria-live="polite">{count}</output>
           <button type="button" onClick={() => setCount((c) => Math.min(max, c + 1))} disabled={count >= max} aria-label="One more">+</button>

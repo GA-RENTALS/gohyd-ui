@@ -3,6 +3,7 @@ import { longDate, money } from "@/lib/customer/format";
 import type { TripSummary } from "@/lib/customer/types";
 
 export function TripCard({ trip }: { trip: TripSummary }) {
+  const bookingOpen = trip.operational_status === "OPEN";
   return (
     <Link href={`/trips/${trip.slug}`} className="bk-trip">
       <div className="bk-cover">
@@ -13,8 +14,8 @@ export function TripCard({ trip }: { trip: TripSummary }) {
         <h3>{trip.title || trip.slug}</h3>
         {trip.summary && <p>{trip.summary}</p>}
         <div className="bk-meta">
-          <span>{trip.next_departure ? longDate(trip.next_departure) : "Dates announced soon"}</span>
-          {trip.from_price !== null && <span>From {money(trip.from_price)}</span>}
+          <span>{trip.next_departure ? longDate(trip.next_departure) : bookingOpen ? "Dates announced soon" : "Bookings unavailable"}</span>
+          {bookingOpen && trip.from_price !== null && <span>From {money(trip.from_price)}</span>}
         </div>
       </div>
     </Link>

@@ -16,7 +16,7 @@ export function Events() {
               {" "}
               <em>the weekend.</em>
             </h2>
-            <p className="count-line">53 escapes around Hyderabad</p>
+            <p className="count-line">50 plans + a featured event around Hyderabad</p>
           </div>
           <p className="lede">
             Find your next reason to step out. Pick a plan, bring your curiosity, and let the weekend take shape.
@@ -25,9 +25,9 @@ export function Events() {
         <p className="notice" data-reveal="">
           <Icon name="info" />
           <span>
-            <strong>These are plan formats, not a live schedule.</strong>
+            <strong>Plans open into full details.</strong>
             {" "}
-            Dates, times, prices and availability change with every announcement and are posted on Instagram, so we don't list them here rather than risk showing you something out of date.
+            Choose a plan to review its itinerary and send your preferred date and group size. Our team will confirm the schedule, price and availability.
           </span>
         </p>
         <div className="section-top" data-reveal="">
@@ -35,7 +35,7 @@ export function Events() {
             <h2 className="rail-title">
               Explore all
               {" "}
-              <span>50 plans</span>
+              <span>50 plans + 1 hot event</span>
             </h2>
             <p className="hint">From quick city escapes to full weekend adventures</p>
           </div>
@@ -56,6 +56,8 @@ export function Events() {
           <button className="chip" type="button" data-chip="camping" aria-pressed="false">Camping</button>
           {" "}
           <button className="chip" type="button" data-chip="rides" aria-pressed="false">Rides</button>
+          {" "}
+          <button className="chip" type="button" data-chip="sports" aria-pressed="false">Sports</button>
           {" "}
           <button className="chip" type="button" data-chip="lakes" aria-pressed="false">Lakes</button>
           {" "}

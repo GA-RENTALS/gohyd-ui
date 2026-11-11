@@ -33,12 +33,29 @@
 /* trip detail */
 .bk-detail { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); margin-top: 32px; align-items: start; }
 @media (max-width: 860px) { .bk-detail { grid-template-columns: 1fr; } }
+.bk-section-tabs { position: sticky; z-index: 8; top: 72px; display: flex; gap: 4px; overflow-x: auto; margin-top: 28px; padding: 7px; border-radius: 4px; background: #bd2520; scrollbar-width: thin; }
+.bk-section-tabs a { flex: 1 0 auto; padding: 12px 16px; border-radius: 3px; color: #fff; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-align: center; text-decoration: none; text-transform: uppercase; white-space: nowrap; }
+.bk-section-tabs a:hover, .bk-section-tabs a:focus-visible { outline: none; background: #fff; color: #171612; }
+.bk-detail-content { display: grid; gap: 20px; min-width: 0; }
+.bk-detail-content .bk-card + .bk-card { margin-top: 0; }
+.bk-detail-section { scroll-margin-top: 148px; }
+.bk-detail-section h2 { scroll-margin-top: 148px; }
 .bk-hero-img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 4px; background: var(--forest); display: block; }
 .bk-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 0; }
 .bk-chip { padding: 5px 10px; border: 1px solid var(--line); border-radius: 100px; font-size: 12px; letter-spacing: .06em; color: var(--sand-light); text-transform: capitalize; }
+.bk-chip-hot { border-color: var(--lime); background: var(--lime); color: var(--ink); font-weight: 800; text-transform: uppercase; }
 .bk-list { margin: 0; padding-left: 20px; color: var(--ivory-2); line-height: 1.8; }
 .bk-prose { color: var(--ivory-2); white-space: pre-line; }
 .bk-sticky { position: sticky; top: 100px; }
+.bk-itinerary { display: grid; gap: 20px; }
+.bk-itinerary-day h3 { margin: 0 0 12px; color: var(--ivory); font-size: 15px; }
+.bk-itinerary-list { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.bk-itinerary-list li { display: grid; grid-template-columns: minmax(70px, auto) 1fr; gap: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+.bk-itinerary-list li > span { color: var(--sand-light); font-size: 12px; font-weight: 700; }
+.bk-itinerary-list p { margin: 0; color: var(--ivory-2); }
+.bk-event-venue { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--ivory-2); }
+.bk-event-venue p { margin: 4px 0 0; color: var(--text-soft); }
+.bk-label-optional { color: var(--text-soft); font-size: 11px; font-weight: 400; letter-spacing: 0; text-transform: none; }
 
 .bk-sched { display: grid; gap: 10px; margin: 0 0 18px; padding: 0; border: 0; }
 .bk-sched label { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px; border: 1px solid var(--line); border-radius: 3px; cursor: pointer; }
@@ -63,6 +80,7 @@
 .bk-total strong { font-size: 24px; }
 .bk-btn-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
 .bk-card .btn { width: 100%; }
+.bk-card .event-whatsapp { margin-top: 10px; background: #25d366; color: #102117; text-align: center; text-decoration: none; }
 .bk-btn-row .btn { width: auto; }
 .btn[disabled] { opacity: .5; cursor: not-allowed; transform: none; }
 .bk-check { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--ivory-2); }
@@ -98,6 +116,9 @@
   .bk-sticky { position: static; }
   .bk-main { padding-top: 104px; padding-bottom: 56px; }
   .bk-detail { padding-bottom: 76px; }
+  .bk-section-tabs { top: 64px; margin-inline: calc(var(--pad) * -1); padding-inline: var(--pad); border-radius: 0; }
+  .bk-section-tabs a { padding: 12px 14px; }
+  .bk-detail-section { scroll-margin-top: 126px; }
   #book { scroll-margin-top: 96px; }
   .bk-bookbar { position: fixed; z-index: 90; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 16px; min-height: 56px; background: var(--lime); color: var(--ink); border-radius: 3px; box-shadow: 0 14px 34px rgba(0,0,0,.45); text-decoration: none; transition: transform .3s var(--ease), opacity .3s; }
   .bk-bookbar.is-hidden { transform: translateY(160%); opacity: 0; pointer-events: none; }

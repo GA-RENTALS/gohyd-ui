@@ -25,6 +25,40 @@ export type Schedule = {
   balance_due_days_before: number;
 };
 
+export type ItineraryItem = { id: number; time_label: string; text: string };
+export type ItineraryDay = { id: number; day_number: number; title: string; items: ItineraryItem[] };
+
+export type EventSchedule = {
+  id: string;
+  starts_at: string;
+  ends_at: string | null;
+  capacity: number | null;
+  is_date_locked: boolean;
+  time_tbd: boolean;
+};
+export type EventDetail = {
+  id: string;
+  slug: string;
+  title: string;
+  summary: string;
+  body: string;
+  category: string;
+  category_slug: string | null;
+  price: string | null;
+  cover_url: string | null;
+  next_date: string | null;
+  next_time_tbd: boolean;
+  is_featured: boolean;
+  booking_whatsapp_number: string;
+  venue_name: string;
+  venue_address: string;
+  schedules: EventSchedule[];
+  itineraries: ItineraryDay[];
+  things_to_bring: string[];
+  inclusions: string[];
+  exclusions: string[];
+};
+
 export type PickupPoint = { id: string; name: string; address: string; pickup_time: string | null };
 export type RefundTier = { days_before: number; refund_basis_points: number; note: string };
 
@@ -32,6 +66,8 @@ export type TripDetail = TripSummary & {
   body: string;
   schedules: Schedule[];
   pickup_points: PickupPoint[];
+  itineraries: ItineraryDay[];
+  things_to_bring: string[];
   inclusions: string[];
   exclusions: string[];
   policies: RefundTier[];

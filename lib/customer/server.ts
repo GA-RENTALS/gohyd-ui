@@ -1,5 +1,5 @@
 import { API_URL } from "@/lib/config";
-import type { TripDetail, TripSummary } from "./types";
+import type { EventDetail, TripDetail, TripSummary } from "./types";
 
 /** Public, signed-out reads done on the server so trip pages arrive fully rendered (good for search engines and slow phones). */
 async function getJson<T>(path: string): Promise<T | null> {
@@ -21,4 +21,8 @@ export async function listTrips(): Promise<TripSummary[]> {
 
 export async function getTrip(slug: string): Promise<TripDetail | null> {
   return getJson<TripDetail>(`/trips/${encodeURIComponent(slug)}/?lang=en`);
+}
+
+export async function getEvent(slug: string): Promise<EventDetail | null> {
+  return getJson<EventDetail>(`/events/${encodeURIComponent(slug)}/?lang=en`);
 }

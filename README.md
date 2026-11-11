@@ -76,6 +76,7 @@ Use `127.0.0.1`, not `localhost`, for the backend address in development. Django
 | `/` | Home page | No |
 | `/trips` | Published trips | No |
 | `/trips/<name>` | Trip detail with dates, price, pickup, refund policy, booking panel | No (booking needs it) |
+| `/events/<slug>` | Event or sample-plan detail, itinerary, event date request and CRM follow-up form | No |
 | `/login` | Customer sign in with a WhatsApp code | No |
 | `/checkout/<id>` | Participants, waiver, payment, confirmation | Customer |
 | `/account` | My bookings | Customer |
@@ -95,7 +96,7 @@ GoHyderabad/
 │   │   ├── page.tsx              home page
 │   │   ├── globals.css, sections.css, animations.css
 │   │   └── (site)/               booking pages and their layout
-│   │       ├── trips/, trips/[slug]/, login/, checkout/[id]/
+│   │       ├── trips/, trips/[slug]/, events/[slug]/, login/, checkout/[id]/
 │   │       ├── account/, account/profile/   (account.css)
 │   │       └── booking.css
 │   ├── admin/                    admin root layout (own styles)
@@ -134,8 +135,9 @@ Do not import one side's CSS into the other.
 ## 7. Public site and booking pages
 
 - **Home page:** built from small components in `components/site` plus typed data files (the 50 plan cards, 8 sample cards, 53 map pins and photo credits). See `components/site/README.md`. Behaviour such as scroll effects, the map and filter chips lives in `components/initPage.ts` and finds elements by `id`, `class` and `data-*`, so keep those names when editing markup.
-- **Live content:** when trips or destinations are published in the admin, `components/publicContent.ts` replaces the built-in plan cards and map list with live data at runtime. Publish only when the live data has photos, dates and prices.
+- **Live content:** published Events replace the built-in plan cards, published Trips fill the Upcoming rail, and published destinations fill the map. If no Event is published, each built-in plan still opens `/events/<slug>` and can send a request to the staff CRM inbox.
 - **Trips and trip detail** are rendered on the server from the public API on every request, so they are always current and work well for search engines. A trip that does not exist gives a 404.
+- **Event detail:** `/events/<slug>` loads a published Event from the public API or falls back to a static plan card. **Book now** creates a CRM enquiry; staff confirm the date, price, and capacity. It does not reserve a seat or take payment.
 - **Booking flow:** choose a date, number of people and pickup point → sign in with a WhatsApp code (new customers give a name) → checkout creates one booking per trip → add participants and accept the waiver → pay the advance with Razorpay → confirmation. The balance is paid later from the account.
 - **Header avatar:** "Sign in" (person icon) when signed out; the customer's initial with a menu (My bookings, Book a trip, Sign out) when signed in. It works on the home page and on the booking pages (`components/booking/AccountMenu.tsx`).
 - **Phones:** a "From ₹… · Book now" bar is pinned to the bottom of trip pages and hides while the booking panel is visible.

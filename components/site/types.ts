@@ -11,6 +11,8 @@ export type Photo = {
 
 /** A trip plan card in the "Events" grid. */
 export type PlanCardData = {
+  slug?: string;
+  is_hot?: boolean;
   /** Category slug used by the filter chips (e.g. "trekking"). */
   cat: string;
   label: string;
@@ -19,8 +21,6 @@ export type PlanCardData = {
   eyebrow: string;
   title: string;
   summary: string;
-  href: string;
-  external: boolean;
   cta: string;
 };
 
