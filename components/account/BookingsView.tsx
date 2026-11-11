@@ -2,8 +2,9 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { customerApi } from "@/lib/customer/api";
-import type { Booking } from "@/lib/customer/types";
+import type { Booking, EventBooking } from "@/lib/customer/types";
 import { BookingCard } from "./BookingCard";
+import { EventBookingsList } from "./EventBookingsList";
 import { bucketOf, needsPayment, type Bucket } from "./booking-model";
 
 const TABS: { key: Bucket; label: string }[] = [
@@ -25,11 +26,14 @@ export function BookingsView() {
   const [bookings, setBookings] = useState<Booking[] | null>(null);
   const [error, setError] = useState("");
   const [tab, setTab] = useState<Bucket>("upcoming");
+  const [eventBookings, setEventBookings] = useState<EventBooking[]>([]);
 
   const load = useCallback(async () => {
     try { setBookings(await customerApi.bookings()); setError(""); } catch (e: any) { setError(e.message); }
   }, []);
   useEffect(() => { void load(); }, [load]);
+  // Separate request: a failure here should not hide trip bookings (and vice versa).
+  useEffect(() => { customerApi.myEventBookings().then(setEventBookings).catch(() => setEventBookings([])); }, []);
 
   const groups = useMemo(() => {
     const g: Record<Bucket, Booking[]> = { upcoming: [], past: [], cancelled: [] };
@@ -92,6 +96,13 @@ export function BookingsView() {
           </div>
         )}
       </section>
+
+      {eventBookings.length > 0 && (
+        <section style={{ marginTop: 32 }}>
+          <div className="ac-section-head"><h2>Your event bookings</h2></div>
+          <EventBookingsList bookings={eventBookings} />
+        </section>
+      )}
     </>
   );
 }

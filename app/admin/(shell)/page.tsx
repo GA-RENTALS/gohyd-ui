@@ -15,7 +15,7 @@ import { adminApi, type Dashboard } from "@/lib/admin/api";
 import { cx } from "@/utils/cx";
 
 const ICON: Record<string, Stat["icon"]> = {
-  trips: RiRoadMapLine, bookings: RiTicket2Line, revenue: RiBankLine, "pending-verification": RiTimeLine, customers: RiGroupLine,
+  trips: RiRoadMapLine, bookings: RiTicket2Line, "event-bookings": RiTicket2Line, revenue: RiBankLine, "pending-verification": RiTimeLine, customers: RiGroupLine,
 };
 const money = (v: string | number) => `₹${Number(v).toLocaleString("en-IN", { maximumFractionDigits: 0 })}`;
 function statusColor(s: string): ChipColor {
@@ -66,6 +66,7 @@ export default function Home() {
   const [err, setErr] = useState("");
   useEffect(() => { adminApi.dashboard().then(setD).catch((e) => setErr(e.message)); }, []);
   const canViewBookings = !!modules.find((m) => m.key === "bookings")?.resources.some((r) => r.key === "bookings" && r.actions.view);
+  const canViewEventBookings = !!modules.find((m) => m.key === "events")?.resources.some((r) => r.key === "event-registrations" && r.actions.view);
   const canViewSchedules = !!modules.find((m) => m.key === "trips")?.resources.some((r) => r.key === "trip-schedules" && r.actions.view);
   const canAddTrip = !!modules.find((m) => m.key === "trips")?.resources.some((r) => r.key === "trips" && r.actions.create);
   const canAddSchedule = !!modules.find((m) => m.key === "trips")?.resources.some((r) => r.key === "trip-schedules" && r.actions.create);
@@ -118,6 +119,27 @@ export default function Home() {
                   </li>
                 ))}
               </ul> : <p className="py-5 text-center text-body-regular text-text-secondary">No bookings yet. New customer bookings will appear here.</p>}
+            </section>
+          )}
+          {canViewEventBookings && (
+            <section className="rounded-xl border border-border-button-default bg-background-primary-default p-4">
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="text-headline-medium text-text-primary">Recent event bookings</h2>
+                <Link href="/admin/events/event-registrations" className="text-body-medium text-text-secondary hover:text-text-primary">View all</Link>
+              </div>
+              {d.recent_event_bookings?.length ? <ul className="flex flex-col gap-2">
+                {d.recent_event_bookings.map((b) => (
+                  <li key={b.id} className="flex items-center gap-3 rounded-lg p-2 hover:bg-background-secondary-default">
+                    <Avatar size="md" color="neutral" initials={(b.contact_name || "?").slice(0, 2).toUpperCase()} />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-body-medium text-text-primary">{b.contact_name || "Guest"} × {b.participant_count}</p>
+                      <p className="truncate text-body-regular text-text-secondary">{b.reference} · {b.schedule__event__slug}</p>
+                    </div>
+                    <Chip variant="caption" color={statusColor(b.status)}>{b.status}</Chip>
+                    <span className="w-24 text-end text-body-medium text-text-primary">{money(b.total_amount)}</span>
+                  </li>
+                ))}
+              </ul> : <p className="py-5 text-center text-body-regular text-text-secondary">No event bookings yet.</p>}
             </section>
           )}
           {canViewSchedules && (

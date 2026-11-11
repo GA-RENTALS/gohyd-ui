@@ -48,6 +48,8 @@ export const customerApi = {
     api<{ status: string }>(`/checkouts/${checkoutId}/confirm/`, { method: "POST", json: { payment, razorpay_payment_id, razorpay_signature } }),
 
   bookings: async () => results(await api<Booking[] | { results: Booking[] }>("/bookings/")),
+  /** Event bookings made while signed in or with this account's phone number. */
+  myEventBookings: () => api<EventBooking[]>("/me/event-bookings/"),
   saveParticipants: (bookingId: string, people: Participant[]) =>
     api<Participant[]>(`/bookings/${bookingId}/participants/`, { method: "PUT", json: people }),
   activeWaiver: () => api<{ id: string; title: string; version: number; language: string; body: string }>("/safety-waivers/active/?lang=en", { auth: false }),
