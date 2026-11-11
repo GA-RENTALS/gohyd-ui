@@ -14,7 +14,6 @@ import {
   FEATURED_EVENT_CAPACITY, FEATURED_EVENT_CONTENT, FEATURED_EVENT_ENDS_AT, FEATURED_EVENT_POSTER, FEATURED_EVENT_SLUG,
   FEATURED_EVENT_STARTS_AT, FEATURED_EVENT_WHATSAPP,
 } from "@/components/site/data/featured-event";
-import "./event-details.css";
 import { SITE_NAME, SITE_URL, absoluteUrl, jsonLd, metaDescription, pageMetadata } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
@@ -41,12 +40,6 @@ function durationLabel(schedule: EventSchedule): string | null {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
   return [h ? `${h} Hour${h === 1 ? "" : "s"}` : "", m ? `${m} Min` : ""].filter(Boolean).join(" ");
-}
-
-function eveningOrDay(schedule: EventSchedule | undefined) {
-  if (!schedule || schedule.time_tbd) return "Plan for the day";
-  const hour = Number(new Date(schedule.starts_at).toLocaleString("en-GB", { hour: "2-digit", hour12: false, timeZone: "Asia/Kolkata" }));
-  return hour >= 16 ? "Plan for the evening" : "Plan for the day";
 }
 
 async function loadPageData(slug: string): Promise<EventPageData | null> {
@@ -168,19 +161,9 @@ function eventJsonLd(event: EventPageData) {
   ];
 }
 
-function Section({ id, kicker, title, children, className }: { id: string; kicker: string; title: string; children: React.ReactNode; className?: string }) {
-  return (
-    <section className={`evd-section-card${className ? ` ${className}` : ""}`} id={id} aria-labelledby={`${id}-title`}>
-      <div className="evd-section-kicker">{kicker}</div>
-      <h2 id={`${id}-title`}>{title}</h2>
-      {children}
-    </section>
-  );
-}
-
 /**
- * Event Details template (from the approved GoHyderabad event page design). One template for every event:
- * cricket, badminton, football, meetups. Sections without content are skipped and the numbering follows.
+ * Event detail page. Same layout and styles as the trip page (booking.css): title, chips, red section tabs,
+ * content cards on the left and the booking card on the right. Sections without content are skipped.
  */
 export default async function EventPage({ params }: Props) {
   const { slug } = await params;
@@ -189,132 +172,133 @@ export default async function EventPage({ params }: Props) {
 
   const isEvent = event.is_live || event.is_featured;
   const next = event.schedules[0];
-  const timeline = event.itineraries.flatMap((day) => day.items.map((item) => ({ ...item, day: day.title, dayNumber: day.day_number })));
-  const multiDay = new Set(timeline.map((item) => item.dayNumber)).size > 1;
   const body = paragraphs(event.body || "");
   const isSport = /sport|cricket|football|badminton|volley|tennis/i.test(`${event.category} ${event.title}`);
-  const duration = next ? durationLabel(next) : null;
   const venue = event.venue_address || event.venue_name;
+  const duration = next ? durationLabel(next) : null;
 
   const facts = [
-    { label: "Date", value: next ? factDate(next.starts_at) : "To be announced" },
-    { label: "Time", value: !next ? "To be announced" : next.time_tbd ? "To be confirmed" : `${time(next.starts_at)}${next.ends_at ? ` – ${time(next.ends_at)}` : ""}` },
-    { label: "Duration", value: duration ?? "To be confirmed" },
-    { label: "Capacity", value: next?.capacity ? `${next.capacity} Participants` : "Open" },
-  ];
+    next ? factDate(next.starts_at) : null,
+    next && !next.time_tbd ? `${time(next.starts_at)}${next.ends_at ? ` – ${time(next.ends_at)}` : ""}` : null,
+    duration ? duration.toLowerCase() : null,
+    next?.capacity ? `${next.capacity} participants` : null,
+  ].filter(Boolean) as string[];
 
-  // Build sections in order; only the ones with content are shown, and the kicker numbers follow.
-  const blocks: { id: string; kicker: string; title: string; node: React.ReactNode; className?: string }[] = [];
-  blocks.push({
-    id: "event-about", kicker: isEvent ? "About this event" : "About this plan", title: event.headline || event.title,
+  const list = (items: string[]) => <ul className="bk-list">{items.map((item, i) => <li key={`${item}-${i}`}>{item}</li>)}</ul>;
+
+  const sections: { id: string; label: string; title: string; node: React.ReactNode }[] = [];
+  sections.push({
+    id: "event-about", label: "About", title: `About this ${isEvent ? "event" : "plan"}`,
     node: (
       <>
-        {body.length ? body.map((line, i) => <p key={i}>{line}</p>) : event.summary && <p>{event.summary}</p>}
-        {event.highlights.length > 0 && (
-          <div className="evd-feature-list">{event.highlights.map((h, i) => <div className="evd-feature" key={`${h}-${i}`}>{h}</div>)}</div>
+        {event.cover_url && <EventHeroImage src={event.cover_url} alt={`${event.title} poster`} />}
+        {event.image_caption && <p className="bk-hint" style={{ marginTop: 8 }}>{event.image_caption}</p>}
+        {event.summary && <p className="bk-lede" style={{ marginTop: 18 }}>{event.summary}</p>}
+        {facts.length > 0 && <p className="bk-note">{facts.join(" · ")}</p>}
+        {event.headline && <h3 style={{ margin: "18px 0 8px" }}>{event.headline}</h3>}
+        {body.map((line, i) => <p key={i} className="bk-prose">{line}</p>)}
+        {event.highlights.length > 0 && list(event.highlights)}
+        {venue && (
+          <div className="bk-event-venue">
+            {event.venue_name && <strong>{event.venue_name}</strong>}
+            {event.venue_address && event.venue_address !== event.venue_name && <p>{event.venue_address}</p>}
+          </div>
         )}
       </>
     ),
   });
   if (event.format_details.length) {
-    blocks.push({
-      id: "event-format", kicker: "Event format", title: isSport ? "How the game works" : "How it works",
+    sections.push({
+      id: "event-format", label: "Format", title: isSport ? "Game format" : "Format",
       node: (
         <>
-          <div className="evd-format-grid">
-            {event.format_details.map((d, i) => <div className="evd-format-row" key={`${d.label}-${i}`}><span>{d.label}</span><strong>{d.value}</strong></div>)}
-          </div>
-          {event.format_note && <p style={{ marginTop: 14 }}>{event.format_note}</p>}
+          <dl className="bk-format-grid">
+            {event.format_details.map((d, i) => <div key={`${d.label}-${i}`}><dt>{d.label}</dt><dd>{d.value}</dd></div>)}
+          </dl>
+          {event.format_note && <p className="bk-note" style={{ marginTop: 14 }}>{event.format_note}</p>}
         </>
       ),
     });
   }
-  blocks.push({
-    id: "event-schedule", kicker: "Event schedule", title: eveningOrDay(next),
+  sections.push({
+    id: "event-itinerary", label: "Itinerary", title: "Itinerary",
     node: (
       <>
-        {timeline.length > 0 ? (
-          <ul className="evd-schedule">
-            {timeline.map((item) => (
-              <li key={item.id}>
-                <time>{multiDay ? `${item.day || `Day ${item.dayNumber}`} · ` : ""}{item.time_label || "—"}</time>
-                <div><strong>{item.text}</strong>{item.detail && <small>{item.detail}</small>}</div>
-              </li>
+        {event.itineraries.length > 0 ? (
+          <div className="bk-itinerary">
+            {event.itineraries.map((day) => (
+              <article key={day.id} className="bk-itinerary-day">
+                <h3>{day.title || `Day ${day.day_number}`}</h3>
+                {day.items.length > 0 ? (
+                  <ol className="bk-itinerary-list">
+                    {day.items.map((item) => <li key={item.id}><span>{item.time_label || "Plan"}</span><p>{item.text}{item.detail && <><br /><small className="bk-hint">{item.detail}</small></>}</p></li>)}
+                  </ol>
+                ) : <p className="bk-note">The schedule will be shared when this event date is confirmed.</p>}
+              </article>
             ))}
-          </ul>
+          </div>
         ) : event.schedules.length > 0 ? (
-          <ul className="evd-schedule">
+          <ul className="bk-schedule-list">
             {event.schedules.map((s) => (
-              <li key={s.id}>
-                <time>{factDate(s.starts_at)}</time>
-                <div><strong>{s.time_tbd ? "Time to be confirmed" : `${time(s.starts_at)}${s.ends_at ? ` – ${time(s.ends_at)}` : ""}`}</strong>{durationLabel(s) && <small>{durationLabel(s)}</small>}</div>
-              </li>
+              <li key={s.id}><strong>{factDate(s.starts_at)}</strong><span>{s.time_tbd ? "Time to be confirmed" : `${time(s.starts_at)}${s.ends_at ? ` – ${time(s.ends_at)}` : ""}`}</span></li>
             ))}
           </ul>
-        ) : <p>The next date will be announced soon.</p>}
-        {event.schedule_note && <p style={{ marginTop: 14, fontSize: 12 }}>{event.schedule_note}</p>}
+        ) : <p className="bk-note">The itinerary will be shared when the next date is announced.</p>}
+        {event.schedule_note && <p className="bk-hint" style={{ marginTop: 14 }}>{event.schedule_note}</p>}
       </>
     ),
   });
-  if (event.things_to_bring.length) blocks.push({ id: "event-bring", kicker: "Things to bring", title: "Come prepared", node: <ul className="evd-bring-list">{event.things_to_bring.map((t, i) => <li key={i}>{t}</li>)}</ul> });
-  if (event.inclusions.length) blocks.push({ id: "event-includes", kicker: "What's included", title: "Your registration includes", node: <ul className="evd-plain-list">{event.inclusions.map((t, i) => <li key={i}>{t}</li>)}</ul> });
-  if (event.exclusions.length) blocks.push({ id: "event-excludes", kicker: "What's not included", title: "Additional expenses", node: <ul className="evd-plain-list">{event.exclusions.map((t, i) => <li key={i}>{t}</li>)}</ul> });
-  if (event.rules.length) blocks.push({ id: "event-rules", kicker: "Rules & guidelines", title: "Let's keep it fun and fair", node: <ul className="evd-plain-list">{event.rules.map((t, i) => <li key={i}>{t}</li>)}</ul> });
+  if (event.things_to_bring.length) sections.push({ id: "event-bring", label: "Things to bring", title: "Things to bring", node: list(event.things_to_bring) });
+  if (event.inclusions.length) sections.push({ id: "event-includes", label: "Includes", title: "What's included", node: list(event.inclusions) });
+  if (event.exclusions.length) sections.push({ id: "event-excludes", label: "Excludes", title: "What's not included", node: list(event.exclusions) });
+  if (event.rules.length) sections.push({ id: "event-rules", label: "Rules", title: "Rules", node: <ul className="bk-list bk-rules">{event.rules.map((t, i) => <li key={i}>{t}</li>)}</ul> });
   if (event.faqs.length) {
-    blocks.push({
-      id: "event-faq", kicker: "Frequently asked questions", title: "Good to know", className: "evd-faq",
-      node: event.faqs.map((f, i) => <details key={i}><summary>{f.question}</summary><p>{f.answer}</p></details>),
+    sections.push({
+      id: "event-faq", label: "FAQs", title: "FAQs",
+      node: event.faqs.map((f, i) => <details key={i} className="bk-more"><summary>{f.question}</summary><p className="bk-note" style={{ margin: "0 0 8px" }}>{f.answer}</p></details>),
     });
   }
 
   return (
-    <div className="evd">
-      {(event.is_live || event.is_featured) && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(eventJsonLd(event)) }} />}
-      <div className="evd-container">
-        <section className="evd-hero">
-          <div className="evd-eyebrow">{isEvent ? "Community event" : "Plan"}</div>
-          <h1>{event.title}</h1>
-          <div className="evd-pills">
-            {event.is_featured && <span className="evd-pill hot">HOT EVENT</span>}
-            {event.category && <span className="evd-pill">{event.category}</span>}
-            {venue && <span className="evd-pill">{venue}</span>}
-          </div>
-        </section>
+    <div className="wrap">
+      {isEvent && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(eventJsonLd(event)) }} />}
+      <div className="eyebrow">{isEvent ? "Event" : "Plan"}</div>
+      <h1 className="bk-title">{event.title}</h1>
+      <div className="bk-chips">
+        {event.is_featured && <span className="bk-chip bk-chip-hot">Hot event</span>}
+        {event.category && <span className="bk-chip">{event.category}</span>}
+        {venue && <span className="bk-chip">{venue}</span>}
+      </div>
 
-        <div className="evd-hero-grid">
-          <div className="evd-main-column" id="event-details">
-            {event.cover_url && <EventHeroImage src={event.cover_url} alt={`${event.title} cover`} />}
-            {event.image_caption && <div className="evd-image-caption">{event.image_caption}</div>}
+      <nav className="bk-section-tabs" aria-label="Event details">
+        {sections.map((section) => <a key={section.id} href={`#${section.id}`}>{section.label}</a>)}
+      </nav>
 
-            <div className="evd-quick-facts" aria-label="Event information">
-              {facts.map((f) => (
-                <div className="evd-fact" key={f.label}><div className="evd-fact-label">{f.label}</div><div className="evd-fact-value">{f.value}</div></div>
-              ))}
-            </div>
-
-            {blocks.map((b, i) => (
-              <Section key={b.id} id={b.id} kicker={`${String(i + 1).padStart(2, "0")} / ${b.kicker}`} title={b.title} className={b.className}>
-                {b.node}
-              </Section>
-            ))}
-          </div>
-
-          {event.is_live ? (
-            <EventBookingPanel
-              slug={event.slug}
-              title={event.title}
-              price={event.price}
-              schedules={event.schedules}
-              whatsappNumber={event.booking_whatsapp_number || ""}
-              venue={venue}
-              registrationType={event.registration_type}
-              maxPerBooking={event.max_participants_per_booking}
-              holdHours={event.reservation_hold_hours}
-            />
-          ) : (
-            <EventEnquiryPanel slug={event.slug} title={event.title} price={event.price} schedules={event.schedules} whatsappNumber={event.booking_whatsapp_number || ""} venue={venue} />
-          )}
+      <div className="bk-detail">
+        <div className="bk-detail-content">
+          {sections.map((section) => (
+            <section key={section.id} className="bk-card bk-detail-section" id={section.id} aria-labelledby={`${section.id}-title`}>
+              <h2 id={`${section.id}-title`}>{section.title}</h2>
+              {section.node}
+            </section>
+          ))}
         </div>
+
+        {event.is_live ? (
+          <EventBookingPanel
+            slug={event.slug}
+            title={event.title}
+            price={event.price}
+            schedules={event.schedules}
+            whatsappNumber={event.booking_whatsapp_number || ""}
+            venue={venue}
+            registrationType={event.registration_type}
+            maxPerBooking={event.max_participants_per_booking}
+            holdHours={event.reservation_hold_hours}
+          />
+        ) : (
+          <EventEnquiryPanel slug={event.slug} title={event.title} price={event.price} schedules={event.schedules} whatsappNumber={event.booking_whatsapp_number || ""} venue={venue} />
+        )}
       </div>
       <MobileBookBar
         price={event.price !== null ? money(event.price) : "Ask for price"}

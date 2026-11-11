@@ -12,7 +12,7 @@ export function EventHeroImage({ src, alt }: { src: string; alt: string }) {
   return (
     <img
       ref={ref}
-      className={`evd-hero-image${portrait ? " is-poster" : ""}`}
+      className={`bk-hero-img${portrait ? " bk-hero-poster" : ""}`}
       src={src}
       alt={alt}
       onLoad={(e) => check(e.currentTarget)}

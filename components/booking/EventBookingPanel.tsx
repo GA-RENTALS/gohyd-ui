@@ -38,8 +38,8 @@ function BookingResult({ booking, onReset }: { booking: EventBooking; onReset?: 
   const wa = whatsAppLink(booking.booking_whatsapp_number, confirmText);
   return (
     <div role="status">
-      <div className={`evd-status evd-status-${booking.status.toLowerCase()}`}>{booking.status_label}</div>
-      <dl className="evd-booking-facts">
+      <div className={`bk-status bk-status-${booking.status.toLowerCase()}`}>{booking.status_label}</div>
+      <dl className="bk-booking-facts">
         <dt>Booking reference</dt><dd><strong>{booking.reference}</strong></dd>
         <dt>Date</dt><dd>{longDate(booking.starts_at)}{booking.time_tbd ? "" : ` · ${time(booking.starts_at)}`}</dd>
         <dt>Participants</dt><dd>{booking.participant_count}</dd>
@@ -48,12 +48,12 @@ function BookingResult({ booking, onReset }: { booking: EventBooking; onReset?: 
           <><dt>Held until</dt><dd>{longDate(booking.reserved_until)} · {time(booking.reserved_until)}</dd></>
         )}
       </dl>
-      <p className="evd-booking-note">{STATUS_NOTE[booking.status]}</p>
+      <p className="bk-hint">{STATUS_NOTE[booking.status]}</p>
       {wa && booking.status === "PENDING" && (
-        <a className="evd-btn evd-btn-whatsapp" href={wa} target="_blank" rel="noreferrer">Confirm on WhatsApp</a>
+        <a className="btn event-whatsapp" href={wa} target="_blank" rel="noreferrer">Confirm on WhatsApp</a>
       )}
-      <p className="evd-booking-note">Save your reference to check the status later with the same mobile number.</p>
-      {onReset && <button type="button" className="evd-linkbtn" onClick={onReset}>Make another booking</button>}
+      <p className="bk-hint">Save your reference to check the status later with the same mobile number.</p>
+      {onReset && <button type="button" className="bk-linkbtn" onClick={onReset}>Make another booking</button>}
     </div>
   );
 }
@@ -74,20 +74,20 @@ function StatusLookup() {
     finally { setBusy(false); }
   }
 
-  if (!open) return <button type="button" className="evd-linkbtn" onClick={() => setOpen(true)}>Already booked? Check your booking status</button>;
+  if (!open) return <button type="button" className="bk-linkbtn" onClick={() => setOpen(true)}>Already booked? Check your booking status</button>;
   return (
-    <form className="evd-lookup" onSubmit={lookUp}>
+    <form className="bk-lookup" onSubmit={lookUp}>
       <h3>Check booking status</h3>
-      <div className="evd-field">
+      <div className="bk-field">
         <label htmlFor="lookup-ref">Booking reference</label>
         <input id="lookup-ref" placeholder="GHE-XXXXXX" value={reference} onChange={(e) => setReference(e.target.value)} required maxLength={16} />
       </div>
-      <div className="evd-field">
+      <div className="bk-field">
         <label htmlFor="lookup-phone">Mobile number used to book</label>
         <input id="lookup-phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required maxLength={20} />
       </div>
-      {error && <p className="evd-error" role="alert">{error}</p>}
-      <button type="submit" className="evd-btn evd-btn-ghost" disabled={busy}>{busy ? "Checking…" : "Check status"}</button>
+      {error && <p className="bk-error" role="alert">{error}</p>}
+      <button type="submit" className="btn btn-ghost" disabled={busy}>{busy ? "Checking…" : "Check status"}</button>
       {booking && <div style={{ marginTop: 16 }}><BookingResult booking={booking} /></div>}
     </form>
   );
@@ -132,7 +132,6 @@ export function EventBookingPanel({
   const participants = Math.min(Math.max(count, minCount), maxCount);
   const unit = price === null ? null : Number(price);
   const total = unit === null ? null : unit * participants;
-  const takenPct = capacity && seatsLeft !== null ? Math.min(100, Math.round(((capacity - seatsLeft) / capacity) * 100)) : 0;
 
   const registerText = [
     `Hello GoHyderabad, I would like to register for ${title}${selected ? ` on ${fullDate(selected.starts_at)}` : ""}.`,
@@ -164,7 +163,7 @@ export function EventBookingPanel({
   }
 
   return (
-    <aside className="evd-booking" id="book">
+    <div className="bk-card bk-sticky" id="book">
       {booking ? (
         <>
           <h2>Booking request received</h2>
@@ -172,33 +171,29 @@ export function EventBookingPanel({
         </>
       ) : (
         <>
-          <h2>Reserve your spot</h2>
-          <p className="evd-booking-intro">Register yourself or bring your friends along. Our team will confirm availability.</p>
-          <div className="evd-price-line"><span>Entry fee per person</span><span className="evd-price">{price !== null ? money(price) : "TBC"}</span></div>
+          <h2>Book your slot</h2>
+          <p className="bk-note">Register yourself or bring your friends along. Our team will confirm availability.</p>
+          <div className="bk-total"><span>Entry fee per person</span><strong>{price !== null ? money(price) : "TBC"}</strong></div>
 
           {capacity !== null && (
-            <>
-              <div className="evd-capacity">
-                <span>Event availability</span>
-                <strong>{seatsLeft === null ? `Capacity: ${capacity} total` : soldOut ? "Fully booked" : `${seatsLeft} of ${capacity} slots left`}</strong>
-              </div>
-              <div className="evd-capacity-track" aria-hidden="true"><div className="evd-capacity-fill" style={{ width: `${takenPct}%` }} /></div>
-            </>
+            <p className={`bk-slots${soldOut ? " is-full" : seatsLeft !== null && seatsLeft <= 5 ? " is-low" : ""}`}>
+              {seatsLeft === null ? `Capacity: ${capacity} total` : soldOut ? "Fully booked" : `${seatsLeft} of ${capacity} slots left`}
+            </p>
           )}
 
           {!schedules.length ? (
             <>
-              <p className="evd-booking-note">There are no open dates for this event right now.</p>
-              {waRegister && <a className="evd-btn evd-btn-whatsapp" href={waRegister} target="_blank" rel="noreferrer">Ask on WhatsApp</a>}
+              <p className="bk-hint">There are no open dates for this event right now.</p>
+              {waRegister && <a className="btn event-whatsapp" href={waRegister} target="_blank" rel="noreferrer">Ask on WhatsApp</a>}
             </>
           ) : soldOut || groupBlocked ? (
             <>
-              <p className="evd-booking-note">All slots for this date are taken or on hold. Unconfirmed holds are released after {holdHours} hours, so check back or ask the team about a waiting list.</p>
-              {waRegister && <a className="evd-btn evd-btn-whatsapp" href={waRegister} target="_blank" rel="noreferrer">Join the waiting list on WhatsApp</a>}
+              <p className="bk-hint">All slots for this date are taken or on hold. Unconfirmed holds are released after {holdHours} hours, so check back or ask the team about a waiting list.</p>
+              {waRegister && <a className="btn event-whatsapp" href={waRegister} target="_blank" rel="noreferrer">Join the waiting list on WhatsApp</a>}
             </>
           ) : (
             <form onSubmit={submit}>
-              <div className="evd-field">
+              <div className="bk-field">
                 <label htmlFor="event-date">Event date</label>
                 {schedules.length === 1
                   ? <input id="event-date" value={scheduleLabel(schedules[0])} readOnly aria-readonly="true" />
@@ -208,47 +203,47 @@ export function EventBookingPanel({
                     </select>
                   )}
               </div>
-              <div className="evd-field">
+              <div className="bk-field">
                 <label htmlFor="participants">Number of participants</label>
                 <input id="participants" type="number" inputMode="numeric" min={minCount} max={maxCount} value={participants}
                   readOnly={maxCount === minCount}
                   onChange={(e) => setCount(Math.max(minCount, Math.min(maxCount, Number(e.target.value) || minCount)))} required />
               </div>
-              <p className="evd-hint">
+              <p className="bk-hint">
                 {registrationType === "INDIVIDUAL"
                   ? "Individual registrations only for this event."
                   : `${capacity !== null ? `Maximum total event capacity is ${capacity}. ` : ""}Group requests are subject to remaining slots${seatsLeft !== null ? ` (up to ${maxCount} now)` : ""}.`}
               </p>
-              <div className="evd-field">
+              <div className="bk-field">
                 <label htmlFor="name">{participants > 1 ? "Primary participant name" : "Your name"}</label>
                 <input id="name" type="text" autoComplete="name" maxLength={150} placeholder="Enter your full name" value={name} onChange={(e) => setName(e.target.value)} required />
               </div>
-              <div className="evd-field">
+              <div className="bk-field">
                 <label htmlFor="phone">Mobile number</label>
                 <input id="phone" type="tel" autoComplete="tel" inputMode="tel" maxLength={20} placeholder="Enter your mobile number" value={phone} onChange={(e) => setPhone(e.target.value)} required />
               </div>
-              <div className="evd-field">
-                <label htmlFor="email">Email address <span className="evd-optional">(optional)</span></label>
+              <div className="bk-field">
+                <label htmlFor="email">Email address <span className="bk-label-optional">(optional)</span></label>
                 <input id="email" type="email" autoComplete="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} />
               </div>
-              <div className="evd-field">
-                <label htmlFor="notes">Anything else? <span className="evd-optional">Optional</span></label>
+              <div className="bk-field">
+                <label htmlFor="notes">Anything else? <span className="bk-label-optional">Optional</span></label>
                 <textarea id="notes" maxLength={1000} placeholder="Add a note for the event team" value={note} onChange={(e) => setNote(e.target.value)} />
               </div>
-              <div className="evd-total"><span>Estimated total{participants > 1 && unit !== null ? ` (${participants} × ${money(unit)})` : ""}</span><strong>{total !== null ? money(total) : "TBC"}</strong></div>
-              <label className="evd-check">
+              <div className="bk-total"><span>Estimated total{participants > 1 && unit !== null ? ` (${participants} × ${money(unit)})` : ""}</span><strong>{total !== null ? money(total) : "TBC"}</strong></div>
+              <label className="bk-check">
                 <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} required />
                 <span>GoHyderabad may contact me about this registration request. I understand that submitting this form does not confirm my booking.</span>
               </label>
-              {error && <p className="evd-error" role="alert">{error}</p>}
-              <button className="evd-btn evd-btn-primary" type="submit" disabled={busy}>{busy ? "Sending…" : "Request a booking"}</button>
-              {waRegister && <a className="evd-btn evd-btn-whatsapp" href={waRegister} target="_blank" rel="noreferrer">Register on WhatsApp</a>}
-              <p className="evd-booking-note">This submits a registration request and holds your slots for up to {holdHours} hours. Your slot is confirmed after the event team verifies availability and sends confirmation. No payment is collected online.</p>
+              {error && <p className="bk-error" role="alert">{error}</p>}
+              <button className="btn" type="submit" disabled={busy}>{busy ? "Sending…" : "Request a booking"}</button>
+              {waRegister && <a className="btn event-whatsapp" href={waRegister} target="_blank" rel="noreferrer">Register on WhatsApp</a>}
+              <p className="bk-hint">This submits a registration request and holds your slots for up to {holdHours} hours. Your slot is confirmed after the event team verifies availability and sends confirmation. No payment is collected online.</p>
             </form>
           )}
         </>
       )}
       <StatusLookup />
-    </aside>
+    </div>
   );
 }
