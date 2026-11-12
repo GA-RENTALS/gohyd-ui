@@ -1,34 +1,63 @@
 import type { Module } from "./api";
 
-/** Sidebar groups: ~7 short items like the Board UI reference; detail navigation lives in the page header. */
-export const GROUPS = [
-  { key: "home", label: "Home", icon: "home", modules: ["dashboard"] },
-  { key: "trips", label: "Trips", icon: "map", modules: ["trips", "destinations"] },
-  { key: "events", label: "Events", icon: "calendar", modules: ["events"] },
-  { key: "bookings", label: "Bookings", icon: "ticket", modules: ["bookings", "checkout", "participants"] },
-  { key: "finance", label: "Finance", icon: "landmark", modules: ["payments", "finance"] },
-  { key: "customers", label: "Customers", icon: "users", modules: ["customers", "crm", "memberships"] },
-  { key: "operations", label: "Operations", icon: "truck", modules: ["vendors", "logistics"] },
-  { key: "marketing", label: "Marketing", icon: "megaphone", modules: ["marketing", "analytics", "cms", "notifications"] },
-  { key: "settings", label: "Settings", icon: "settings", modules: ["permissions", "audit", "system"], footer: true },
-] as const;
+/**
+ * Sidebar, grouped the way the teams work. Each item needs view access to one table; items a person can't open are hidden.
+ * `badge` names a number from /admin/counts/ (work waiting for someone).
+ */
+type Item = { key: string; label: string; icon: string; href: string; needs?: [module: string, resource: string]; badge?: string; match?: RegExp };
+export const SECTIONS: { title: string | null; items: Item[] }[] = [
+  { title: null, items: [{ key: "home", label: "Dashboard", icon: "home", href: "/admin", match: /^\/admin\/?$/ }] },
+  {
+    title: "Sell", items: [
+      { key: "trips", label: "Trips", icon: "map", href: "/admin/trips", needs: ["trips", "trips"], match: /^\/admin\/(trips(\/trips)?$|overview\/trip)/ },
+      { key: "events", label: "Events", icon: "calendar", href: "/admin/events", needs: ["events", "events"], match: /^\/admin\/(events(\/events)?$|overview\/event)/ },
+      { key: "bookings", label: "Bookings", icon: "ticket", href: "/admin/bookings", needs: ["bookings", "bookings"], badge: "event_bookings", match: /^\/admin\/bookings\/?$/ },
+      { key: "payments", label: "Payments", icon: "wallet", href: "/admin/payments", needs: ["payments", "payments"], badge: "payments", match: /^\/admin\/payments\/?$/ },
+    ],
+  },
+  {
+    title: "People", items: [
+      { key: "customers", label: "Customers", icon: "users", href: "/admin/customers", needs: ["customers", "customers"], match: /^\/admin\/(customers\/?$|customer\/)/ },
+      { key: "enquiries", label: "Enquiries", icon: "chat", href: "/admin/crm/enquiries", needs: ["crm", "enquiries"], badge: "enquiries" },
+    ],
+  },
+  {
+    title: "Website", items: [
+      { key: "destinations", label: "Destinations", icon: "pin", href: "/admin/destinations/destinations", needs: ["destinations", "destinations"] },
+      { key: "blogs", label: "Blog posts", icon: "article", href: "/admin/cms/blogs", needs: ["cms", "blogs"] },
+    ],
+  },
+  {
+    title: "Settings", items: [
+      { key: "settings", label: "Business settings", icon: "settings", href: "/admin/system/settings", needs: ["system", "settings"] },
+      { key: "all", label: "All data", icon: "grid", href: "/admin/all", match: /^\/admin\/all/ },
+    ],
+  },
+];
 
-export type Group = { key: string; label: string; icon: string; footer?: boolean; modules: Module[] };
+export type NavItem = Item;
+export type NavSection = { title: string | null; items: NavItem[] };
 
-export function buildGroups(modules: Module[]): Group[] {
-  const byKey = new Map(modules.map((m) => [m.key, m]));
-  const used = new Set<string>();
-  const out: Group[] = GROUPS.map((g) => {
-    const mods = g.modules.map((k) => byKey.get(k)).filter((m): m is Module => !!m && (m.key === "dashboard" || m.resources.length > 0));
-    mods.forEach((m) => used.add(m.key));
-    return { key: g.key, label: g.label, icon: g.icon, footer: "footer" in g, modules: mods };
-  });
-  // any module the backend adds later still gets a home under Settings
-  const stray = modules.filter((m) => !used.has(m.key) && m.resources.length);
-  const settings = out.find((g) => g.key === "settings")!;
-  settings.modules.push(...stray);
-  return out.filter((g) => g.modules.length);
+const canView = (modules: Module[], module: string, resource: string) =>
+  !!modules.find((m) => m.key === module)?.resources.some((r) => r.key === resource && r.actions.view !== false);
+
+export function buildNav(modules: Module[]): NavSection[] {
+  return SECTIONS.map((s) => ({ ...s, items: s.items.filter((i) => !i.needs || canView(modules, ...i.needs)) })).filter((s) => s.items.length);
 }
 
-export const groupHref = (g: Group) => (g.key === "home" ? "/admin" : `/admin/${g.modules[0].key}/${g.modules[0].resources[0].key}`);
-export const groupOf = (groups: Group[], moduleKey: string) => groups.find((g) => g.modules.some((m) => m.key === moduleKey));
+export const CORE_RESOURCES: Set<string> = new Set(SECTIONS.flatMap((s) => s.items.flatMap((i) => (i.needs ? [i.needs[1]] : []))));
+
+/** Which item is highlighted: its own pattern, otherwise its href, otherwise "All data" for any other table. */
+export function activeNav(pathname: string): string {
+  const items = SECTIONS.flatMap((s) => s.items);
+  const hit = items.find((i) => (i.match ? i.match.test(pathname) : pathname === i.href || pathname.startsWith(`${i.href}/`)));
+  if (hit) return hit.key;
+  return pathname.split("/").filter(Boolean).length >= 3 ? "all" : "home";
+}
+
+export function overviewHref(resourceKey: string, id: string): string | null {
+  if (resourceKey === "trips") return `/admin/overview/trip/${id}`;
+  if (resourceKey === "events") return `/admin/overview/event/${id}`;
+  if (resourceKey === "customers") return `/admin/customer/${id}`;
+  return null;
+}
