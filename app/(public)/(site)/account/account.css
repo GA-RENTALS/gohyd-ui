@@ -20,7 +20,7 @@
 /* page */
 .ac-content { min-width: 0; padding: 22px clamp(18px, 2.4vw, 38px) 64px; }
 .ac-hero { position: relative; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; min-height: 210px; margin-bottom: 20px; padding: 28px 30px; overflow: hidden; border-radius: 16px; color: #fff;
-  background: linear-gradient(90deg, rgba(18,19,14,.78) 0%, rgba(18,19,14,.35) 55%, rgba(18,19,14,.6) 100%), url("/assets/img/hero-night-1200.jpg") center 40% / cover; }
+  background: linear-gradient(90deg, rgba(18,19,14,.78) 0%, rgba(18,19,14,.35) 55%, rgba(18,19,14,.6) 100%), url("/assets/img/w/hero-night-1200.webp") center 40% / cover; }
 .ac-hero.is-short { min-height: 150px; }
 .ac-hero h1 { margin: 0 0 10px; font: 500 clamp(36px, 4vw, 56px)/1 var(--display); letter-spacing: .01em; text-transform: uppercase; }
 .ac-hero p { margin: 0; max-width: 46ch; font-size: 16px; line-height: 1.5; color: rgba(255,255,255,.92); }

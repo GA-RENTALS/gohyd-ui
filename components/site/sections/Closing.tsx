@@ -6,7 +6,7 @@ export async function Closing() {
   return (
     <section className="closing" aria-labelledby="closing-title">
       <div className="ph" data-label="Golconda Fort ramparts">
-        <img src="assets/img/golconda-fort-1200.jpg" srcSet="assets/img/golconda-fort-640.jpg 640w, assets/img/golconda-fort-1200.jpg 1200w, assets/img/golconda-fort-1920.jpg 1920w" sizes="100vw" width="3840" height="2399" alt="The stone ramparts and ruined halls of Golconda Fort stretching across a green lawn under a blue sky" loading="lazy" decoding="async" />
+        <img src="assets/img/w/golconda-fort-1200.webp" srcSet="assets/img/w/golconda-fort-480.webp 480w, assets/img/w/golconda-fort-800.webp 800w, assets/img/w/golconda-fort-1200.webp 1200w, assets/img/w/golconda-fort-1600.webp 1600w" sizes="100vw" width="3840" height="2399" alt="The stone ramparts and ruined halls of Golconda Fort stretching across a green lawn under a blue sky" loading="lazy" decoding="async" />
       </div>
       <div className="wrap" data-reveal="">
         <div className="eyebrow">{t("Your city. Your people. Your weekend.")}</div>

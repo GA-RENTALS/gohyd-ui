@@ -3,6 +3,7 @@ import { translate } from "@/lib/i18n";
 
 const tx = (english: string) => translate(clientLang(), english);
 import { BACKEND_URL as API_BASE_URL } from "@/lib/config";
+import { applyResized } from "@/lib/media";
 import { eventImage, fallbackFeaturedEvent, upcomingEvents, type PublicEvent } from "@/components/site/upcomingEvents";
 
 type PublicTrip = {
@@ -101,6 +102,7 @@ function isDestination(value: unknown): value is PublicDestination {
 async function fetchAll<T>(path: string, isItem: (value: unknown) => value is T): Promise<T[]> {
   const base = new URL(API_BASE_URL);
   let url = new URL(path, base);
+  if (!url.searchParams.has("page_size")) url.searchParams.set("page_size", "100");   // one request instead of one per 12 items
   const visited = new Set<string>();
   const items: T[] = [];
 
@@ -163,7 +165,7 @@ function renderTripCard(trip: PublicTrip, upcoming: boolean): HTMLElement {
   photo.dataset.label = trip.title;
   if (trip.cover_url) {
     const image = element("img");
-    image.src = trip.cover_url;
+    applyResized(image, trip.cover_url, "(min-width:900px) 30vw, 90vw");
     image.alt = trip.title;
     image.loading = "lazy";
     image.decoding = "async";
@@ -218,7 +220,7 @@ function renderEventCard(event: PublicEvent): HTMLElement {
   const cover = eventImage(event);
   if (cover) {
     const image = element("img");
-    image.src = cover;
+    applyResized(image, cover, "(min-width:900px) 30vw, 90vw");
     image.alt = event.title;
     markPortraitPoster(image, photo);
     image.loading = "lazy";
@@ -360,7 +362,7 @@ function renderDestinations(destinations: PublicDestination[]): void {
     thumbnail.dataset.label = destination.name;
     if (destination.cover_url) {
       const image = element("img");
-      image.src = destination.cover_url;
+      applyResized(image, destination.cover_url, "96px", [384]);
       image.alt = destination.name;
       image.loading = "lazy";
       image.decoding = "async";

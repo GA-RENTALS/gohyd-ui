@@ -23,10 +23,6 @@ export const metadata: Metadata = pageMetadata({ path: "/" });
 export default function Home() {
   return (
     <>
-      <div className="preloader" aria-hidden="true">
-        <img src="/assets/logo.png" alt="" width={84} height={84} />
-        <span className="bar" />
-      </div>
       <SiteSprite />
       <SiteHeader />
       <main id="main">

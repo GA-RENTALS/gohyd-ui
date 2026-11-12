@@ -16,9 +16,9 @@
       --text-soft-dark: #5a5a4d;
       --line: rgba(243,238,226,.16);
       --line-dark: rgba(26,27,21,.18);
-      --sans: "Manrope", "Avenir Next", Avenir, system-ui, sans-serif;
-      --display: "Barlow Condensed", Impact, "Arial Narrow", sans-serif;
-      --serif: "Fraunces", Georgia, serif;
+      --sans: var(--font-sans), "Manrope", "Avenir Next", Avenir, system-ui, sans-serif;
+      --display: var(--font-display), "Barlow Condensed", Impact, "Arial Narrow", sans-serif;
+      --serif: var(--font-serif), "Fraunces", Georgia, serif;
       --pad: clamp(20px, 5vw, 80px);
       --max: 1360px;
       --ease: cubic-bezier(.22, .72, .18, 1);

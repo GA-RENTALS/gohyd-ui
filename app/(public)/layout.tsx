@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Barlow_Condensed, Fraunces, Manrope } from "next/font/google";
 import "lenis/dist/lenis.css";
 import "./globals.css";
 import "./animations.css";
@@ -46,6 +47,12 @@ export const viewport: Viewport = {
   themeColor: "#12130e",
 };
 
+// Fonts are self-hosted by Next (downloaded at build time, served from our own domain, preloaded): no render-blocking
+// request to Google Fonts and no cross-origin font errors.
+const sans = Manrope({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-sans", display: "swap" });
+const display = Barlow_Condensed({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-display", display: "swap" });
+const serif = Fraunces({ subsets: ["latin"], style: ["italic"], axes: ["opsz"], variable: "--font-serif", display: "swap" });
+
 const siteJsonLd = [
   {
     "@context": "https://schema.org",
@@ -75,23 +82,9 @@ const siteJsonLd = [
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const lang = await serverLang();
   return (
-    <html lang={LANGS.find((l) => l.code === lang)?.html ?? "en-IN"} suppressHydrationWarning>
+    <html lang={LANGS.find((l) => l.code === lang)?.html ?? "en-IN"} className={`${sans.variable} ${display.variable} ${serif.variable}`} suppressHydrationWarning>
       <head>
-        <link
-          rel="preload"
-          as="image"
-          href="/assets/img/hero-night-1920.jpg"
-          imageSrcSet="/assets/img/hero-night-640.jpg 640w, /assets/img/hero-night-1200.jpg 1200w, /assets/img/hero-night-1920.jpg 1920w"
-          imageSizes="100vw"
-          fetchPriority="high"
-        />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap"
-          rel="stylesheet"
-        />
-        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('motion-ready');setTimeout(function(){document.documentElement.classList.add('motion-go')},5000)" }} />
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('motion-ready','motion-go')" }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(siteJsonLd) }} />
       </head>
       <body><LangProvider lang={lang}>{children}<VisitorTracking /></LangProvider></body>

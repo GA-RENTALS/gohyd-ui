@@ -1,0 +1,307 @@
+{
+  "ananthagiri": {
+    "width": 1920,
+    "height": 1272,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  },
+  "ananthagiri-trail": {
+    "width": 1920,
+    "height": 1440,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  },
+  "biryani": {
+    "width": 1920,
+    "height": 1275,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  },
+  "box-cricket-poster": {
+    "width": 1122,
+    "height": 1402,
+    "widths": [
+      480,
+      800,
+      1122
+    ]
+  },
+  "box-cricket-upi-qr": {
+    "width": 831,
+    "height": 1280,
+    "widths": [
+      480,
+      800,
+      831
+    ]
+  },
+  "cable-bridge": {
+    "width": 1920,
+    "height": 1280,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  },
+  "chai-charminar": {
+    "width": 1920,
+    "height": 2560,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  },
+  "chai-niloufer": {
+    "width": 1920,
+    "height": 1440,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  },
+  "charminar-market": {
+    "width": 1200,
+    "height": 800,
+    "widths": [
+      480,
+      800,
+      1200
+    ]
+  },
+  "charminar-sunset": {
+    "width": 1920,
+    "height": 1440,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  },
+  "chowmahalla": {
+    "width": 1920,
+    "height": 1440,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  },
+  "cricket-morning": {
+    "width": 1920,
+    "height": 1368,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  },
+  "cricket-street": {
+    "width": 1920,
+    "height": 1440,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  },
+  "durgam-aerial": {
+    "width": 1920,
+    "height": 1280,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  },
+  "golconda-city": {
+    "width": 1920,
+    "height": 1280,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  },
+  "golconda-fort": {
+    "width": 1920,
+    "height": 1200,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  },
+  "hero-night": {
+    "width": 1920,
+    "height": 1279,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  },
+  "hitec-night": {
+    "width": 1920,
+    "height": 864,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  },
+  "hussain-sagar": {
+    "width": 1920,
+    "height": 1285,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  },
+  "laad-bangles": {
+    "width": 1200,
+    "height": 946,
+    "widths": [
+      480,
+      800,
+      1200
+    ]
+  },
+  "laad-bazaar": {
+    "width": 1920,
+    "height": 1440,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  },
+  "mecca-masjid": {
+    "width": 1920,
+    "height": 1440,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  },
+  "paigah-tombs": {
+    "width": 1920,
+    "height": 1280,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  },
+  "qutb-shahi": {
+    "width": 1920,
+    "height": 1280,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  },
+  "ride-aerial": {
+    "width": 1920,
+    "height": 1012,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  },
+  "ride-himalaya": {
+    "width": 1920,
+    "height": 1207,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  },
+  "riders-meet": {
+    "width": 1200,
+    "height": 900,
+    "widths": [
+      480,
+      800,
+      1200
+    ]
+  },
+  "shilparamam-artist": {
+    "width": 1920,
+    "height": 1253,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  },
+  "shilparamam-vendor": {
+    "width": 1920,
+    "height": 1080,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  },
+  "street-food": {
+    "width": 1920,
+    "height": 1440,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  },
+  "tank-bund": {
+    "width": 1920,
+    "height": 1280,
+    "widths": [
+      480,
+      800,
+      1200,
+      1600
+    ]
+  }
+}

@@ -11,7 +11,7 @@ export async function SiteFooter() {
         <div className="foot-grid">
           <div>
             <a className="brand" href="#home" aria-label="GoHyderabad home">
-              <img src="assets/logo.png" width="160" height="160" alt="" />
+              <img src="assets/logo-96.webp" width="96" height="96" alt="" />
               <span>
                 <b>GoHyderabad</b>
                 <small>{t("Meet · Explore · Experience")}</small>
