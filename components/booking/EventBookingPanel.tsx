@@ -287,8 +287,8 @@ export function EventBookingPanel({
 
           {!schedules.length ? (
             <>
-              <p className="bk-hint">There are no open dates for this event right now.</p>
-              {waRegister && <a className="btn event-whatsapp" href={waRegister} target="_blank" rel="noreferrer">Ask on WhatsApp</a>}
+              <p className="bk-hint">Upcoming — dates will be announced soon. Message us to register your interest.</p>
+              {waRegister && <a className="btn event-whatsapp" href={waRegister} target="_blank" rel="noreferrer">Register interest on WhatsApp</a>}
             </>
           ) : soldOut || groupBlocked ? (
             <>

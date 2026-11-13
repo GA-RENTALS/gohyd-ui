@@ -5,6 +5,9 @@ const tx = (english: string) => translate(clientLang(), english);
 import { BACKEND_URL as API_BASE_URL } from "@/lib/config";
 import { applyResized } from "@/lib/media";
 import { eventImage, fallbackFeaturedEvent, upcomingEvents, type PublicEvent } from "@/components/site/upcomingEvents";
+import { PLANS } from "@/components/site/data/plans";
+import { getPlanBySlug, planSlug } from "@/components/site/plan-slug";
+import { FEATURED_EVENT_SLUG } from "@/components/site/data/featured-event";
 
 type PublicTrip = {
   slug: string;
@@ -218,9 +221,16 @@ function renderEventCard(event: PublicEvent): HTMLElement {
   const photo = element("div", "ph");
   photo.dataset.label = event.title;
   const cover = eventImage(event);
-  if (cover) {
+  // Plan events seeded without an uploaded cover fall back to the bundled plan card photo.
+  const planPhoto = cover ? null : getPlanBySlug(event.slug)?.photo ?? null;
+  if (cover || planPhoto) {
     const image = element("img");
-    applyResized(image, cover, "(min-width:900px) 30vw, 90vw");
+    if (cover) applyResized(image, cover, "(min-width:900px) 30vw, 90vw");
+    else if (planPhoto) {
+      image.src = `/${planPhoto.src.replace(/^\//, "")}`;
+      if (planPhoto.srcSet) image.srcset = planPhoto.srcSet.replace(/(^|, )(?!\/|https?:)/g, "$1/");
+      image.sizes = "(min-width:700px) 340px, 82vw";
+    }
     image.alt = event.title;
     markPortraitPoster(image, photo);
     image.loading = "lazy";
@@ -230,7 +240,7 @@ function renderEventCard(event: PublicEvent): HTMLElement {
   }
   photo.append(element("span", "ptag", categoryLabel(category)));
   if (event.is_featured) photo.append(element("span", "badge hot-event-badge", tx("Hot event")));
-  else if (event.next_date) photo.append(element("span", "badge", tx("Upcoming")));
+  else photo.append(element("span", "badge", tx("Upcoming")));
 
   const body = element("div", "ebody");
   body.append(element("span", "ecat", event.category || categoryLabel(category)));
@@ -240,16 +250,17 @@ function renderEventCard(event: PublicEvent): HTMLElement {
   const date = event.next_date ? new Date(event.next_date) : null;
   const dateText = date && !Number.isNaN(date.getTime())
     ? `${new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", ...(event.next_time_tbd ? {} : { timeStyle: "short" }), timeZone: "Asia/Kolkata" }).format(date)}${event.next_time_tbd ? ` · ${tx("Time to be confirmed")}` : ""}`
-    : tx("Date to be announced");
+    : tx("Upcoming");
   const amount = Number(event.price);
-  const price = Number.isFinite(amount)
+  // 0 means the price is not set yet (upcoming plans).
+  const price = Number.isFinite(amount) && amount > 0
     ? new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 2 }).format(amount)
-    : tx("To be confirmed");
+    : tx("Ask for price");
   details.append(
     element("dt", undefined, tx("Date")), element("dd", undefined, dateText),
     element("dt", undefined, tx("Price")), element("dd", undefined, price),
   );
-  body.append(details, element("span", "link", tx("Book your spot")));
+  body.append(details, element("span", "link", event.next_date ? tx("Book your spot") : tx("View plan")));
   card.append(photo, body);
   return card;
 }
@@ -293,6 +304,43 @@ function renderEvents(events: PublicEvent[]): void {
       ? tx("1 upcoming event in Hyderabad")
       : tx("count.events").replace("{n}", String(visibleEvents.length || (clientLang() === "en" ? "No" : 0)));
   }
+}
+
+/** "Plan your next trip": published events with no date yet, in homepage plan order, with category chips. */
+function renderPlans(events: PublicEvent[]): void {
+  const section = document.getElementById("plans");
+  const grid = document.getElementById("plans-grid");
+  const chipBox = document.getElementById("plans-chips");
+  if (!section || !grid || !chipBox) return;
+  const order = new Map(PLANS.map((plan, i) => [plan.slug || planSlug(plan.title), i]));
+  const plans = events
+    .filter((event) => !event.next_date && event.slug !== FEATURED_EVENT_SLUG)
+    .sort((a, b) => (order.get(a.slug) ?? 999) - (order.get(b.slug) ?? 999));
+  if (!plans.length) { section.hidden = true; return; }
+
+  const cards = plans.map(renderEventCard);
+  grid.replaceChildren(...cards);
+
+  const categories = new Map<string, string>();
+  for (const event of plans) {
+    const slug = event.category_slug || "events";
+    if (!categories.has(slug)) categories.set(slug, event.category || categoryLabel(slug));
+  }
+  const chips = [["all", tx("All")] as [string, string], ...categories.entries()].map(([slug, label]) => {
+    const chip = element("button", "chip", label);
+    chip.type = "button";
+    chip.dataset.chip = slug;
+    chip.setAttribute("aria-pressed", String(slug === "all"));
+    return chip;
+  });
+  const select = (slug: string) => {
+    chips.forEach((chip) => chip.setAttribute("aria-pressed", String(chip.dataset.chip === slug)));
+    cards.forEach((card) => { card.hidden = slug !== "all" && card.dataset.cat !== slug; });
+    grid.scrollTo({ left: 0 });
+  };
+  chips.forEach((chip) => chip.addEventListener("click", () => select(chip.dataset.chip || "all")));
+  chipBox.replaceChildren(...chips);
+  section.hidden = false;
 }
 
 function renderTrips(trips: PublicTrip[]): boolean {
@@ -470,6 +518,7 @@ export async function loadPublicContent(): Promise<void> {
 
   if (results[1].status === "fulfilled") {
     renderEvents(results[1].value);
+    renderPlans(results[1].value);
   } else {
     console.error("Could not load published events from the backend.", results[1].reason);
     notices.push("Live events are unavailable right now; showing the featured event.");

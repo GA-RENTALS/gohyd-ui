@@ -196,7 +196,7 @@ export function initPage() {
       }
 
       // Events filter (chips + experience cards)
-      var chips = Array.prototype.slice.call(document.querySelectorAll(".chip"));
+      var chips = Array.prototype.slice.call(document.querySelectorAll(".chips:not(.plan-chips) .chip"));
       var cards = Array.prototype.slice.call(document.querySelectorAll(".ecard"));
       function filter(cat) {
         // Only a few upcoming events are listed; if none match the category, keep every event visible.

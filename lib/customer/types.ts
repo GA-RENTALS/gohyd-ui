@@ -42,6 +42,9 @@ export type EventRegistrationType = "INDIVIDUAL" | "GROUP" | "BOTH";
 export type EventFormatDetail = { label: string; value: string };
 export type EventDetail = {
   id: string;
+  /** Alt text and photographer / licence line of the uploaded cover (empty when none). */
+  cover_alt?: string;
+  cover_credit?: string;
   slug: string;
   title: string;
   summary: string;

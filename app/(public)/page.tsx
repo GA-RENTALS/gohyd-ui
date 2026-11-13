@@ -12,6 +12,7 @@ import { Events } from "@/components/site/sections/Events";
 import { Experiences } from "@/components/site/sections/Experiences";
 import { Explore } from "@/components/site/sections/Explore";
 import { Hero } from "@/components/site/sections/Hero";
+import { Plans } from "@/components/site/sections/Plans";
 import { How } from "@/components/site/sections/How";
 import { Stats } from "@/components/site/sections/Stats";
 import { Upcoming } from "@/components/site/sections/Upcoming";
@@ -29,6 +30,7 @@ export default function Home() {
         <Hero />
         <ArchEdge />
         <Events />
+        <Plans />
         <Stats />
         <Experiences />
         <Upcoming />
