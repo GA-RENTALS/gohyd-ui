@@ -71,6 +71,10 @@ export type EventDetail = {
   registration_type: EventRegistrationType;
   max_participants_per_booking: number | null;
   reservation_hold_hours: number;
+  /** Online cancellation closes this many hours before the start. */
+  cancellation_cutoff_hours?: number;
+  /** Refund tiers, most generous first. Empty = no refund on cancellation. */
+  refund_policy?: EventRefundTier[];
   highlights: string[];
   faqs: { question: string; answer: string }[];
   headline: string;
@@ -110,7 +114,16 @@ export type EventBooking = {
   payment: EventPayment | null;
   payment_submitted: boolean;
   payment_submitted_at: string | null;
+  cancelled_at?: string | null;
+  cancelled_by_customer?: boolean;
+  /** Only while the booking is active: whether it can be cancelled online now, and what that would refund. */
+  cancellation?: EventCancellation | null;
+  /** The refund on a cancelled, paid booking (sent back by UPI by our team). */
+  refund?: EventRefund | null;
 };
+export type EventCancellation = { allowed: boolean; until: string; refund_percent: number; refund_amount: string; paid: boolean };
+export type EventRefund = { status: "DUE" | "SENT" | "NOT_REFUNDED"; status_label: string; amount: string; upi_reference: string; recorded_at: string | null };
+export type EventRefundTier = { hours_before: number; refund_percent: number; note: string };
 export type EventPayment = { qr_url: string | null; upi_id: string; payee_name: string };
 
 export type PickupPoint = { id: string; name: string; address: string; pickup_time: string | null };

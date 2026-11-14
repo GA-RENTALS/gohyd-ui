@@ -97,6 +97,8 @@
 .ac-dl .is-late { color: #a1312a; }
 .ac-people { margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.7; }
 .ac-cancel { grid-column: 1 / -1; }
+.ac-card.is-event .ac-cancel, .ac-note { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--ac-line); }
+.ac-cancel .ac-caption { margin: 8px 0 12px; }
 .ac-cancel label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ac-muted); }
 .ac-cancel input { width: 100%; max-width: 420px; padding: 11px 12px; border: 1px solid #cfd2c4; border-radius: 8px; font: inherit; background: #fff; color: var(--ac-ink); }
 .ac-danger { padding: 0; border: 0; background: none; color: #a1312a; font: 600 14px/1 var(--sans); text-decoration: underline; cursor: pointer; text-transform: none; letter-spacing: 0; }

@@ -115,7 +115,7 @@ export function OverviewPage({ kind, id }: { kind: "trip" | "event"; id: string 
     details: "Details & translations",
     dates: `Dates (${data.schedules.length})`,
     itinerary: "Itinerary",
-    content: isTrip ? "Inclusions, pickups & policies" : "Highlights, rules & FAQs",
+    content: isTrip ? "Inclusions, pickups & policies" : "Highlights, rules, refunds & FAQs",
   };
   const visibleTabs = TABS.filter((t) => t !== "payments" || p.payments || !isTrip);
   const showsDateFilter = ["overview", "bookings", "payments", "participants"].includes(tab) && data.schedules.length > 1;
@@ -384,6 +384,9 @@ export function OverviewPage({ kind, id }: { kind: "trip" | "event"; id: string 
       {textList("event-exclusions", "Not included", "Add item")}
       {textList("event-things-to-bring", "Things to bring", "Add item")}
       {textList("event-rules", "Rules & guidelines", "Add rule")}
+      <RelatedList resource="event-refund-policies" parentField="event" parentId={data.id} title="Refund policy" addLabel="Add rule"
+        hint="Refund % when a customer cancels at least this many hours before the start. No rules = no refund. Online cancelling closes at the Cancellation cutoff in Main details."
+        primary={(r) => `${r.hours_before}+ hours before: ${Number(r.refund_basis_points) / 100}% refund`} secondary={(r) => r.note || null} sortBy={["hours_before"]} />
       <RelatedList resource="event-faqs" parentField="event" parentId={data.id} title="FAQs" addLabel="Add question"
         primary={(r) => r.question_en} secondary={(r) => r.answer_en} />
     </div>

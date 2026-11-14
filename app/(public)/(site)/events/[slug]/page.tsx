@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { EventBookingPanel } from "@/components/booking/EventBookingPanel";
 import { EventEnquiryPanel } from "@/components/booking/EventEnquiryPanel";
+import { cutoffLine, refundTierLines } from "@/lib/customer/refunds";
 import { EventHeroImage } from "@/components/booking/EventHeroImage";
 import { MobileBookBar } from "@/components/booking/MobileBookBar";
 import { getEvent } from "@/lib/customer/server";
@@ -260,6 +261,20 @@ export default async function EventPage({ params }: Props) {
   if (event.inclusions.length) sections.push({ id: "event-includes", label: t("Includes"), title: t("What's included"), node: list(event.inclusions) });
   if (event.exclusions.length) sections.push({ id: "event-excludes", label: t("Excludes"), title: t("What's not included"), node: list(event.exclusions) });
   if (event.rules.length) sections.push({ id: "event-rules", label: t("Rules"), title: t("Rules"), node: <ul className="bk-list bk-rules">{event.rules.map((t, i) => <li key={i}>{t}</li>)}</ul> });
+  if (event.is_live && event.price !== null && event.cancellation_cutoff_hours !== undefined) {
+    const paid = Number(event.price) > 0;
+    const tiers = refundTierLines(event.refund_policy ?? []);
+    sections.push({
+      id: "event-cancellation", label: t("Cancellation"), title: t("Cancellation & refunds"),
+      node: (
+        <ul className="bk-list">
+          <li>{cutoffLine(event.cancellation_cutoff_hours)}</li>
+          {paid && (tiers.length ? tiers.map((line) => <li key={line}>{line}.</li>) : <li>{t("No refund if you cancel.")}</li>)}
+          {paid && tiers.length > 0 && <li>{t("Refunds are sent back by UPI by our team, and you'll get a WhatsApp message when it's done.")}</li>}
+        </ul>
+      ),
+    });
+  }
   if (event.faqs.length) {
     sections.push({
       id: "event-faq", label: t("FAQs"), title: t("FAQs"),

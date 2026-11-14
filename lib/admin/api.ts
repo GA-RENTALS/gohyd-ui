@@ -124,14 +124,23 @@ export type RefundRow = {
   customer_id: string; title: string; parent_id: string; approved_by: string; created_at: string; updated_at: string;
 };
 /** Money at a glance on the Payments page. A figure is missing when the staff member can't see its source. */
+/** A refund owed on a cancelled, paid event booking. Staff send it by UPI, then record it here. */
+export type EventRefundRow = {
+  id: string; amount: string; status: "DUE" | "SENT" | "NOT_REFUNDED"; status_label: string; percent: number; paid: string;
+  reference: string; booking_id: string; name: string; phone: string; customer_id: string | null; title: string; parent_id: string;
+  starts_at: string; cancelled_by: "Customer" | "Staff"; reason: string; upi_reference: string; note: string;
+  recorded_by: string; recorded_at: string | null; created_at: string;
+};
+
 export type PaymentSummary = {
   received_month?: { amount: string };
   to_verify?: { count: number; amount: string };
   refunds_waiting?: { count: number; amount: string };
+  event_refunds_due?: { count: number; amount: string };
   balance_due?: { count: number; amount: string };
   as_of: string;
 };
-export type PaymentsPage = ListPage<TripPayment | BookingRow | RefundRow> & { summary: PaymentSummary };
+export type PaymentsPage = ListPage<TripPayment | BookingRow | RefundRow | EventRefundRow> & { summary: PaymentSummary };
 export type CustomerRow = { id: string; name: string; phone: string; email: string; joined: string; trip_bookings: number; event_bookings: number; spent: string; due: string; active: boolean };
 export type CustomersPage = ListPage<CustomerRow> & { summary: { total: number; new_month: number; with_due: number; blocked: number } };
 export type NoteChannel = "note" | "call" | "whatsapp" | "email" | "in_person";

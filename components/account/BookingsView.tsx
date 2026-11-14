@@ -100,7 +100,7 @@ export function BookingsView() {
       {eventBookings.length > 0 && (
         <section style={{ marginTop: 32 }}>
           <div className="ac-section-head"><h2>Your event bookings</h2></div>
-          <EventBookingsList bookings={eventBookings} />
+          <EventBookingsList bookings={eventBookings} onChanged={(b) => setEventBookings((list) => list.map((x) => (x.reference === b.reference ? b : x)))} />
         </section>
       )}
     </>

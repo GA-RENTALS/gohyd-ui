@@ -77,6 +77,8 @@ export const customerApi = {
   bookings: async () => results(await api<Booking[] | { results: Booking[] }>("/bookings/")),
   /** Event bookings made while signed in or with this account's phone number. */
   myEventBookings: () => api<EventBooking[]>("/me/event-bookings/"),
+  cancelEventBooking: (reference: string, reason: string) =>
+    api<EventBooking>(`/me/event-bookings/${encodeURIComponent(reference)}/cancel/`, { method: "POST", json: { reason } }),
   saveParticipants: (bookingId: string, people: Participant[]) =>
     api<Participant[]>(`/bookings/${bookingId}/participants/`, { method: "PUT", json: people }),
   activeWaiver: () => api<{ id: string; title: string; version: number; language: string; body: string }>("/safety-waivers/active/?lang=en", { auth: false }),
