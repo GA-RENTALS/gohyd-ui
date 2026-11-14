@@ -4,6 +4,8 @@ import "lenis/dist/lenis.css";
 import "./globals.css";
 import "./animations.css";
 import "./sections.css";
+import { GoogleAnalytics } from "@next/third-parties/google";
+
 import { OG_IMAGE, SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_TITLE, SITE_URL, SOCIAL_PROFILES, absoluteUrl, jsonLd } from "@/lib/site";
 import { LANGS } from "@/lib/lang";
 import { serverLang } from "@/lib/lang-server";
@@ -40,6 +42,8 @@ export const metadata: Metadata = {
   // verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } : undefined,
   category: "travel",
 };
+
+
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -80,6 +84,8 @@ const siteJsonLd = [
   },
 ];
 
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const lang = await serverLang();
   return (
@@ -89,6 +95,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(siteJsonLd) }} />
       </head>
       <body><LangProvider lang={lang}>{children}<VisitorTracking /></LangProvider></body>
+      {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
     </html>
   );
 }
