@@ -12,6 +12,7 @@ import { VisitorTracking } from "@/components/site/VisitorTracking";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: SITE_TITLE, template: `%s | ${SITE_NAME}` },
+  verification: { google: "Exkl0mtaKCiPYYeqJcOhdwGuPAObz5xVSf2" },
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
   keywords: [

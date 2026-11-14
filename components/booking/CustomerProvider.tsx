@@ -3,6 +3,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { customerApi, tokenStore } from "@/lib/customer/api";
 import type { Profile } from "@/lib/customer/types";
+import { ApiError } from "@/lib/api/client";
 
 type CustomerContext = {
   /** The signed-in customer, or null when signed out. */
@@ -24,23 +25,38 @@ export function useCustomer(): CustomerContext {
 export function CustomerProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [sessionError, setSessionError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
-    if (!tokenStore.get()) { setUser(null); setLoading(false); return null; }
-    try {
-      const me = await customerApi.me();
-      setUser(me);
-      return me;
-    } catch {
+  if (!tokenStore.get()) {
+    setUser(null);
+    setLoading(false);
+    return null;
+  }
+
+  try {
+    const me = await customerApi.me();
+    setUser(me);
+    return me;
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 401) {
       tokenStore.clear();
       setUser(null);
-      return null;
-    } finally {
-      setLoading(false);
     }
-  }, []);
 
-  useEffect(() => { void refresh(); }, [refresh]);
+    // Network errors, 5xx errors and other temporary failures
+    // must not automatically log out the customer.
+    throw error;
+  } finally {
+    setLoading(false);
+  }
+}, []);
+
+  useEffect(() => {
+  void refresh().catch((error) => {
+    console.error("Customer session refresh failed:", error);
+  });
+}, [refresh]);
 
   const signOut = useCallback(async () => {
     await customerApi.logout();

@@ -37,18 +37,53 @@ export function createApiClient({ baseUrl, storageKey }: { baseUrl: string; stor
 
   let refreshing: Promise<boolean> | null = null;
   async function refresh(): Promise<boolean> {
-    const t = tokenStore.get();
-    if (!t) return false;
-    refreshing ||= fetch(`${baseUrl}/auth/refresh/`, {
-      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ refresh: t.refresh }),
-    }).then(async (r) => {
-      if (!r.ok) return false;
-      const d = await r.json();
-      tokenStore.set({ access: d.access, refresh: d.refresh || t.refresh });
-      return true;
-    }).catch(() => false).finally(() => { refreshing = null; });
-    return refreshing;
-  }
+  const t = tokenStore.get();
+  if (!t) return false;
+
+  refreshing ||= (async () => {
+    let response: Response;
+
+    try {
+      response = await fetch(`${baseUrl}/auth/refresh/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refresh: t.refresh }),
+      });
+    } catch {
+      throw new ApiError(0, "Unable to reach the authentication server.");
+    }
+
+    // Only confirmed refresh-token rejection means the session is invalid.
+    if ([400, 401].includes(response.status)) {
+  return false;
+}
+
+    // Preserve the session if the server has a temporary failure.
+    if (!response.ok) {
+      throw new ApiError(
+        response.status,
+        "Unable to refresh your session. Please retry."
+      );
+    }
+
+    const data = await response.json();
+
+    if (!data.access) {
+      throw new ApiError(500, "Invalid token refresh response.");
+    }
+
+    tokenStore.set({
+      access: data.access,
+      refresh: data.refresh || t.refresh,
+    });
+
+    return true;
+  })().finally(() => {
+    refreshing = null;
+  });
+
+  return refreshing;
+}
 
   async function api<T = any>(path: string, init: RequestOptions = {}, retry = true): Promise<T> {
     const { auth = true, json, headers, ...rest } = init;
