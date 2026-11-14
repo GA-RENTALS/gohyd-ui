@@ -39,7 +39,6 @@ export function EventEnquiryPanel({
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [date, setDate] = useState("");
   const [scheduleId, setScheduleId] = useState(schedules[0]?.id ?? "");
   const [count, setCount] = useState(1);
   const [message, setMessage] = useState("");
@@ -49,11 +48,13 @@ export function EventEnquiryPanel({
   const [sent, setSent] = useState(false);
   const selected = schedules.find((schedule) => schedule.id === scheduleId);
   const isFixedDate = schedules.length === 1 && schedules[0].is_date_locked;
+  /** No dates yet (an upcoming plan): collect interest instead of asking the visitor to pick a date. */
+  const upcoming = schedules.length === 0;
   const maxAttendees = selected?.capacity ?? 30;
   const whatsAppDigits = whatsappNumber.replace(/\D/g, "");
 
   function whatsAppMessage() {
-    const requestedDate = selected ? scheduleLabel(selected) : date || "Date to be discussed";
+    const requestedDate = selected ? scheduleLabel(selected) : "Date to be announced";
     return [
       `Event registration request: ${title} (${slug})`,
       `Date: ${requestedDate}`,
@@ -69,7 +70,7 @@ export function EventEnquiryPanel({
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
-    const requestedDate = selected ? scheduleLabel(selected) : date || "Flexible / not selected";
+    const requestedDate = selected ? scheduleLabel(selected) : "Upcoming (no date yet)";
     const details = [
       `Event booking request: ${title} (${slug})`,
       `Requested date: ${requestedDate}`,
@@ -85,7 +86,6 @@ export function EventEnquiryPanel({
         ...(eventSlug ? { event: eventSlug } : {}),
         ...(eventSlug && selected ? { event_schedule: selected.id } : {}),
         ...(selected && !eventSlug ? { preferred_date: isoDateInHyderabad(selected.starts_at) } : {}),
-        ...(!selected && date ? { preferred_date: date } : {}),
         group_size: count,
         source: "website",
         message: details,
@@ -111,8 +111,10 @@ export function EventEnquiryPanel({
 
   return (
     <form className="bk-card bk-sticky" id="book" onSubmit={submit}>
-      <h2>Book your slot</h2>
-      <p className="bk-note">Send your registration request. Our team will confirm your place.</p>
+      <h2>{upcoming ? "Register your interest" : "Book your slot"}</h2>
+      <p className="bk-note">{upcoming
+        ? "Upcoming — dates and price will be announced soon. Leave your details and we'll message you first."
+        : "Send your registration request. Our team will confirm your place."}</p>
       <div className="bk-total"><span>Entry fee per person</span><strong>{price !== null ? money(price) : "To be confirmed"}</strong></div>
 
       {isFixedDate ? (
@@ -127,12 +129,7 @@ export function EventEnquiryPanel({
             {schedules.map((schedule) => <option key={schedule.id} value={schedule.id}>{scheduleLabel(schedule)}</option>)}
           </select>
         </div>
-      ) : (
-        <div className="bk-field">
-          <label htmlFor="preferred-event-date">Preferred date</label>
-          <input id="preferred-event-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
-        </div>
-      )}
+      ) : null}
 
       <div className="bk-field">
         <label htmlFor="event-guests">Attendees</label>
@@ -157,10 +154,12 @@ export function EventEnquiryPanel({
       </label>
       {error && <p className="bk-error" role="alert">{error}</p>}
       <button type="submit" className="btn" disabled={busy} style={{ marginTop: 16 }}>
-        {busy ? "Sending…" : "Book now"}
+        {busy ? "Sending…" : upcoming ? "Register interest" : "Book now"}
       </button>
       {whatsAppDigits && <a className="btn event-whatsapp" href={`https://wa.me/${whatsAppDigits}?text=${encodeURIComponent(whatsAppMessage())}`} target="_blank" rel="noreferrer">Register on WhatsApp</a>}
-      <p className="bk-hint" style={{ marginBottom: 0 }}>This sends a request for staff confirmation. It does not hold a slot or take payment.</p>
+      <p className="bk-hint" style={{ marginBottom: 0 }}>{upcoming
+        ? "This doesn't book a place or take payment. We'll contact you when dates are announced."
+        : "This sends a request for staff confirmation. It does not hold a slot or take payment."}</p>
     </form>
   );
 }

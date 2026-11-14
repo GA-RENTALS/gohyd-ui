@@ -13,9 +13,9 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Charminar",
     "subtitle": "Old City",
     "photo": {
-      "src": "assets/img/charminar-market-1200.jpg",
+      "src": "assets/img/w/charminar-market-1200.webp",
       "alt": "Charminar, Hyderabad",
-      "srcSet": "assets/img/charminar-market-640.jpg 640w, assets/img/charminar-market-1200.jpg 1200w",
+      "srcSet": "assets/img/w/charminar-market-480.webp 480w, assets/img/w/charminar-market-800.webp 800w, assets/img/w/charminar-market-1200.webp 1200w",
       "sizes": "64px",
       "width": 1620,
       "height": 1080
@@ -33,9 +33,9 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Laad Bazaar",
     "subtitle": "Old City",
     "photo": {
-      "src": "assets/img/laad-bazaar-1200.jpg",
+      "src": "assets/img/w/laad-bazaar-1200.webp",
       "alt": "Laad Bazaar, Hyderabad",
-      "srcSet": "assets/img/laad-bazaar-640.jpg 640w, assets/img/laad-bazaar-1200.jpg 1200w, assets/img/laad-bazaar-1920.jpg 1920w",
+      "srcSet": "assets/img/w/laad-bazaar-480.webp 480w, assets/img/w/laad-bazaar-800.webp 800w, assets/img/w/laad-bazaar-1200.webp 1200w, assets/img/w/laad-bazaar-1600.webp 1600w",
       "sizes": "64px",
       "width": 3840,
       "height": 2880
@@ -53,9 +53,9 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Chowmahalla Palace",
     "subtitle": "Old City",
     "photo": {
-      "src": "assets/img/chowmahalla-1200.jpg",
+      "src": "assets/img/w/chowmahalla-1200.webp",
       "alt": "Chowmahalla Palace, Hyderabad",
-      "srcSet": "assets/img/chowmahalla-640.jpg 640w, assets/img/chowmahalla-1200.jpg 1200w, assets/img/chowmahalla-1920.jpg 1920w",
+      "srcSet": "assets/img/w/chowmahalla-480.webp 480w, assets/img/w/chowmahalla-800.webp 800w, assets/img/w/chowmahalla-1200.webp 1200w, assets/img/w/chowmahalla-1600.webp 1600w",
       "sizes": "64px",
       "width": 3840,
       "height": 2880
@@ -73,9 +73,9 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Golconda Fort",
     "subtitle": "West of the city",
     "photo": {
-      "src": "assets/img/golconda-fort-1200.jpg",
+      "src": "assets/img/w/golconda-fort-1200.webp",
       "alt": "Golconda Fort, Hyderabad",
-      "srcSet": "assets/img/golconda-fort-640.jpg 640w, assets/img/golconda-fort-1200.jpg 1200w, assets/img/golconda-fort-1920.jpg 1920w",
+      "srcSet": "assets/img/w/golconda-fort-480.webp 480w, assets/img/w/golconda-fort-800.webp 800w, assets/img/w/golconda-fort-1200.webp 1200w, assets/img/w/golconda-fort-1600.webp 1600w",
       "sizes": "64px",
       "width": 3840,
       "height": 2399
@@ -93,9 +93,9 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Qutb Shahi Tombs",
     "subtitle": "Ibrahim Bagh",
     "photo": {
-      "src": "assets/img/qutb-shahi-1200.jpg",
+      "src": "assets/img/w/qutb-shahi-1200.webp",
       "alt": "Qutb Shahi Tombs, Hyderabad",
-      "srcSet": "assets/img/qutb-shahi-640.jpg 640w, assets/img/qutb-shahi-1200.jpg 1200w, assets/img/qutb-shahi-1920.jpg 1920w",
+      "srcSet": "assets/img/w/qutb-shahi-480.webp 480w, assets/img/w/qutb-shahi-800.webp 800w, assets/img/w/qutb-shahi-1200.webp 1200w, assets/img/w/qutb-shahi-1600.webp 1600w",
       "sizes": "64px",
       "width": 3840,
       "height": 2560
@@ -113,9 +113,9 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Hussain Sagar",
     "subtitle": "Tank Bund",
     "photo": {
-      "src": "assets/img/tank-bund-1200.jpg",
+      "src": "assets/img/w/tank-bund-1200.webp",
       "alt": "Hussain Sagar, Hyderabad",
-      "srcSet": "assets/img/tank-bund-640.jpg 640w, assets/img/tank-bund-1200.jpg 1200w, assets/img/tank-bund-1920.jpg 1920w",
+      "srcSet": "assets/img/w/tank-bund-480.webp 480w, assets/img/w/tank-bund-800.webp 800w, assets/img/w/tank-bund-1200.webp 1200w, assets/img/w/tank-bund-1600.webp 1600w",
       "sizes": "64px",
       "width": 3840,
       "height": 2560
@@ -133,9 +133,9 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Durgam Cheruvu Cable Bridge",
     "subtitle": "Madhapur",
     "photo": {
-      "src": "assets/img/cable-bridge-1200.jpg",
+      "src": "assets/img/w/cable-bridge-1200.webp",
       "alt": "Durgam Cheruvu Cable Bridge, Hyderabad",
-      "srcSet": "assets/img/cable-bridge-640.jpg 640w, assets/img/cable-bridge-1200.jpg 1200w, assets/img/cable-bridge-1920.jpg 1920w",
+      "srcSet": "assets/img/w/cable-bridge-480.webp 480w, assets/img/w/cable-bridge-800.webp 800w, assets/img/w/cable-bridge-1200.webp 1200w, assets/img/w/cable-bridge-1600.webp 1600w",
       "sizes": "64px",
       "width": 3840,
       "height": 2560
@@ -153,9 +153,9 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "HITEC City",
     "subtitle": "The west",
     "photo": {
-      "src": "assets/img/hitec-night-1200.jpg",
+      "src": "assets/img/w/hitec-night-1200.webp",
       "alt": "HITEC City, Hyderabad",
-      "srcSet": "assets/img/hitec-night-640.jpg 640w, assets/img/hitec-night-1200.jpg 1200w, assets/img/hitec-night-1920.jpg 1920w",
+      "srcSet": "assets/img/w/hitec-night-480.webp 480w, assets/img/w/hitec-night-800.webp 800w, assets/img/w/hitec-night-1200.webp 1200w, assets/img/w/hitec-night-1600.webp 1600w",
       "sizes": "64px",
       "width": 2048,
       "height": 922
@@ -173,9 +173,9 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Shilparamam",
     "subtitle": "Madhapur",
     "photo": {
-      "src": "assets/img/shilparamam-vendor-1200.jpg",
+      "src": "assets/img/w/shilparamam-vendor-1200.webp",
       "alt": "Shilparamam, Hyderabad",
-      "srcSet": "assets/img/shilparamam-vendor-640.jpg 640w, assets/img/shilparamam-vendor-1200.jpg 1200w, assets/img/shilparamam-vendor-1920.jpg 1920w",
+      "srcSet": "assets/img/w/shilparamam-vendor-480.webp 480w, assets/img/w/shilparamam-vendor-800.webp 800w, assets/img/w/shilparamam-vendor-1200.webp 1200w, assets/img/w/shilparamam-vendor-1600.webp 1600w",
       "sizes": "64px",
       "width": 3840,
       "height": 2161
@@ -193,9 +193,9 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Ananthagiri Hills",
     "subtitle": "Vikarabad district",
     "photo": {
-      "src": "assets/img/ananthagiri-1200.jpg",
+      "src": "assets/img/w/ananthagiri-1200.webp",
       "alt": "Ananthagiri Hills, Hyderabad",
-      "srcSet": "assets/img/ananthagiri-640.jpg 640w, assets/img/ananthagiri-1200.jpg 1200w, assets/img/ananthagiri-1920.jpg 1920w",
+      "srcSet": "assets/img/w/ananthagiri-480.webp 480w, assets/img/w/ananthagiri-800.webp 800w, assets/img/w/ananthagiri-1200.webp 1200w, assets/img/w/ananthagiri-1600.webp 1600w",
       "sizes": "64px",
       "width": 3840,
       "height": 2543
@@ -213,7 +213,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Khajaguda",
     "subtitle": "Trekking · Hyderabad",
     "photo": {
-      "src": "assets/img/ananthagiri-trail-640.jpg",
+      "src": "assets/img/w/ananthagiri-trail-480.webp",
       "alt": "Khajaguda",
       "width": 64,
       "height": 64
@@ -231,7 +231,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Rachakonda",
     "subtitle": "Forts · Telangana",
     "photo": {
-      "src": "assets/img/golconda-fort-640.jpg",
+      "src": "assets/img/w/golconda-fort-480.webp",
       "alt": "Rachakonda",
       "width": 64,
       "height": 64
@@ -249,7 +249,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Pocharam",
     "subtitle": "Rides · Telangana",
     "photo": {
-      "src": "assets/img/ride-aerial-640.jpg",
+      "src": "assets/img/w/ride-aerial-480.webp",
       "alt": "Pocharam",
       "width": 64,
       "height": 64
@@ -267,7 +267,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Narsapur Forest Trek",
     "subtitle": "Trekking · Medak",
     "photo": {
-      "src": "assets/img/ananthagiri-640.jpg",
+      "src": "assets/img/w/ananthagiri-480.webp",
       "alt": "Narsapur Forest Trek",
       "width": 64,
       "height": 64
@@ -285,7 +285,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Medak Bike Ride",
     "subtitle": "Rides · Medak",
     "photo": {
-      "src": "assets/img/ride-himalaya-640.jpg",
+      "src": "assets/img/w/ride-himalaya-480.webp",
       "alt": "Medak Bike Ride",
       "width": 64,
       "height": 64
@@ -303,7 +303,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Somasila",
     "subtitle": "Day Trips · Telangana",
     "photo": {
-      "src": "assets/img/ananthagiri-640.jpg",
+      "src": "assets/img/w/ananthagiri-480.webp",
       "alt": "Somasila",
       "width": 64,
       "height": 64
@@ -321,7 +321,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Vizag Colony",
     "subtitle": "Day Trips · Telangana",
     "photo": {
-      "src": "assets/img/paigah-tombs-640.jpg",
+      "src": "assets/img/w/paigah-tombs-480.webp",
       "alt": "Vizag Colony",
       "width": 64,
       "height": 64
@@ -339,7 +339,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Koil Sagar",
     "subtitle": "Lakes · Telangana",
     "photo": {
-      "src": "assets/img/hussain-sagar-640.jpg",
+      "src": "assets/img/w/hussain-sagar-480.webp",
       "alt": "Koil Sagar",
       "width": 64,
       "height": 64
@@ -357,7 +357,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Srirangapuram & Pangal Fort",
     "subtitle": "Forts · Telangana",
     "photo": {
-      "src": "assets/img/golconda-city-640.jpg",
+      "src": "assets/img/w/golconda-city-480.webp",
       "alt": "Srirangapuram & Pangal Fort",
       "width": 64,
       "height": 64
@@ -375,7 +375,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Killa Ganpur",
     "subtitle": "Forts · Telangana",
     "photo": {
-      "src": "assets/img/qutb-shahi-640.jpg",
+      "src": "assets/img/w/qutb-shahi-480.webp",
       "alt": "Killa Ganpur",
       "width": 64,
       "height": 64
@@ -393,7 +393,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Adilabad",
     "subtitle": "Day Trips · Telangana",
     "photo": {
-      "src": "assets/img/chowmahalla-640.jpg",
+      "src": "assets/img/w/chowmahalla-480.webp",
       "alt": "Adilabad",
       "width": 64,
       "height": 64
@@ -411,7 +411,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Tadoba-Andhari Tiger Reserve",
     "subtitle": "Wildlife · Maharashtra",
     "photo": {
-      "src": "assets/img/ananthagiri-trail-640.jpg",
+      "src": "assets/img/w/ananthagiri-trail-480.webp",
       "alt": "Tadoba-Andhari Tiger Reserve",
       "width": 64,
       "height": 64
@@ -429,7 +429,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Pench Day Safari",
     "subtitle": "Wildlife · Madhya Pradesh",
     "photo": {
-      "src": "assets/img/ananthagiri-640.jpg",
+      "src": "assets/img/w/ananthagiri-480.webp",
       "alt": "Pench Day Safari",
       "width": 64,
       "height": 64
@@ -447,7 +447,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Chincholi",
     "subtitle": "Day Trips · Karnataka",
     "photo": {
-      "src": "assets/img/ride-aerial-640.jpg",
+      "src": "assets/img/w/ride-aerial-480.webp",
       "alt": "Chincholi",
       "width": 64,
       "height": 64
@@ -465,7 +465,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Srirangapuram + Pamapuram",
     "subtitle": "Day Trips · Telangana",
     "photo": {
-      "src": "assets/img/ananthagiri-640.jpg",
+      "src": "assets/img/w/ananthagiri-480.webp",
       "alt": "Srirangapuram + Pamapuram",
       "width": 64,
       "height": 64
@@ -483,7 +483,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Laknavaram Lake",
     "subtitle": "Lakes · Telangana",
     "photo": {
-      "src": "assets/img/tank-bund-640.jpg",
+      "src": "assets/img/w/tank-bund-480.webp",
       "alt": "Laknavaram Lake",
       "width": 64,
       "height": 64
@@ -501,7 +501,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Mallela Theertham",
     "subtitle": "Waterfalls · Telangana",
     "photo": {
-      "src": "assets/img/ananthagiri-trail-640.jpg",
+      "src": "assets/img/w/ananthagiri-trail-480.webp",
       "alt": "Mallela Theertham",
       "width": 64,
       "height": 64
@@ -519,7 +519,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Koilsagar Dam – Trek & Rappelling",
     "subtitle": "Adventure · Telangana",
     "photo": {
-      "src": "assets/img/durgam-aerial-640.jpg",
+      "src": "assets/img/w/durgam-aerial-480.webp",
       "alt": "Koilsagar Dam – Trek & Rappelling",
       "width": 64,
       "height": 64
@@ -537,7 +537,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Nagarjuna Sagar",
     "subtitle": "Lakes · Telangana",
     "photo": {
-      "src": "assets/img/cable-bridge-640.jpg",
+      "src": "assets/img/w/cable-bridge-480.webp",
       "alt": "Nagarjuna Sagar",
       "width": 64,
       "height": 64
@@ -555,7 +555,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Umamaheshwaram",
     "subtitle": "Temples · Telangana",
     "photo": {
-      "src": "assets/img/mecca-masjid-640.jpg",
+      "src": "assets/img/w/mecca-masjid-480.webp",
       "alt": "Umamaheshwaram",
       "width": 64,
       "height": 64
@@ -573,7 +573,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Pandavula Gutta",
     "subtitle": "Trekking · Khammam",
     "photo": {
-      "src": "assets/img/durgam-aerial-640.jpg",
+      "src": "assets/img/w/durgam-aerial-480.webp",
       "alt": "Pandavula Gutta",
       "width": 64,
       "height": 64
@@ -591,7 +591,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Bidar Fort",
     "subtitle": "Forts · Karnataka",
     "photo": {
-      "src": "assets/img/golconda-fort-640.jpg",
+      "src": "assets/img/w/golconda-fort-480.webp",
       "alt": "Bidar Fort",
       "width": 64,
       "height": 64
@@ -609,7 +609,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Vemulawada",
     "subtitle": "Temples · Telangana",
     "photo": {
-      "src": "assets/img/chowmahalla-640.jpg",
+      "src": "assets/img/w/chowmahalla-480.webp",
       "alt": "Vemulawada",
       "width": 64,
       "height": 64
@@ -627,7 +627,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Kuntala Falls",
     "subtitle": "Waterfalls · Adilabad",
     "photo": {
-      "src": "assets/img/durgam-aerial-640.jpg",
+      "src": "assets/img/w/durgam-aerial-480.webp",
       "alt": "Kuntala Falls",
       "width": 64,
       "height": 64
@@ -645,7 +645,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Edupayala Vana Durga Bhavani Temple",
     "subtitle": "Temples · Medak",
     "photo": {
-      "src": "assets/img/qutb-shahi-640.jpg",
+      "src": "assets/img/w/qutb-shahi-480.webp",
       "alt": "Edupayala Vana Durga Bhavani Temple",
       "width": 64,
       "height": 64
@@ -663,7 +663,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Jurala Dam",
     "subtitle": "Lakes · Telangana",
     "photo": {
-      "src": "assets/img/hussain-sagar-640.jpg",
+      "src": "assets/img/w/hussain-sagar-480.webp",
       "alt": "Jurala Dam",
       "width": 64,
       "height": 64
@@ -681,7 +681,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Koilkonda Fort & Koilsagar Dam",
     "subtitle": "Forts · Telangana",
     "photo": {
-      "src": "assets/img/golconda-city-640.jpg",
+      "src": "assets/img/w/golconda-city-480.webp",
       "alt": "Koilkonda Fort & Koilsagar Dam",
       "width": 64,
       "height": 64
@@ -699,7 +699,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Ethipothala Falls",
     "subtitle": "Waterfalls · Andhra Pradesh",
     "photo": {
-      "src": "assets/img/ananthagiri-trail-640.jpg",
+      "src": "assets/img/w/ananthagiri-trail-480.webp",
       "alt": "Ethipothala Falls",
       "width": 64,
       "height": 64
@@ -717,7 +717,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Kinnerasani Dam & Wildlife Sanctuary",
     "subtitle": "Wildlife · Telangana",
     "photo": {
-      "src": "assets/img/ananthagiri-trail-640.jpg",
+      "src": "assets/img/w/ananthagiri-trail-480.webp",
       "alt": "Kinnerasani Dam & Wildlife Sanctuary",
       "width": 64,
       "height": 64
@@ -735,7 +735,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Bheemuni Paadam Waterfalls",
     "subtitle": "Waterfalls · Near Warangal",
     "photo": {
-      "src": "assets/img/durgam-aerial-640.jpg",
+      "src": "assets/img/w/durgam-aerial-480.webp",
       "alt": "Bheemuni Paadam Waterfalls",
       "width": 64,
       "height": 64
@@ -753,7 +753,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Damagundam Ramalingeshwara Temple",
     "subtitle": "Temples · Telangana",
     "photo": {
-      "src": "assets/img/paigah-tombs-640.jpg",
+      "src": "assets/img/w/paigah-tombs-480.webp",
       "alt": "Damagundam Ramalingeshwara Temple",
       "width": 64,
       "height": 64
@@ -771,7 +771,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Kotpally Reservoir",
     "subtitle": "Lakes · Telangana",
     "photo": {
-      "src": "assets/img/tank-bund-640.jpg",
+      "src": "assets/img/w/tank-bund-480.webp",
       "alt": "Kotpally Reservoir",
       "width": 64,
       "height": 64
@@ -789,7 +789,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Vizag Colony Backwaters",
     "subtitle": "Lakes · Telangana",
     "photo": {
-      "src": "assets/img/cable-bridge-640.jpg",
+      "src": "assets/img/w/cable-bridge-480.webp",
       "alt": "Vizag Colony Backwaters",
       "width": 64,
       "height": 64
@@ -807,7 +807,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Bogata Waterfall",
     "subtitle": "Waterfalls · Telangana",
     "photo": {
-      "src": "assets/img/ananthagiri-trail-640.jpg",
+      "src": "assets/img/w/ananthagiri-trail-480.webp",
       "alt": "Bogata Waterfall",
       "width": 64,
       "height": 64
@@ -825,7 +825,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Kavadipally Forest Trek",
     "subtitle": "Trekking · Telangana",
     "photo": {
-      "src": "assets/img/ananthagiri-trail-640.jpg",
+      "src": "assets/img/w/ananthagiri-trail-480.webp",
       "alt": "Kavadipally Forest Trek",
       "width": 64,
       "height": 64
@@ -843,7 +843,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Kondapochamma Lake",
     "subtitle": "Lakes · Telangana",
     "photo": {
-      "src": "assets/img/hussain-sagar-640.jpg",
+      "src": "assets/img/w/hussain-sagar-480.webp",
       "alt": "Kondapochamma Lake",
       "width": 64,
       "height": 64
@@ -861,7 +861,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Dharmapuri",
     "subtitle": "Temples · Telangana",
     "photo": {
-      "src": "assets/img/mecca-masjid-640.jpg",
+      "src": "assets/img/w/mecca-masjid-480.webp",
       "alt": "Dharmapuri",
       "width": 64,
       "height": 64
@@ -879,7 +879,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Muthyamdhara Waterfalls",
     "subtitle": "Waterfalls · Telangana",
     "photo": {
-      "src": "assets/img/durgam-aerial-640.jpg",
+      "src": "assets/img/w/durgam-aerial-480.webp",
       "alt": "Muthyamdhara Waterfalls",
       "width": 64,
       "height": 64
@@ -897,7 +897,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Moula Ali Hill",
     "subtitle": "Trekking · Hyderabad",
     "photo": {
-      "src": "assets/img/ananthagiri-640.jpg",
+      "src": "assets/img/w/ananthagiri-480.webp",
       "alt": "Moula Ali Hill",
       "width": 64,
       "height": 64
@@ -915,7 +915,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Chityal Hills",
     "subtitle": "Trekking · Telangana",
     "photo": {
-      "src": "assets/img/durgam-aerial-640.jpg",
+      "src": "assets/img/w/durgam-aerial-480.webp",
       "alt": "Chityal Hills",
       "width": 64,
       "height": 64
@@ -933,7 +933,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Gunrock Hill",
     "subtitle": "Trekking · Hyderabad",
     "photo": {
-      "src": "assets/img/ananthagiri-trail-640.jpg",
+      "src": "assets/img/w/ananthagiri-trail-480.webp",
       "alt": "Gunrock Hill",
       "width": 64,
       "height": 64
@@ -951,7 +951,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Kondamadugu Hills",
     "subtitle": "Trekking · Telangana",
     "photo": {
-      "src": "assets/img/ananthagiri-640.jpg",
+      "src": "assets/img/w/ananthagiri-480.webp",
       "alt": "Kondamadugu Hills",
       "width": 64,
       "height": 64
@@ -969,7 +969,7 @@ export const MAP_PLACES: MapPlaceData[] = [
     "label": "Octopus View Point",
     "subtitle": "Viewpoints · Telangana",
     "photo": {
-      "src": "assets/img/durgam-aerial-640.jpg",
+      "src": "assets/img/w/durgam-aerial-480.webp",
       "alt": "Octopus View Point",
       "width": 64,
       "height": 64

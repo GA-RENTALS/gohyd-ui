@@ -7,9 +7,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "trekking",
     "label": "Khajaguda",
     "photo": {
-      "src": "assets/img/ananthagiri-trail-1200.jpg",
+      "src": "assets/img/w/ananthagiri-trail-1200.webp",
       "alt": "Khajaguda",
-      "srcSet": "assets/img/ananthagiri-trail-640.jpg 640w, assets/img/ananthagiri-trail-1200.jpg 1200w",
+      "srcSet": "assets/img/w/ananthagiri-trail-480.webp 480w, assets/img/w/ananthagiri-trail-800.webp 800w, assets/img/w/ananthagiri-trail-1200.webp 1200w, assets/img/w/ananthagiri-trail-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Trekking",
@@ -22,9 +22,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "forts",
     "label": "Rachakonda",
     "photo": {
-      "src": "assets/img/golconda-fort-1200.jpg",
+      "src": "assets/img/w/golconda-fort-1200.webp",
       "alt": "Rachakonda",
-      "srcSet": "assets/img/golconda-fort-640.jpg 640w, assets/img/golconda-fort-1200.jpg 1200w",
+      "srcSet": "assets/img/w/golconda-fort-480.webp 480w, assets/img/w/golconda-fort-800.webp 800w, assets/img/w/golconda-fort-1200.webp 1200w, assets/img/w/golconda-fort-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Forts",
@@ -37,9 +37,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "day-trips",
     "label": "Ananthagiri Hills – Day",
     "photo": {
-      "src": "assets/img/ananthagiri-1200.jpg",
+      "src": "assets/img/w/ananthagiri-1200.webp",
       "alt": "Ananthagiri Hills – Day",
-      "srcSet": "assets/img/ananthagiri-640.jpg 640w, assets/img/ananthagiri-1200.jpg 1200w",
+      "srcSet": "assets/img/w/ananthagiri-480.webp 480w, assets/img/w/ananthagiri-800.webp 800w, assets/img/w/ananthagiri-1200.webp 1200w, assets/img/w/ananthagiri-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Day Trips",
@@ -52,9 +52,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "camping",
     "label": "Ananthagiri Hills – Camping",
     "photo": {
-      "src": "assets/img/durgam-aerial-1200.jpg",
+      "src": "assets/img/w/durgam-aerial-1200.webp",
       "alt": "Ananthagiri Hills – Camping",
-      "srcSet": "assets/img/durgam-aerial-640.jpg 640w, assets/img/durgam-aerial-1200.jpg 1200w",
+      "srcSet": "assets/img/w/durgam-aerial-480.webp 480w, assets/img/w/durgam-aerial-800.webp 800w, assets/img/w/durgam-aerial-1200.webp 1200w, assets/img/w/durgam-aerial-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Camping",
@@ -67,9 +67,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "rides",
     "label": "Pocharam – Ride",
     "photo": {
-      "src": "assets/img/ride-aerial-1200.jpg",
+      "src": "assets/img/w/ride-aerial-1200.webp",
       "alt": "Pocharam – Ride",
-      "srcSet": "assets/img/ride-aerial-640.jpg 640w, assets/img/ride-aerial-1200.jpg 1200w",
+      "srcSet": "assets/img/w/ride-aerial-480.webp 480w, assets/img/w/ride-aerial-800.webp 800w, assets/img/w/ride-aerial-1200.webp 1200w, assets/img/w/ride-aerial-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Rides",
@@ -82,9 +82,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "trekking",
     "label": "Narsapur Forest Trek",
     "photo": {
-      "src": "assets/img/ananthagiri-1200.jpg",
+      "src": "assets/img/w/ananthagiri-1200.webp",
       "alt": "Narsapur Forest Trek",
-      "srcSet": "assets/img/ananthagiri-640.jpg 640w, assets/img/ananthagiri-1200.jpg 1200w",
+      "srcSet": "assets/img/w/ananthagiri-480.webp 480w, assets/img/w/ananthagiri-800.webp 800w, assets/img/w/ananthagiri-1200.webp 1200w, assets/img/w/ananthagiri-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Trekking",
@@ -97,9 +97,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "rides",
     "label": "Medak Bike Ride",
     "photo": {
-      "src": "assets/img/ride-himalaya-1200.jpg",
+      "src": "assets/img/w/ride-himalaya-1200.webp",
       "alt": "Medak Bike Ride",
-      "srcSet": "assets/img/ride-himalaya-640.jpg 640w, assets/img/ride-himalaya-1200.jpg 1200w",
+      "srcSet": "assets/img/w/ride-himalaya-480.webp 480w, assets/img/w/ride-himalaya-800.webp 800w, assets/img/w/ride-himalaya-1200.webp 1200w, assets/img/w/ride-himalaya-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Rides",
@@ -112,9 +112,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "day-trips",
     "label": "Somasila – Day",
     "photo": {
-      "src": "assets/img/paigah-tombs-1200.jpg",
+      "src": "assets/img/w/paigah-tombs-1200.webp",
       "alt": "Somasila – Day",
-      "srcSet": "assets/img/paigah-tombs-640.jpg 640w, assets/img/paigah-tombs-1200.jpg 1200w",
+      "srcSet": "assets/img/w/paigah-tombs-480.webp 480w, assets/img/w/paigah-tombs-800.webp 800w, assets/img/w/paigah-tombs-1200.webp 1200w, assets/img/w/paigah-tombs-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Day Trips",
@@ -127,9 +127,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "camping",
     "label": "Somasila Camping",
     "photo": {
-      "src": "assets/img/ananthagiri-trail-1200.jpg",
+      "src": "assets/img/w/ananthagiri-trail-1200.webp",
       "alt": "Somasila Camping",
-      "srcSet": "assets/img/ananthagiri-trail-640.jpg 640w, assets/img/ananthagiri-trail-1200.jpg 1200w",
+      "srcSet": "assets/img/w/ananthagiri-trail-480.webp 480w, assets/img/w/ananthagiri-trail-800.webp 800w, assets/img/w/ananthagiri-trail-1200.webp 1200w, assets/img/w/ananthagiri-trail-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Camping",
@@ -142,9 +142,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "day-trips",
     "label": "Vizag Colony – Day",
     "photo": {
-      "src": "assets/img/chowmahalla-1200.jpg",
+      "src": "assets/img/w/chowmahalla-1200.webp",
       "alt": "Vizag Colony – Day",
-      "srcSet": "assets/img/chowmahalla-640.jpg 640w, assets/img/chowmahalla-1200.jpg 1200w",
+      "srcSet": "assets/img/w/chowmahalla-480.webp 480w, assets/img/w/chowmahalla-800.webp 800w, assets/img/w/chowmahalla-1200.webp 1200w, assets/img/w/chowmahalla-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Day Trips",
@@ -157,9 +157,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "camping",
     "label": "Vizag Colony – Camping",
     "photo": {
-      "src": "assets/img/ananthagiri-1200.jpg",
+      "src": "assets/img/w/ananthagiri-1200.webp",
       "alt": "Vizag Colony – Camping",
-      "srcSet": "assets/img/ananthagiri-640.jpg 640w, assets/img/ananthagiri-1200.jpg 1200w",
+      "srcSet": "assets/img/w/ananthagiri-480.webp 480w, assets/img/w/ananthagiri-800.webp 800w, assets/img/w/ananthagiri-1200.webp 1200w, assets/img/w/ananthagiri-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Camping",
@@ -172,9 +172,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "lakes",
     "label": "Koil Sagar",
     "photo": {
-      "src": "assets/img/hussain-sagar-1200.jpg",
+      "src": "assets/img/w/hussain-sagar-1200.webp",
       "alt": "Koil Sagar",
-      "srcSet": "assets/img/hussain-sagar-640.jpg 640w, assets/img/hussain-sagar-1200.jpg 1200w",
+      "srcSet": "assets/img/w/hussain-sagar-480.webp 480w, assets/img/w/hussain-sagar-800.webp 800w, assets/img/w/hussain-sagar-1200.webp 1200w, assets/img/w/hussain-sagar-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Lakes",
@@ -187,9 +187,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "forts",
     "label": "Srirangapuram & Pangal Fort",
     "photo": {
-      "src": "assets/img/golconda-city-1200.jpg",
+      "src": "assets/img/w/golconda-city-1200.webp",
       "alt": "Srirangapuram & Pangal Fort",
-      "srcSet": "assets/img/golconda-city-640.jpg 640w, assets/img/golconda-city-1200.jpg 1200w",
+      "srcSet": "assets/img/w/golconda-city-480.webp 480w, assets/img/w/golconda-city-800.webp 800w, assets/img/w/golconda-city-1200.webp 1200w, assets/img/w/golconda-city-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Forts",
@@ -202,9 +202,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "forts",
     "label": "Killa Ganpur",
     "photo": {
-      "src": "assets/img/qutb-shahi-1200.jpg",
+      "src": "assets/img/w/qutb-shahi-1200.webp",
       "alt": "Killa Ganpur",
-      "srcSet": "assets/img/qutb-shahi-640.jpg 640w, assets/img/qutb-shahi-1200.jpg 1200w",
+      "srcSet": "assets/img/w/qutb-shahi-480.webp 480w, assets/img/w/qutb-shahi-800.webp 800w, assets/img/w/qutb-shahi-1200.webp 1200w, assets/img/w/qutb-shahi-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Forts",
@@ -217,9 +217,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "camping",
     "label": "No Name – Camping",
     "photo": {
-      "src": "assets/img/durgam-aerial-1200.jpg",
+      "src": "assets/img/w/durgam-aerial-1200.webp",
       "alt": "No Name – Camping",
-      "srcSet": "assets/img/durgam-aerial-640.jpg 640w, assets/img/durgam-aerial-1200.jpg 1200w",
+      "srcSet": "assets/img/w/durgam-aerial-480.webp 480w, assets/img/w/durgam-aerial-800.webp 800w, assets/img/w/durgam-aerial-1200.webp 1200w, assets/img/w/durgam-aerial-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Camping",
@@ -232,9 +232,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "adventure",
     "label": "UTM – Day",
     "photo": {
-      "src": "assets/img/durgam-aerial-1200.jpg",
+      "src": "assets/img/w/durgam-aerial-1200.webp",
       "alt": "UTM – Day",
-      "srcSet": "assets/img/durgam-aerial-640.jpg 640w, assets/img/durgam-aerial-1200.jpg 1200w",
+      "srcSet": "assets/img/w/durgam-aerial-480.webp 480w, assets/img/w/durgam-aerial-800.webp 800w, assets/img/w/durgam-aerial-1200.webp 1200w, assets/img/w/durgam-aerial-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Adventure",
@@ -247,9 +247,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "camping",
     "label": "UTM – Camping",
     "photo": {
-      "src": "assets/img/ananthagiri-trail-1200.jpg",
+      "src": "assets/img/w/ananthagiri-trail-1200.webp",
       "alt": "UTM – Camping",
-      "srcSet": "assets/img/ananthagiri-trail-640.jpg 640w, assets/img/ananthagiri-trail-1200.jpg 1200w",
+      "srcSet": "assets/img/w/ananthagiri-trail-480.webp 480w, assets/img/w/ananthagiri-trail-800.webp 800w, assets/img/w/ananthagiri-trail-1200.webp 1200w, assets/img/w/ananthagiri-trail-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Camping",
@@ -262,9 +262,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "day-trips",
     "label": "Adilabad",
     "photo": {
-      "src": "assets/img/ride-aerial-1200.jpg",
+      "src": "assets/img/w/ride-aerial-1200.webp",
       "alt": "Adilabad",
-      "srcSet": "assets/img/ride-aerial-640.jpg 640w, assets/img/ride-aerial-1200.jpg 1200w",
+      "srcSet": "assets/img/w/ride-aerial-480.webp 480w, assets/img/w/ride-aerial-800.webp 800w, assets/img/w/ride-aerial-1200.webp 1200w, assets/img/w/ride-aerial-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Day Trips",
@@ -277,9 +277,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "wildlife",
     "label": "Tadoba-Andhari Tiger Reserve",
     "photo": {
-      "src": "assets/img/ananthagiri-trail-1200.jpg",
+      "src": "assets/img/w/ananthagiri-trail-1200.webp",
       "alt": "Tadoba-Andhari Tiger Reserve",
-      "srcSet": "assets/img/ananthagiri-trail-640.jpg 640w, assets/img/ananthagiri-trail-1200.jpg 1200w",
+      "srcSet": "assets/img/w/ananthagiri-trail-480.webp 480w, assets/img/w/ananthagiri-trail-800.webp 800w, assets/img/w/ananthagiri-trail-1200.webp 1200w, assets/img/w/ananthagiri-trail-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Wildlife",
@@ -292,9 +292,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "wildlife",
     "label": "Pench – Day Safari",
     "photo": {
-      "src": "assets/img/ananthagiri-1200.jpg",
+      "src": "assets/img/w/ananthagiri-1200.webp",
       "alt": "Pench – Day Safari",
-      "srcSet": "assets/img/ananthagiri-640.jpg 640w, assets/img/ananthagiri-1200.jpg 1200w",
+      "srcSet": "assets/img/w/ananthagiri-480.webp 480w, assets/img/w/ananthagiri-800.webp 800w, assets/img/w/ananthagiri-1200.webp 1200w, assets/img/w/ananthagiri-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Wildlife",
@@ -307,9 +307,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "day-trips",
     "label": "Chincholi",
     "photo": {
-      "src": "assets/img/ananthagiri-1200.jpg",
+      "src": "assets/img/w/ananthagiri-1200.webp",
       "alt": "Chincholi",
-      "srcSet": "assets/img/ananthagiri-640.jpg 640w, assets/img/ananthagiri-1200.jpg 1200w",
+      "srcSet": "assets/img/w/ananthagiri-480.webp 480w, assets/img/w/ananthagiri-800.webp 800w, assets/img/w/ananthagiri-1200.webp 1200w, assets/img/w/ananthagiri-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Day Trips",
@@ -322,9 +322,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "day-trips",
     "label": "Srirangapuram + Pamapuram",
     "photo": {
-      "src": "assets/img/paigah-tombs-1200.jpg",
+      "src": "assets/img/w/paigah-tombs-1200.webp",
       "alt": "Srirangapuram + Pamapuram",
-      "srcSet": "assets/img/paigah-tombs-640.jpg 640w, assets/img/paigah-tombs-1200.jpg 1200w",
+      "srcSet": "assets/img/w/paigah-tombs-480.webp 480w, assets/img/w/paigah-tombs-800.webp 800w, assets/img/w/paigah-tombs-1200.webp 1200w, assets/img/w/paigah-tombs-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Day Trips",
@@ -337,9 +337,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "lakes",
     "label": "Laknavaram Lake",
     "photo": {
-      "src": "assets/img/tank-bund-1200.jpg",
+      "src": "assets/img/w/tank-bund-1200.webp",
       "alt": "Laknavaram Lake",
-      "srcSet": "assets/img/tank-bund-640.jpg 640w, assets/img/tank-bund-1200.jpg 1200w",
+      "srcSet": "assets/img/w/tank-bund-480.webp 480w, assets/img/w/tank-bund-800.webp 800w, assets/img/w/tank-bund-1200.webp 1200w, assets/img/w/tank-bund-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Lakes",
@@ -352,9 +352,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "waterfalls",
     "label": "Mallela Theertham",
     "photo": {
-      "src": "assets/img/ananthagiri-trail-1200.jpg",
+      "src": "assets/img/w/ananthagiri-trail-1200.webp",
       "alt": "Mallela Theertham",
-      "srcSet": "assets/img/ananthagiri-trail-640.jpg 640w, assets/img/ananthagiri-trail-1200.jpg 1200w",
+      "srcSet": "assets/img/w/ananthagiri-trail-480.webp 480w, assets/img/w/ananthagiri-trail-800.webp 800w, assets/img/w/ananthagiri-trail-1200.webp 1200w, assets/img/w/ananthagiri-trail-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Waterfalls",
@@ -367,9 +367,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "adventure",
     "label": "Koilsagar Dam – Trek & Rappelling",
     "photo": {
-      "src": "assets/img/ride-himalaya-1200.jpg",
+      "src": "assets/img/w/ride-himalaya-1200.webp",
       "alt": "Koilsagar Dam – Trek & Rappelling",
-      "srcSet": "assets/img/ride-himalaya-640.jpg 640w, assets/img/ride-himalaya-1200.jpg 1200w",
+      "srcSet": "assets/img/w/ride-himalaya-480.webp 480w, assets/img/w/ride-himalaya-800.webp 800w, assets/img/w/ride-himalaya-1200.webp 1200w, assets/img/w/ride-himalaya-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Adventure",
@@ -382,9 +382,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "lakes",
     "label": "Nagarjuna Sagar",
     "photo": {
-      "src": "assets/img/cable-bridge-1200.jpg",
+      "src": "assets/img/w/cable-bridge-1200.webp",
       "alt": "Nagarjuna Sagar",
-      "srcSet": "assets/img/cable-bridge-640.jpg 640w, assets/img/cable-bridge-1200.jpg 1200w",
+      "srcSet": "assets/img/w/cable-bridge-480.webp 480w, assets/img/w/cable-bridge-800.webp 800w, assets/img/w/cable-bridge-1200.webp 1200w, assets/img/w/cable-bridge-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Lakes",
@@ -397,9 +397,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "temples",
     "label": "Umamaheshwaram",
     "photo": {
-      "src": "assets/img/mecca-masjid-1200.jpg",
+      "src": "assets/img/w/mecca-masjid-1200.webp",
       "alt": "Umamaheshwaram",
-      "srcSet": "assets/img/mecca-masjid-640.jpg 640w, assets/img/mecca-masjid-1200.jpg 1200w",
+      "srcSet": "assets/img/w/mecca-masjid-480.webp 480w, assets/img/w/mecca-masjid-800.webp 800w, assets/img/w/mecca-masjid-1200.webp 1200w, assets/img/w/mecca-masjid-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Temples",
@@ -412,9 +412,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "trekking",
     "label": "Pandavula Gutta – Khammam",
     "photo": {
-      "src": "assets/img/durgam-aerial-1200.jpg",
+      "src": "assets/img/w/durgam-aerial-1200.webp",
       "alt": "Pandavula Gutta – Khammam",
-      "srcSet": "assets/img/durgam-aerial-640.jpg 640w, assets/img/durgam-aerial-1200.jpg 1200w",
+      "srcSet": "assets/img/w/durgam-aerial-480.webp 480w, assets/img/w/durgam-aerial-800.webp 800w, assets/img/w/durgam-aerial-1200.webp 1200w, assets/img/w/durgam-aerial-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Trekking",
@@ -427,9 +427,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "forts",
     "label": "Bidar Fort",
     "photo": {
-      "src": "assets/img/golconda-fort-1200.jpg",
+      "src": "assets/img/w/golconda-fort-1200.webp",
       "alt": "Bidar Fort",
-      "srcSet": "assets/img/golconda-fort-640.jpg 640w, assets/img/golconda-fort-1200.jpg 1200w",
+      "srcSet": "assets/img/w/golconda-fort-480.webp 480w, assets/img/w/golconda-fort-800.webp 800w, assets/img/w/golconda-fort-1200.webp 1200w, assets/img/w/golconda-fort-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Forts",
@@ -442,9 +442,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "temples",
     "label": "Vemulawada",
     "photo": {
-      "src": "assets/img/chowmahalla-1200.jpg",
+      "src": "assets/img/w/chowmahalla-1200.webp",
       "alt": "Vemulawada",
-      "srcSet": "assets/img/chowmahalla-640.jpg 640w, assets/img/chowmahalla-1200.jpg 1200w",
+      "srcSet": "assets/img/w/chowmahalla-480.webp 480w, assets/img/w/chowmahalla-800.webp 800w, assets/img/w/chowmahalla-1200.webp 1200w, assets/img/w/chowmahalla-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Temples",
@@ -457,9 +457,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "waterfalls",
     "label": "Kuntala Falls",
     "photo": {
-      "src": "assets/img/durgam-aerial-1200.jpg",
+      "src": "assets/img/w/durgam-aerial-1200.webp",
       "alt": "Kuntala Falls",
-      "srcSet": "assets/img/durgam-aerial-640.jpg 640w, assets/img/durgam-aerial-1200.jpg 1200w",
+      "srcSet": "assets/img/w/durgam-aerial-480.webp 480w, assets/img/w/durgam-aerial-800.webp 800w, assets/img/w/durgam-aerial-1200.webp 1200w, assets/img/w/durgam-aerial-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Waterfalls",
@@ -472,9 +472,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "temples",
     "label": "Edupayala Vana Durga Bhavani Temple",
     "photo": {
-      "src": "assets/img/qutb-shahi-1200.jpg",
+      "src": "assets/img/w/qutb-shahi-1200.webp",
       "alt": "Edupayala Vana Durga Bhavani Temple",
-      "srcSet": "assets/img/qutb-shahi-640.jpg 640w, assets/img/qutb-shahi-1200.jpg 1200w",
+      "srcSet": "assets/img/w/qutb-shahi-480.webp 480w, assets/img/w/qutb-shahi-800.webp 800w, assets/img/w/qutb-shahi-1200.webp 1200w, assets/img/w/qutb-shahi-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Temples",
@@ -487,9 +487,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "lakes",
     "label": "Jurala Dam",
     "photo": {
-      "src": "assets/img/hussain-sagar-1200.jpg",
+      "src": "assets/img/w/hussain-sagar-1200.webp",
       "alt": "Jurala Dam",
-      "srcSet": "assets/img/hussain-sagar-640.jpg 640w, assets/img/hussain-sagar-1200.jpg 1200w",
+      "srcSet": "assets/img/w/hussain-sagar-480.webp 480w, assets/img/w/hussain-sagar-800.webp 800w, assets/img/w/hussain-sagar-1200.webp 1200w, assets/img/w/hussain-sagar-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Lakes",
@@ -502,9 +502,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "forts",
     "label": "Koilkonda Fort & Koilsagar Dam",
     "photo": {
-      "src": "assets/img/golconda-city-1200.jpg",
+      "src": "assets/img/w/golconda-city-1200.webp",
       "alt": "Koilkonda Fort & Koilsagar Dam",
-      "srcSet": "assets/img/golconda-city-640.jpg 640w, assets/img/golconda-city-1200.jpg 1200w",
+      "srcSet": "assets/img/w/golconda-city-480.webp 480w, assets/img/w/golconda-city-800.webp 800w, assets/img/w/golconda-city-1200.webp 1200w, assets/img/w/golconda-city-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Forts",
@@ -517,9 +517,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "waterfalls",
     "label": "Ethipothala Falls",
     "photo": {
-      "src": "assets/img/ananthagiri-trail-1200.jpg",
+      "src": "assets/img/w/ananthagiri-trail-1200.webp",
       "alt": "Ethipothala Falls",
-      "srcSet": "assets/img/ananthagiri-trail-640.jpg 640w, assets/img/ananthagiri-trail-1200.jpg 1200w",
+      "srcSet": "assets/img/w/ananthagiri-trail-480.webp 480w, assets/img/w/ananthagiri-trail-800.webp 800w, assets/img/w/ananthagiri-trail-1200.webp 1200w, assets/img/w/ananthagiri-trail-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Waterfalls",
@@ -532,9 +532,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "wildlife",
     "label": "Kinnerasani Dam & Wildlife Sanctuary",
     "photo": {
-      "src": "assets/img/ananthagiri-trail-1200.jpg",
+      "src": "assets/img/w/ananthagiri-trail-1200.webp",
       "alt": "Kinnerasani Dam & Wildlife Sanctuary",
-      "srcSet": "assets/img/ananthagiri-trail-640.jpg 640w, assets/img/ananthagiri-trail-1200.jpg 1200w",
+      "srcSet": "assets/img/w/ananthagiri-trail-480.webp 480w, assets/img/w/ananthagiri-trail-800.webp 800w, assets/img/w/ananthagiri-trail-1200.webp 1200w, assets/img/w/ananthagiri-trail-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Wildlife",
@@ -547,9 +547,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "waterfalls",
     "label": "Bheemuni Paadam Waterfalls",
     "photo": {
-      "src": "assets/img/durgam-aerial-1200.jpg",
+      "src": "assets/img/w/durgam-aerial-1200.webp",
       "alt": "Bheemuni Paadam Waterfalls",
-      "srcSet": "assets/img/durgam-aerial-640.jpg 640w, assets/img/durgam-aerial-1200.jpg 1200w",
+      "srcSet": "assets/img/w/durgam-aerial-480.webp 480w, assets/img/w/durgam-aerial-800.webp 800w, assets/img/w/durgam-aerial-1200.webp 1200w, assets/img/w/durgam-aerial-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Waterfalls",
@@ -562,9 +562,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "temples",
     "label": "Damagundam Ramaklingeshwara Temple",
     "photo": {
-      "src": "assets/img/paigah-tombs-1200.jpg",
+      "src": "assets/img/w/paigah-tombs-1200.webp",
       "alt": "Damagundam Ramaklingeshwara Temple",
-      "srcSet": "assets/img/paigah-tombs-640.jpg 640w, assets/img/paigah-tombs-1200.jpg 1200w",
+      "srcSet": "assets/img/w/paigah-tombs-480.webp 480w, assets/img/w/paigah-tombs-800.webp 800w, assets/img/w/paigah-tombs-1200.webp 1200w, assets/img/w/paigah-tombs-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Temples",
@@ -577,9 +577,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "lakes",
     "label": "Kotpally Reservoir",
     "photo": {
-      "src": "assets/img/tank-bund-1200.jpg",
+      "src": "assets/img/w/tank-bund-1200.webp",
       "alt": "Kotpally Reservoir",
-      "srcSet": "assets/img/tank-bund-640.jpg 640w, assets/img/tank-bund-1200.jpg 1200w",
+      "srcSet": "assets/img/w/tank-bund-480.webp 480w, assets/img/w/tank-bund-800.webp 800w, assets/img/w/tank-bund-1200.webp 1200w, assets/img/w/tank-bund-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Lakes",
@@ -592,9 +592,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "lakes",
     "label": "Vizag Colony Backwaters",
     "photo": {
-      "src": "assets/img/cable-bridge-1200.jpg",
+      "src": "assets/img/w/cable-bridge-1200.webp",
       "alt": "Vizag Colony Backwaters",
-      "srcSet": "assets/img/cable-bridge-640.jpg 640w, assets/img/cable-bridge-1200.jpg 1200w",
+      "srcSet": "assets/img/w/cable-bridge-480.webp 480w, assets/img/w/cable-bridge-800.webp 800w, assets/img/w/cable-bridge-1200.webp 1200w, assets/img/w/cable-bridge-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Lakes",
@@ -607,9 +607,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "waterfalls",
     "label": "Bogata Waterfall",
     "photo": {
-      "src": "assets/img/ananthagiri-trail-1200.jpg",
+      "src": "assets/img/w/ananthagiri-trail-1200.webp",
       "alt": "Bogata Waterfall",
-      "srcSet": "assets/img/ananthagiri-trail-640.jpg 640w, assets/img/ananthagiri-trail-1200.jpg 1200w",
+      "srcSet": "assets/img/w/ananthagiri-trail-480.webp 480w, assets/img/w/ananthagiri-trail-800.webp 800w, assets/img/w/ananthagiri-trail-1200.webp 1200w, assets/img/w/ananthagiri-trail-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Waterfalls",
@@ -622,9 +622,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "trekking",
     "label": "Kavadipally Forest Trek",
     "photo": {
-      "src": "assets/img/ananthagiri-trail-1200.jpg",
+      "src": "assets/img/w/ananthagiri-trail-1200.webp",
       "alt": "Kavadipally Forest Trek",
-      "srcSet": "assets/img/ananthagiri-trail-640.jpg 640w, assets/img/ananthagiri-trail-1200.jpg 1200w",
+      "srcSet": "assets/img/w/ananthagiri-trail-480.webp 480w, assets/img/w/ananthagiri-trail-800.webp 800w, assets/img/w/ananthagiri-trail-1200.webp 1200w, assets/img/w/ananthagiri-trail-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Trekking",
@@ -637,9 +637,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "lakes",
     "label": "Kondapochamma Lake",
     "photo": {
-      "src": "assets/img/hussain-sagar-1200.jpg",
+      "src": "assets/img/w/hussain-sagar-1200.webp",
       "alt": "Kondapochamma Lake",
-      "srcSet": "assets/img/hussain-sagar-640.jpg 640w, assets/img/hussain-sagar-1200.jpg 1200w",
+      "srcSet": "assets/img/w/hussain-sagar-480.webp 480w, assets/img/w/hussain-sagar-800.webp 800w, assets/img/w/hussain-sagar-1200.webp 1200w, assets/img/w/hussain-sagar-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Lakes",
@@ -652,9 +652,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "temples",
     "label": "Dharmapuri",
     "photo": {
-      "src": "assets/img/mecca-masjid-1200.jpg",
+      "src": "assets/img/w/mecca-masjid-1200.webp",
       "alt": "Dharmapuri",
-      "srcSet": "assets/img/mecca-masjid-640.jpg 640w, assets/img/mecca-masjid-1200.jpg 1200w",
+      "srcSet": "assets/img/w/mecca-masjid-480.webp 480w, assets/img/w/mecca-masjid-800.webp 800w, assets/img/w/mecca-masjid-1200.webp 1200w, assets/img/w/mecca-masjid-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Temples",
@@ -667,9 +667,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "waterfalls",
     "label": "Muthyamdhara Waterfalls",
     "photo": {
-      "src": "assets/img/durgam-aerial-1200.jpg",
+      "src": "assets/img/w/durgam-aerial-1200.webp",
       "alt": "Muthyamdhara Waterfalls",
-      "srcSet": "assets/img/durgam-aerial-640.jpg 640w, assets/img/durgam-aerial-1200.jpg 1200w",
+      "srcSet": "assets/img/w/durgam-aerial-480.webp 480w, assets/img/w/durgam-aerial-800.webp 800w, assets/img/w/durgam-aerial-1200.webp 1200w, assets/img/w/durgam-aerial-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Waterfalls",
@@ -682,9 +682,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "trekking",
     "label": "Moula Ali Hill",
     "photo": {
-      "src": "assets/img/ananthagiri-1200.jpg",
+      "src": "assets/img/w/ananthagiri-1200.webp",
       "alt": "Moula Ali Hill",
-      "srcSet": "assets/img/ananthagiri-640.jpg 640w, assets/img/ananthagiri-1200.jpg 1200w",
+      "srcSet": "assets/img/w/ananthagiri-480.webp 480w, assets/img/w/ananthagiri-800.webp 800w, assets/img/w/ananthagiri-1200.webp 1200w, assets/img/w/ananthagiri-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Trekking",
@@ -697,9 +697,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "trekking",
     "label": "Chityal Hills",
     "photo": {
-      "src": "assets/img/durgam-aerial-1200.jpg",
+      "src": "assets/img/w/durgam-aerial-1200.webp",
       "alt": "Chityal Hills",
-      "srcSet": "assets/img/durgam-aerial-640.jpg 640w, assets/img/durgam-aerial-1200.jpg 1200w",
+      "srcSet": "assets/img/w/durgam-aerial-480.webp 480w, assets/img/w/durgam-aerial-800.webp 800w, assets/img/w/durgam-aerial-1200.webp 1200w, assets/img/w/durgam-aerial-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Trekking",
@@ -712,9 +712,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "trekking",
     "label": "Gunrock Hill",
     "photo": {
-      "src": "assets/img/ananthagiri-trail-1200.jpg",
+      "src": "assets/img/w/ananthagiri-trail-1200.webp",
       "alt": "Gunrock Hill",
-      "srcSet": "assets/img/ananthagiri-trail-640.jpg 640w, assets/img/ananthagiri-trail-1200.jpg 1200w",
+      "srcSet": "assets/img/w/ananthagiri-trail-480.webp 480w, assets/img/w/ananthagiri-trail-800.webp 800w, assets/img/w/ananthagiri-trail-1200.webp 1200w, assets/img/w/ananthagiri-trail-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Trekking",
@@ -727,9 +727,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "trekking",
     "label": "Kondamadugu Hills",
     "photo": {
-      "src": "assets/img/ananthagiri-1200.jpg",
+      "src": "assets/img/w/ananthagiri-1200.webp",
       "alt": "Kondamadugu Hills",
-      "srcSet": "assets/img/ananthagiri-640.jpg 640w, assets/img/ananthagiri-1200.jpg 1200w",
+      "srcSet": "assets/img/w/ananthagiri-480.webp 480w, assets/img/w/ananthagiri-800.webp 800w, assets/img/w/ananthagiri-1200.webp 1200w, assets/img/w/ananthagiri-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Trekking",
@@ -742,9 +742,9 @@ export const PLANS: PlanCardData[] = [
     "cat": "viewpoints",
     "label": "Octopus View Point",
     "photo": {
-      "src": "assets/img/durgam-aerial-1200.jpg",
+      "src": "assets/img/w/durgam-aerial-1200.webp",
       "alt": "Octopus View Point",
-      "srcSet": "assets/img/durgam-aerial-640.jpg 640w, assets/img/durgam-aerial-1200.jpg 1200w",
+      "srcSet": "assets/img/w/durgam-aerial-480.webp 480w, assets/img/w/durgam-aerial-800.webp 800w, assets/img/w/durgam-aerial-1200.webp 1200w, assets/img/w/durgam-aerial-1600.webp 1600w",
       "sizes": "(min-width:700px) 340px, 82vw"
     },
     "tag": "Viewpoints",

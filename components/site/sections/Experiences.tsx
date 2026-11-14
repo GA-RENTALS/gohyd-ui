@@ -22,7 +22,7 @@ export async function Experiences() {
         <div className="exp-grid">
           <a className="xcard x1" href="#events" data-filter="rides" data-reveal="" aria-label="Adventure and road trips — see ride plans">
             <div className="ph" data-label="Motorcyclists on a mountain highway">
-              <img src="assets/img/ride-himalaya-1200.jpg" srcSet="assets/img/ride-himalaya-640.jpg 640w, assets/img/ride-himalaya-1200.jpg 1200w, assets/img/ride-himalaya-1920.jpg 1920w" sizes="(min-width:900px) 58vw, 100vw" width="3840" height="2414" alt="Motorcyclists riding a winding mountain highway beneath a deep blue sky and barren Himalayan peaks" loading="lazy" decoding="async" />
+              <img src="assets/img/w/ride-himalaya-1200.webp" srcSet="assets/img/w/ride-himalaya-480.webp 480w, assets/img/w/ride-himalaya-800.webp 800w, assets/img/w/ride-himalaya-1200.webp 1200w, assets/img/w/ride-himalaya-1600.webp 1600w" sizes="(min-width:900px) 58vw, 100vw" width="3840" height="2414" alt="Motorcyclists riding a winding mountain highway beneath a deep blue sky and barren Himalayan peaks" loading="lazy" decoding="async" />
               <span className="ptag">{t("Photo · Ladakh")}</span>
             </div>
             <span className="n">01</span>
@@ -38,7 +38,7 @@ export async function Experiences() {
           {" "}
           <a className="xcard x2" href="#events" data-filter="sports" data-reveal="" data-d="1" aria-label="Sports and box cricket — see sports plans">
             <div className="ph" data-label="Friends playing cricket on a grass ground">
-              <img src="assets/img/cricket-morning-1200.jpg" srcSet="assets/img/cricket-morning-640.jpg 640w, assets/img/cricket-morning-1200.jpg 1200w, assets/img/cricket-morning-1920.jpg 1920w" sizes="(min-width:900px) 40vw, 100vw" width="3840" height="2737" alt="Young players mid-game on a grass cricket ground, a batter at the stumps and a fielder crouching in the foreground" loading="lazy" decoding="async" />
+              <img src="assets/img/w/cricket-morning-1200.webp" srcSet="assets/img/w/cricket-morning-480.webp 480w, assets/img/w/cricket-morning-800.webp 800w, assets/img/w/cricket-morning-1200.webp 1200w, assets/img/w/cricket-morning-1600.webp 1600w" sizes="(min-width:900px) 40vw, 100vw" width="3840" height="2737" alt="Young players mid-game on a grass cricket ground, a batter at the stumps and a fielder crouching in the foreground" loading="lazy" decoding="async" />
               <span className="ptag">{t("Photo · India")}</span>
             </div>
             <span className="n">02</span>
@@ -52,7 +52,7 @@ export async function Experiences() {
           {" "}
           <a className="xcard x3" href="#events" data-filter="food" data-reveal="" aria-label="Food and cafés — see food plans">
             <div className="ph" data-label="Hyderabadi dum biryani">
-              <img src="assets/img/biryani-1200.jpg" srcSet="assets/img/biryani-640.jpg 640w, assets/img/biryani-1200.jpg 1200w, assets/img/biryani-1920.jpg 1920w" sizes="(min-width:900px) 30vw, 100vw" width="3840" height="2550" alt="A copper handi of Hyderabadi chicken dum biryani with fried onions, served with raita" loading="lazy" decoding="async" />
+              <img src="assets/img/w/biryani-1200.webp" srcSet="assets/img/w/biryani-480.webp 480w, assets/img/w/biryani-800.webp 800w, assets/img/w/biryani-1200.webp 1200w, assets/img/w/biryani-1600.webp 1600w" sizes="(min-width:900px) 30vw, 100vw" width="3840" height="2550" alt="A copper handi of Hyderabadi chicken dum biryani with fried onions, served with raita" loading="lazy" decoding="async" />
             </div>
             <span className="n">03</span>
             <h3>{t("Food & Cafés")}</h3>
@@ -65,7 +65,7 @@ export async function Experiences() {
           {" "}
           <a className="xcard x4" href="#events" data-filter="culture" data-reveal="" data-d="1" aria-label="Art and culture — see culture plans">
             <div className="ph" data-label="Chowmahalla Palace, Hyderabad">
-              <img src="assets/img/chowmahalla-1200.jpg" srcSet="assets/img/chowmahalla-640.jpg 640w, assets/img/chowmahalla-1200.jpg 1200w, assets/img/chowmahalla-1920.jpg 1920w" sizes="(min-width:900px) 30vw, 100vw" width="3840" height="2880" alt="The Chowmahalla Palace in Hyderabad, its arched facade and clock tower seen across a green lawn" loading="lazy" decoding="async" />
+              <img src="assets/img/w/chowmahalla-1200.webp" srcSet="assets/img/w/chowmahalla-480.webp 480w, assets/img/w/chowmahalla-800.webp 800w, assets/img/w/chowmahalla-1200.webp 1200w, assets/img/w/chowmahalla-1600.webp 1600w" sizes="(min-width:900px) 30vw, 100vw" width="3840" height="2880" alt="The Chowmahalla Palace in Hyderabad, its arched facade and clock tower seen across a green lawn" loading="lazy" decoding="async" />
             </div>
             <span className="n">04</span>
             <h3>{t("Art & Culture")}</h3>
@@ -78,7 +78,7 @@ export async function Experiences() {
           {" "}
           <a className="xcard x5" href="#events" data-filter="social" data-reveal="" data-d="2" aria-label="Social meetups — see meetup plans">
             <div className="ph" data-label="Crowds at Mecca Masjid at night">
-              <img src="assets/img/mecca-masjid-1200.jpg" srcSet="assets/img/mecca-masjid-640.jpg 640w, assets/img/mecca-masjid-1200.jpg 1200w, assets/img/mecca-masjid-1920.jpg 1920w" sizes="(min-width:900px) 30vw, 100vw" width="3840" height="2880" alt="A crowd gathered in the evening below the Mecca Masjid in Hyderabad, its arches lit in purple, green and gold" loading="lazy" decoding="async" />
+              <img src="assets/img/w/mecca-masjid-1200.webp" srcSet="assets/img/w/mecca-masjid-480.webp 480w, assets/img/w/mecca-masjid-800.webp 800w, assets/img/w/mecca-masjid-1200.webp 1200w, assets/img/w/mecca-masjid-1600.webp 1600w" sizes="(min-width:900px) 30vw, 100vw" width="3840" height="2880" alt="A crowd gathered in the evening below the Mecca Masjid in Hyderabad, its arches lit in purple, green and gold" loading="lazy" decoding="async" />
             </div>
             <span className="n">05</span>
             <h3>{t("Social Meetups")}</h3>
@@ -91,7 +91,7 @@ export async function Experiences() {
           {" "}
           <a className="xcard x6" href="#events" data-filter="gems" data-reveal="" aria-label="Hidden gems — see hidden gem plans">
             <div className="ph" data-label="Qutb Shahi Tombs lit at night">
-              <img src="assets/img/qutb-shahi-1200.jpg" srcSet="assets/img/qutb-shahi-640.jpg 640w, assets/img/qutb-shahi-1200.jpg 1200w, assets/img/qutb-shahi-1920.jpg 1920w" sizes="100vw" width="3840" height="2560" alt="The domes of the Qutb Shahi Tombs in Hyderabad, softly lit against the night sky" loading="lazy" decoding="async" />
+              <img src="assets/img/w/qutb-shahi-1200.webp" srcSet="assets/img/w/qutb-shahi-480.webp 480w, assets/img/w/qutb-shahi-800.webp 800w, assets/img/w/qutb-shahi-1200.webp 1200w, assets/img/w/qutb-shahi-1600.webp 1600w" sizes="100vw" width="3840" height="2560" alt="The domes of the Qutb Shahi Tombs in Hyderabad, softly lit against the night sky" loading="lazy" decoding="async" />
             </div>
             <span className="n">06</span>
             <h3>{t("Hidden Gems")}</h3>

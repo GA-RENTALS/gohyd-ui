@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PublicEnquiryForm } from "@/components/site/PublicEnquiryForm";
-import { contentText, getCmsPage, listFaqs, type PublicPage } from "@/lib/customer/public-content";
+import { MembershipPlans } from "@/components/site/MembershipPlans";
+import { contentText, getCmsPage, listFaqs, listMembershipPlans, type MembershipPlan, type PublicPage } from "@/lib/customer/public-content";
 import { pageMetadata } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
@@ -37,6 +38,10 @@ export default async function PublicContentPage({ params }: Props) {
   if (slug === "faqs") {
     try { faqs = await listFaqs(); } catch { faqFailed = true; }
   }
+  let plans: MembershipPlan[] = [];
+  if (slug === "membership") {
+    try { plans = await listMembershipPlans(); } catch { /* the enquiry form still works without the plan list */ }
+  }
 
   const title = page?.title || titles[slug];
   const isEnquiry = slug === "contact" || slug === "corporate" || slug === "membership";
@@ -52,7 +57,8 @@ export default async function PublicContentPage({ params }: Props) {
           {slug === "how-it-works" && !page?.body && <div className="bk-card"><h2>Choose a plan and book</h2><p className="bk-prose">Browse a trip or experience, check its details and available dates, then follow the booking steps. Your account keeps your booking details and payment balance in one place.</p><p><Link className="btn" href="/trips">Browse trips</Link></p></div>}
           {slug === "faqs" && (faqFailed ? <p className="bk-error" role="alert">FAQs are unavailable right now.</p> : faqs.length ? <div className="bk-card"><h2>Common questions</h2>{faqs.map((faq) => <details className="bk-more" key={faq.id}><summary>{faq.question}</summary><p className="bk-prose">{faq.answer}</p></details>)}</div> : !page?.body ? <div className="bk-card bk-prose">Questions about a particular trip are answered on that trip's detail page. For anything else, <Link href="/contact">send us a message</Link>.</div> : null)}
           {slug === "community" && !page?.body && <div className="bk-card bk-prose"><p>GoHyderabad is for people who want to explore the city and nearby places together. Browse the next plans, meet the group at an event, and keep up with announcements on Instagram.</p><p><Link href="/experiences">See experiences</Link> · <a href="https://www.instagram.com/gohyderabad/" target="_blank" rel="noopener noreferrer">Follow GoHyderabad on Instagram ↗</a></p></div>}
-          {slug === "membership" && !page?.body && <div className="bk-card bk-prose"><p>Interested in a GoHyderabad membership? Leave your details and the team can share the current membership information with you.</p></div>}
+          {slug === "membership" && plans.length > 0 && <MembershipPlans plans={plans} />}
+          {slug === "membership" && !page?.body && !plans.length && <div className="bk-card bk-prose"><p>Interested in a GoHyderabad membership? Leave your details and the team can share the current membership information with you.</p></div>}
           {slug === "corporate" && !page?.body && <div className="bk-card bk-prose"><p>Planning a team outing in or around Hyderabad? Tell us about your group, preferred dates and the kind of day you have in mind.</p></div>}
           {slug === "contact" && !page?.body && <div className="bk-card bk-prose"><p>Have a question about a trip, event or booking? Send a message and the GoHyderabad team will get back to you.</p></div>}
         </div>

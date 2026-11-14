@@ -228,6 +228,9 @@ const DICT: Record<string, Entry> = {
   "Format": { te: "ఫార్మాట్", hi: "फ़ॉर्मेट" },
   "Game format": { te: "ఆట ఫార్మాట్", hi: "खेल का फ़ॉर्मेट" },
   "Rules": { te: "నియమాలు", hi: "नियम" },
+  "Cancellation": { te: "రద్దు", hi: "रद्द करना" },
+  "No refund if you cancel.": { te: "రద్దు చేస్తే రీఫండ్ ఉండదు.", hi: "रद्द करने पर रिफ़ंड नहीं मिलेगा।" },
+  "Refunds are sent back by UPI by our team, and you'll get a WhatsApp message when it's done.": { te: "రీఫండ్‌ను మా టీమ్ UPI ద్వారా పంపుతుంది, పంపగానే మీకు WhatsApp సందేశం వస్తుంది.", hi: "रिफ़ंड हमारी टीम UPI से भेजती है, और भेजते ही आपको WhatsApp पर संदेश मिलेगा।" },
   "About this trip": { te: "ఈ ట్రిప్ గురించి", hi: "इस ट्रिप के बारे में" },
   "About this event": { te: "ఈ ఈవెంట్ గురించి", hi: "इस इवेंट के बारे में" },
   "About this plan": { te: "ఈ ప్లాన్ గురించి", hi: "इस प्लान के बारे में" },
@@ -292,6 +295,22 @@ const DICT: Record<string, Entry> = {
   "Enter your mobile number": { te: "మీ మొబైల్ నంబర్ నమోదు చేయండి", hi: "अपना मोबाइल नंबर लिखें" },
   "Enter your email": { te: "మీ ఈమెయిల్ నమోదు చేయండి", hi: "अपना ईमेल लिखें" },
   "Add a note for the event team": { te: "ఈవెంట్ బృందానికి ఒక గమనిక రాయండి", hi: "इवेंट टीम के लिए नोट लिखें" },
+  // ----- homepage plans, coupons, newsletter (added 14 Nov 2026) -----
+  "Plan your next trip": { te: "మీ తదుపరి ట్రిప్‌ను ప్లాన్ చేయండి", hi: "अपनी अगली ट्रिप की योजना बनाएं" },
+  "plans": { te: "ప్లాన్‌లు", hi: "प्लान" },
+  "Treks, forts, lakes, waterfalls and more — dates announced soon": { te: "ట్రెక్‌లు, కోటలు, సరస్సులు, జలపాతాలు మరియు మరిన్ని — తేదీలు త్వరలో ప్రకటిస్తాం", hi: "ट्रेक, किले, झीलें, झरने और बहुत कुछ — तारीखें जल्द घोषित होंगी" },
+  "View plan": { te: "ప్లాన్ చూడండి", hi: "प्लान देखें" },
+  "All": { te: "అన్నీ", hi: "सभी" },
+  "Photo": { te: "ఫోటో", hi: "फ़ोटो" },
+  "applied": { te: "వర్తింపజేయబడింది", hi: "लागू हुआ" },
+  "Remove coupon": { te: "కూపన్ తీసివేయండి", hi: "कूपन हटाएं" },
+  "Checking…": { te: "తనిఖీ చేస్తున్నాం…", hi: "जांच रहे हैं…" },
+  "This coupon code is not valid.": { te: "ఈ కూపన్ కోడ్ చెల్లదు.", hi: "यह कूपन कोड मान्य नहीं है।" },
+  "New trips and events by email": { te: "కొత్త ట్రిప్‌లు, ఈవెంట్లు ఈమెయిల్‌లో", hi: "नई ट्रिप्स और इवेंट्स ईमेल पर" },
+  "Subscribe": { te: "సబ్‌స్క్రైబ్ చేయండి", hi: "सब्सक्राइब करें" },
+  "By subscribing you agree to receive our emails. Unsubscribe any time.": { te: "సబ్‌స్క్రైబ్ చేయడం ద్వారా మా ఈమెయిల్‌లు పొందడానికి మీరు అంగీకరిస్తున్నారు. ఎప్పుడైనా అన్‌సబ్‌స్క్రైబ్ చేయవచ్చు.", hi: "सब्सक्राइब करके आप हमारे ईमेल पाने के लिए सहमत हैं। कभी भी अनसब्सक्राइब कर सकते हैं।" },
+  "You're on the list. New trips and events will land in your inbox.": { te: "మీరు జాబితాలో ఉన్నారు. కొత్త ట్రిప్‌లు, ఈవెంట్లు మీ ఇన్‌బాక్స్‌కు వస్తాయి.", hi: "आप सूची में हैं। नई ट्रिप्स और इवेंट्स आपके इनबॉक्स में आएंगे।" },
+  "Couldn't sign you up. Please try again.": { te: "సైన్ అప్ కాలేదు. మళ్లీ ప్రయత్నించండి.", hi: "साइन अप नहीं हो सका। कृपया फिर से कोशिश करें।" },
 };
 
 export type T = (english: string) => string;

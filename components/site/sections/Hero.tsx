@@ -8,7 +8,7 @@ export async function Hero() {
     <section className="hero" id="home" aria-labelledby="hero-title">
       <div className="hero-photo" id="hero-photo">
         <div className="ph" style={{ position: "absolute", inset: "0" }} data-label="Charminar at night, Hyderabad">
-          <img src="assets/img/hero-night-1200.jpg" srcSet="assets/img/hero-night-640.jpg 640w, assets/img/hero-night-1200.jpg 1200w, assets/img/hero-night-1920.jpg 1920w" sizes="100vw" width="3840" height="2558" alt="Charminar's arches and minarets lit warm against the dark night sky, photographed from below with bamboo scaffolding on the minarets" loading="eager" fetchPriority="high" decoding="async" />
+          <img src="assets/img/w/hero-night-1200.webp" srcSet="assets/img/w/hero-night-480.webp 480w, assets/img/w/hero-night-800.webp 800w, assets/img/w/hero-night-1200.webp 1200w, assets/img/w/hero-night-1600.webp 1600w" sizes="100vw" width="3840" height="2558" alt="Charminar's arches and minarets lit warm against the dark night sky, photographed from below with bamboo scaffolding on the minarets" loading="eager" fetchPriority="high" decoding="async" />
         </div>
       </div>
       <div className="wrap">

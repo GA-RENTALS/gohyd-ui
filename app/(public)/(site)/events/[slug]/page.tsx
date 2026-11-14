@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { EventBookingPanel } from "@/components/booking/EventBookingPanel";
 import { EventEnquiryPanel } from "@/components/booking/EventEnquiryPanel";
+import { cutoffLine, refundTierLines } from "@/lib/customer/refunds";
 import { EventHeroImage } from "@/components/booking/EventHeroImage";
 import { MobileBookBar } from "@/components/booking/MobileBookBar";
 import { getEvent } from "@/lib/customer/server";
@@ -47,8 +48,13 @@ async function loadPageData(slug: string): Promise<EventPageData | null> {
   const event = await getEvent(slug).catch(() => null);
   if (event) {
     // No poster uploaded yet for the featured event (e.g. seeded without file storage): use the bundled one.
-    const cover_url = event.cover_url || (event.slug === FEATURED_EVENT_SLUG ? FEATURED_EVENT_POSTER : null);
-    return { ...event, cover_url, is_live: true };
+    // Seeded plan events have no uploaded cover yet: use the plan card's photo.
+    const plan = getPlanBySlug(event.slug);
+    const cover_url = event.cover_url
+      || (event.slug === FEATURED_EVENT_SLUG ? FEATURED_EVENT_POSTER : plan ? `/${plan.photo.src.replace(/^\//, "")}` : null);
+    // ₹0 means "price not announced yet" (e.g. the upcoming plan events) unless the event is marked free.
+    const price = event.price !== null && (Number(event.price) > 0 || event.is_free) ? event.price : null;
+    return { ...event, cover_url, price, is_live: true };
   }
 
   const plan = getPlanBySlug(slug);
@@ -193,7 +199,8 @@ export default async function EventPage({ params }: Props) {
     id: "event-about", label: t("tab.about"), title: isEvent ? t("About this event") : t("About this plan"),
     node: (
       <>
-        {event.cover_url && <EventHeroImage src={event.cover_url} alt={`${event.title} poster`} />}
+        {event.cover_url && <EventHeroImage src={event.cover_url} alt={event.cover_alt || `${event.title} poster`} />}
+        {event.cover_credit && <p className="bk-hint" style={{ marginTop: 6, fontSize: 12 }}>{t("Photo")}: {event.cover_credit}</p>}
         {event.image_caption && <p className="bk-hint" style={{ marginTop: 8 }}>{event.image_caption}</p>}
         {event.summary && <p className="bk-lede" style={{ marginTop: 18 }}>{event.summary}</p>}
         {facts.length > 0 && <p className="bk-note">{facts.join(" · ")}</p>}
@@ -254,6 +261,20 @@ export default async function EventPage({ params }: Props) {
   if (event.inclusions.length) sections.push({ id: "event-includes", label: t("Includes"), title: t("What's included"), node: list(event.inclusions) });
   if (event.exclusions.length) sections.push({ id: "event-excludes", label: t("Excludes"), title: t("What's not included"), node: list(event.exclusions) });
   if (event.rules.length) sections.push({ id: "event-rules", label: t("Rules"), title: t("Rules"), node: <ul className="bk-list bk-rules">{event.rules.map((t, i) => <li key={i}>{t}</li>)}</ul> });
+  if (event.is_live && event.price !== null && event.cancellation_cutoff_hours !== undefined) {
+    const paid = Number(event.price) > 0;
+    const tiers = refundTierLines(event.refund_policy ?? []);
+    sections.push({
+      id: "event-cancellation", label: t("Cancellation"), title: t("Cancellation & refunds"),
+      node: (
+        <ul className="bk-list">
+          <li>{cutoffLine(event.cancellation_cutoff_hours)}</li>
+          {paid && (tiers.length ? tiers.map((line) => <li key={line}>{line}.</li>) : <li>{t("No refund if you cancel.")}</li>)}
+          {paid && tiers.length > 0 && <li>{t("Refunds are sent back by UPI by our team, and you'll get a WhatsApp message when it's done.")}</li>}
+        </ul>
+      ),
+    });
+  }
   if (event.faqs.length) {
     sections.push({
       id: "event-faq", label: t("FAQs"), title: t("FAQs"),
@@ -268,6 +289,7 @@ export default async function EventPage({ params }: Props) {
       <h1 className="bk-title">{event.title}</h1>
       <div className="bk-chips">
         {event.is_featured && <span className="bk-chip bk-chip-hot">{t("Hot event")}</span>}
+        {!next && <span className="bk-chip">{t("Upcoming")}</span>}
         {event.category && <span className="bk-chip">{event.category}</span>}
         {venue && <span className="bk-chip">{venue}</span>}
       </div>
@@ -282,7 +304,7 @@ export default async function EventPage({ params }: Props) {
           ))}
         </div>
 
-        {event.is_live ? (
+        {event.is_live && event.price !== null ? (
           <EventBookingPanel
             slug={event.slug}
             title={event.title}

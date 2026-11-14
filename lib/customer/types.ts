@@ -42,6 +42,9 @@ export type EventRegistrationType = "INDIVIDUAL" | "GROUP" | "BOTH";
 export type EventFormatDetail = { label: string; value: string };
 export type EventDetail = {
   id: string;
+  /** Alt text and photographer / licence line of the uploaded cover (empty when none). */
+  cover_alt?: string;
+  cover_credit?: string;
   slug: string;
   title: string;
   summary: string;
@@ -53,6 +56,8 @@ export type EventDetail = {
   next_date: string | null;
   next_time_tbd: boolean;
   is_featured: boolean;
+  /** A free event takes bookings at ₹0; otherwise ₹0 means the price isn't announced yet. */
+  is_free?: boolean;
   booking_whatsapp_number: string;
   venue_name: string;
   venue_address: string;
@@ -66,6 +71,10 @@ export type EventDetail = {
   registration_type: EventRegistrationType;
   max_participants_per_booking: number | null;
   reservation_hold_hours: number;
+  /** Online cancellation closes this many hours before the start. */
+  cancellation_cutoff_hours?: number;
+  /** Refund tiers, most generous first. Empty = no refund on cancellation. */
+  refund_policy?: EventRefundTier[];
   highlights: string[];
   faqs: { question: string; answer: string }[];
   headline: string;
@@ -86,6 +95,9 @@ export type EventBooking = {
   contact_name: string;
   participant_count: number;
   unit_price: string | null;
+  /** Taken off by a coupon (0 when none). */
+  discount_amount?: string;
+  coupon_code?: string | null;
   total_amount: string;
   reserved_until: string | null;
   confirmed_at: string | null;
@@ -102,7 +114,16 @@ export type EventBooking = {
   payment: EventPayment | null;
   payment_submitted: boolean;
   payment_submitted_at: string | null;
+  cancelled_at?: string | null;
+  cancelled_by_customer?: boolean;
+  /** Only while the booking is active: whether it can be cancelled online now, and what that would refund. */
+  cancellation?: EventCancellation | null;
+  /** The refund on a cancelled, paid booking (sent back by UPI by our team). */
+  refund?: EventRefund | null;
 };
+export type EventCancellation = { allowed: boolean; until: string; refund_percent: number; refund_amount: string; paid: boolean };
+export type EventRefund = { status: "DUE" | "SENT" | "NOT_REFUNDED"; status_label: string; amount: string; upi_reference: string; recorded_at: string | null };
+export type EventRefundTier = { hours_before: number; refund_percent: number; note: string };
 export type EventPayment = { qr_url: string | null; upi_id: string; payee_name: string };
 
 export type PickupPoint = { id: string; name: string; address: string; pickup_time: string | null };

@@ -4,7 +4,7 @@ The customer website, booking pages and staff admin panel for GoHyderabad, in on
 
 **Stack:** Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS 4 (admin) · plain CSS (public site) · React Aria components · Recharts.
 
-> Read next: [GOHYDERABAD.md](GOHYDERABAD.md) (architecture and requirements coverage) and [FIXES.md](FIXES.md) (what is left to do, by priority). The Django API lives in the sibling project `backend/`.
+> Read next: [GOHYDERABAD.md](../GOHYDERABAD.md) (architecture and requirements coverage) and [FIXES.md](../FIXES.md) (what is left to do, by priority). Latest audit: [BUGS.md](../BUGS.md), [GAPS.md](../GAPS.md), [ADMIN_ENHANCEMENTS.md](../ADMIN_ENHANCEMENTS.md). The Django API lives in the sibling project `gohyd-api/`.
 
 ## Contents
 
@@ -168,7 +168,7 @@ There is no screen per table. `components/admin/ResourceView.tsx` builds a list 
 
 - It adds the `Authorization` header, refreshes an expired access token once, and turns failures into readable messages (including "Can't reach the server").
 - Calls that create bookings or payments send an `Idempotency-Key`, so retrying never double-charges.
-- Tokens are kept in the browser's local storage. Moving to secure cookies is planned (see FIXES.md).
+- Tokens are kept in the browser's local storage. Moving to secure cookies is planned (see [FIXES.md](../FIXES.md)).
 - Razorpay's payment window is loaded on demand by `lib/customer/razorpay.ts`; the server creates the order and verifies the signature.
 
 ## 11. Styling
@@ -193,8 +193,8 @@ To check a page: Chrome → F12 → device toolbar → 360 and 390 px, and look 
 ## 13. Checks and builds
 
 - `npx tsc --noEmit` and `npm run build` must both pass.
-- `npm audit --omit=dev` (see FIXES.md, F-11, for the current framework notice).
-- There are no automated frontend tests yet (FIXES.md, F-09).
+- `npm audit --omit=dev` (see [FIXES.md](../FIXES.md), F-11, for the current framework notice).
+- There are no automated frontend tests yet ([FIXES.md](../FIXES.md), F-09).
 - To build while the dev server is running, use `NEXT_DIST_DIR=.next-verify npm run build`; delete `.next-verify` afterwards. If a build changes `tsconfig.json`, restore it.
 
 ## 14. Troubleshooting
@@ -215,4 +215,4 @@ To check a page: Chrome → F12 → device toolbar → 360 and 390 px, and look 
 - One deployable: build with `npm run build`, run with `npm start` (or your host's Next.js runtime).
 - Set `NEXT_PUBLIC_BACKEND_URL` to the API's public address **at build time**, and add the site's address to the backend's `CORS_ALLOWED_ORIGINS` and the backend host as a verified tenant domain.
 - The admin is part of the same application. If it later needs its own release schedule or access boundary, it can be split out (`app/admin`, `components/admin`, `lib/admin`, `styles` are self-contained).
-- Full launch checklist with priorities: [FIXES.md](FIXES.md).
+- Full launch checklist with priorities: [FIXES.md](../FIXES.md).

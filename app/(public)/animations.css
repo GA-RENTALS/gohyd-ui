@@ -1,7 +1,7 @@
 /* Motion layer — added on top of globals.css. Reduced-motion users get none of it (see end of globals.css). */
 
 /* ---------- Page load: hero choreography ---------- */
-@keyframes lineUp { from { opacity: 0; transform: translateY(55%) rotate(1.5deg); filter: blur(10px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes lineUp { from { opacity: 0; transform: translateY(55%) rotate(1.5deg); } to { opacity: 1; transform: none; } }   /* no blur: filters can't run on the GPU */
 @keyframes fadeUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
 @keyframes dropIn { from { opacity: 0; transform: translateY(-100%); } to { opacity: 1; transform: none; } }
 @keyframes kenBurns { from { transform: scale(1.14); } to { transform: scale(1); } }
@@ -84,22 +84,13 @@
 @keyframes barGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes logoPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
 
-/* Images fade in as they arrive instead of popping, over a soft shimmer */
-.motion-ready .ph img:not(.is-loaded) { opacity: 0; }
-.motion-ready .ph img.is-loaded { animation: imgFade 1s var(--ease); }
+/* Images fade in as they arrive instead of popping, over a soft shimmer.
+   The hero photo is excluded: it is the first thing people see, so it must paint the moment it arrives (no JS wait). */
+.motion-ready .ph img:not(.is-loaded):not([fetchpriority="high"]) { opacity: 0; }
+.motion-ready .ph img.is-loaded:not([fetchpriority="high"]) { animation: imgFade 1s var(--ease); }
 .motion-ready .closing .ph img.is-loaded { animation-name: imgFadeOnly; }
 .motion-ready .ph::before { content: ""; position: absolute; z-index: 1; top: 0; bottom: 0; left: -100%; width: 300%; pointer-events: none; background: linear-gradient(100deg, transparent 40%, rgba(255,255,255,.28) 50%, transparent 60%); animation: shimmer 1.6s linear infinite; transition: opacity .5s; }
-.motion-ready .ph:has(img.is-loaded)::before, .ph.img-failed::before { opacity: 0; animation: none; }
-
-/* Splash while the first screen loads */
-.preloader { position: fixed; z-index: 1000; inset: 0; display: grid; place-content: center; justify-items: center; gap: 26px; background: var(--char); transition: opacity .7s var(--ease), visibility .7s; }
-.preloader img { width: 84px; height: 84px; border-radius: 50%; animation: logoPulse 1.6s ease-in-out infinite; }
-.preloader .bar { display: block; width: 160px; height: 2px; overflow: hidden; background: rgba(243,238,226,.14); }
-.preloader .bar::after { content: ""; display: block; height: 100%; background: var(--lime); transform-origin: left; animation: barGrow 2.2s var(--ease) both; }
-html:not(.motion-ready) .preloader { display: none; }
-.motion-go .preloader { opacity: 0; visibility: hidden; pointer-events: none; }
-/* hold the hero choreography until the splash lifts */
-.motion-ready:not(.motion-go) .header, .motion-ready:not(.motion-go) .hero h1 span, .motion-ready:not(.motion-go) .hero-place, .motion-ready:not(.motion-go) .hero-copy > p, .motion-ready:not(.motion-go) .hero-actions, .motion-ready:not(.motion-go) .hero-foot, .motion-ready:not(.motion-go) .hero-caption, .motion-ready:not(.motion-go) .hero-photo .ph img { animation-play-state: paused; }
+.motion-ready .ph:has(img.is-loaded)::before, .ph.img-failed::before, .hero-photo .ph::before { opacity: 0; animation: none; }
 
 /* ================= UI polish ================= */
 /* Cursor spotlight on cards */

@@ -20,7 +20,7 @@
 /* page */
 .ac-content { min-width: 0; padding: 22px clamp(18px, 2.4vw, 38px) 64px; }
 .ac-hero { position: relative; display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; min-height: 210px; margin-bottom: 20px; padding: 28px 30px; overflow: hidden; border-radius: 16px; color: #fff;
-  background: linear-gradient(90deg, rgba(18,19,14,.78) 0%, rgba(18,19,14,.35) 55%, rgba(18,19,14,.6) 100%), url("/assets/img/hero-night-1200.jpg") center 40% / cover; }
+  background: linear-gradient(90deg, rgba(18,19,14,.78) 0%, rgba(18,19,14,.35) 55%, rgba(18,19,14,.6) 100%), url("/assets/img/w/hero-night-1200.webp") center 40% / cover; }
 .ac-hero.is-short { min-height: 150px; }
 .ac-hero h1 { margin: 0 0 10px; font: 500 clamp(36px, 4vw, 56px)/1 var(--display); letter-spacing: .01em; text-transform: uppercase; }
 .ac-hero p { margin: 0; max-width: 46ch; font-size: 16px; line-height: 1.5; color: rgba(255,255,255,.92); }
@@ -97,6 +97,8 @@
 .ac-dl .is-late { color: #a1312a; }
 .ac-people { margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.7; }
 .ac-cancel { grid-column: 1 / -1; }
+.ac-card.is-event .ac-cancel, .ac-note { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--ac-line); }
+.ac-cancel .ac-caption { margin: 8px 0 12px; }
 .ac-cancel label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ac-muted); }
 .ac-cancel input { width: 100%; max-width: 420px; padding: 11px 12px; border: 1px solid #cfd2c4; border-radius: 8px; font: inherit; background: #fff; color: var(--ac-ink); }
 .ac-danger { padding: 0; border: 0; background: none; color: #a1312a; font: 600 14px/1 var(--sans); text-decoration: underline; cursor: pointer; text-transform: none; letter-spacing: 0; }

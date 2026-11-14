@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { API_URL } from "@/lib/config";
+import { isRemote, resized, resizedSrcSet } from "@/lib/media";
 import { eventDateLabel, eventImage, eventPriceLabel, popupEvents, type PublicEvent } from "./upcomingEvents";
 
 const DISMISS_KEY = "gohyd:events-popup-dismissed";
@@ -104,7 +105,9 @@ export function UpcomingEventsPopup() {
 
         <a className="ev-popup-poster" href={href} onClick={rememberDismissed}>
           {poster
-            ? <img src={poster} alt={`${event.title} poster`} />
+            ? <img src={resized(poster)} srcSet={isRemote(poster) ? resizedSrcSet(poster, [384, 640, 828]) : undefined}
+                sizes="(min-width:700px) 300px, 85vw" alt={`${event.title} poster`} decoding="async"
+                onError={(e) => { const img = e.currentTarget; if (img.src !== poster) { img.removeAttribute("srcset"); img.src = poster; } }} />
             : <span className="ev-popup-noposter">{event.title}</span>}
         </a>
 

@@ -1,5 +1,8 @@
 // @ts-nocheck
-// Original page script, unchanged. Runs once Leaflet has loaded (or failed to).
+// Original page script. Runs as soon as the page content is ready; the map part loads Leaflet itself, only when needed.
+const LEAFLET_CSS = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
+const LEAFLET_JS = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";
+
 export function initPage() {
     (function () {
       "use strict";
@@ -111,6 +114,8 @@ export function initPage() {
       // Map
       var rows = Array.prototype.slice.call(document.querySelectorAll(".mitem"));
       var mapEl = document.getElementById("map");
+      // Leaflet and its map tiles load only when the map is about to scroll into view (saves ~400 KB on first load).
+      function buildMap() {
       if (window.L && mapEl) {
         var map = L.map(mapEl, { scrollWheelZoom: false, zoomControl: true, dragging: !L.Browser.mobile, tap: false });
         L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", { maxZoom: 18, attribution: "Tiles &copy; Esri &mdash; Esri, HERE, Garmin, OpenStreetMap contributors" }).addTo(map);
@@ -128,7 +133,7 @@ export function initPage() {
           b.appendChild(h); b.appendChild(p); b.appendChild(a); if (im) w.appendChild(im); w.appendChild(b); return w;
         }
         var items = rows.map(function (r) {
-          var d = { name: r.dataset.name, text: r.dataset.text, group: r.dataset.group, href: r.href, ll: [+r.dataset.lat, +r.dataset.lng], slug: r.dataset.slug, img: r.dataset.slug ? "assets/img/" + r.dataset.slug + "-640.jpg" : "", row: r };
+          var d = { name: r.dataset.name, text: r.dataset.text, group: r.dataset.group, href: r.href, ll: [+r.dataset.lat, +r.dataset.lng], slug: r.dataset.slug, img: r.dataset.slug ? "assets/img/w/" + r.dataset.slug + "-480.webp" : "", row: r };
           d.marker = L.marker(d.ll, { icon: pinIcon(d.img, 0, r.dataset.emoji), title: d.name, keyboard: true }).bindPopup(popup(d), { closeButton: true, autoPanPadding: [30, 30] });
           return d;
         });
@@ -164,14 +169,34 @@ export function initPage() {
           });
         });
         document.getElementById("map-fit").addEventListener("click", function () { map.closePopup(); map.flyToBounds(allBounds, { padding: [40, 40], duration: 1.1 }); });
-        window.addEventListener("load", function () { map.invalidateSize(); });
+        setTimeout(function () { map.invalidateSize(); }, 0);
       } else {
         var fit = document.getElementById("map-fit"); if (fit) fit.hidden = true;
         if (mapEl) { mapEl.textContent = "The interactive map couldn't load. Use the list to open each place in Google Maps."; mapEl.style.cssText = "display:grid;place-items:center;padding:24px;text-align:center;color:#5a5a4d"; }
       }
+      }
+      function loadLeaflet() {
+        if (window.L) return Promise.resolve();
+        return new Promise(function (resolve) {
+          var css = document.createElement("link"); css.rel = "stylesheet"; css.href = LEAFLET_CSS; document.head.appendChild(css);
+          var js = document.createElement("script"); js.src = LEAFLET_JS; js.async = true;
+          js.onload = resolve; js.onerror = resolve;   // on failure buildMap shows the "map couldn't load" note
+          document.body.appendChild(js);
+        });
+      }
+      if (mapEl) {
+        if ("IntersectionObserver" in window) {
+          var mapWatch = new IntersectionObserver(function (entries) {
+            if (!entries.some(function (e) { return e.isIntersecting; })) return;
+            mapWatch.disconnect();
+            loadLeaflet().then(buildMap);
+          }, { rootMargin: "800px 0px" });
+          mapWatch.observe(mapEl);
+        } else loadLeaflet().then(buildMap);
+      }
 
       // Events filter (chips + experience cards)
-      var chips = Array.prototype.slice.call(document.querySelectorAll(".chip"));
+      var chips = Array.prototype.slice.call(document.querySelectorAll(".chips:not(.plan-chips) .chip"));
       var cards = Array.prototype.slice.call(document.querySelectorAll(".ecard"));
       function filter(cat) {
         // Only a few upcoming events are listed; if none match the category, keep every event visible.

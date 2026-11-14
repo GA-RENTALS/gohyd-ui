@@ -23,19 +23,10 @@ export default function Motion() {
       cleanups.push(() => { cancelAnimationFrame(id); lenis.destroy(); });
     }
 
-    // Splash: lift once the hero image and fonts are ready (or after a cap)
-    const heroImg = document.querySelector<HTMLImageElement>("#home .ph img");
-    const heroReady = new Promise<void>((res) => {
-      if (!heroImg || heroImg.complete) return res();
-      heroImg.addEventListener("load", () => res(), { once: true });
-      heroImg.addEventListener("error", () => res(), { once: true });
-    });
-    const fontsReady = document.fonts ? document.fonts.ready.then(() => undefined) : Promise.resolve();
-    const minWait = new Promise<void>((res) => setTimeout(res, 900));
-    const cap = new Promise<void>((res) => setTimeout(res, 3500));
-    Promise.race([Promise.all([heroReady, fontsReady, minWait]), cap]).then(() => root.classList.add("motion-go"));
+    // The hero animates immediately (no splash screen): it is already allowed by the class set in <head>.
+    root.classList.add("motion-go");
 
-    // Fade images in on load, and warm the rest of the page in the background
+    // Fade images in as they arrive. Lazy images stay lazy: they load when scrolled near, not all at once.
     const imgs = Array.from(document.querySelectorAll<HTMLImageElement>(".ph img"));
     imgs.forEach((img) => {
       if (img.complete && img.naturalWidth) img.classList.add("is-loaded");
@@ -44,13 +35,6 @@ export default function Motion() {
         img.addEventListener("error", () => img.classList.add("is-loaded"), { once: true });
       }
     });
-    const warm = () => {
-      imgs.forEach((img, i) => {
-        if (img.loading === "lazy") setTimeout(() => (img.loading = "eager"), i * 120);
-      });
-    };
-    if (document.readyState === "complete") setTimeout(warm, 800);
-    else window.addEventListener("load", () => setTimeout(warm, 800), { once: true });
 
     // Active section in nav
     const links = Array.from(document.querySelectorAll<HTMLAnchorElement>("#nav-links a[href^='#']"));

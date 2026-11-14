@@ -1,5 +1,6 @@
 import { serverT } from "@/lib/lang-server";
 import { CreditItem } from "./CreditItem";
+import { NewsletterSignup } from "./NewsletterSignup";
 import { CREDITS } from "./data/credits";
 import Link from "next/link";
 
@@ -11,7 +12,7 @@ export async function SiteFooter() {
         <div className="foot-grid">
           <div>
             <a className="brand" href="#home" aria-label="GoHyderabad home">
-              <img src="assets/logo.png" width="160" height="160" alt="" />
+              <img src="assets/logo-96.webp" width="96" height="96" alt="" />
               <span>
                 <b>GoHyderabad</b>
                 <small>{t("Meet · Explore · Experience")}</small>
@@ -38,6 +39,7 @@ export async function SiteFooter() {
           </nav>
           <div>
             <h2>{t("Stay in the loop")}</h2>
+            <NewsletterSignup />
             <div className="foot-links">
               <a href="https://www.instagram.com/gohyderabad/" target="_blank" rel="noopener noreferrer">Instagram · @gohyderabad ↗</a>
               <a href="https://www.instagram.com/goadventure.in/" target="_blank" rel="noopener noreferrer">Instagram · @goadventure.in ↗</a>

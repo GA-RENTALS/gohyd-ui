@@ -33,8 +33,12 @@ export const customerApi = {
     api<{ status: string }>("/enquiries/", { method: "POST", auth: false, json: data }),
 
   /** Holds slots on an event date (capacity-checked on the server). Staff confirm it afterwards. */
-  createEventBooking: (data: { event: string; schedule: string; name: string; phone: string; email?: string; participant_count: number; note?: string; consent_to_contact: boolean }) =>
+  createEventBooking: (data: { event: string; schedule: string; name: string; phone: string; email?: string; participant_count: number; note?: string; coupon?: string; consent_to_contact: boolean }) =>
     api<EventBooking>("/event-bookings/", { method: "POST", auth: false, json: data }),
+  /** What a coupon takes off an event booking. Nothing is reserved; the booking checks the coupon again. */
+  previewEventCoupon: (data: { event: string; participant_count: number; code: string; phone?: string }) =>
+    api<CouponPreview>("/event-bookings/coupon-preview/", { method: "POST", auth: false, json: data }),
+  newsletterSignup: (email: string) => api<{ status: string }>("/newsletter/", { method: "POST", auth: false, json: { email, consent: true } }),
   /** Reference + the phone used to book. */
   eventBookingStatus: (reference: string, phone: string) =>
     api<EventBooking>(`/event-bookings/${encodeURIComponent(reference.trim().toUpperCase())}/?phone=${encodeURIComponent(phone)}`, { auth: false }),
@@ -73,6 +77,8 @@ export const customerApi = {
   bookings: async () => results(await api<Booking[] | { results: Booking[] }>("/bookings/")),
   /** Event bookings made while signed in or with this account's phone number. */
   myEventBookings: () => api<EventBooking[]>("/me/event-bookings/"),
+  cancelEventBooking: (reference: string, reason: string) =>
+    api<EventBooking>(`/me/event-bookings/${encodeURIComponent(reference)}/cancel/`, { method: "POST", json: { reason } }),
   saveParticipants: (bookingId: string, people: Participant[]) =>
     api<Participant[]>(`/bookings/${bookingId}/participants/`, { method: "PUT", json: people }),
   activeWaiver: () => api<{ id: string; title: string; version: number; language: string; body: string }>("/safety-waivers/active/?lang=en", { auth: false }),

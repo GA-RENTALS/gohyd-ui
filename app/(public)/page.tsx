@@ -12,6 +12,7 @@ import { Events } from "@/components/site/sections/Events";
 import { Experiences } from "@/components/site/sections/Experiences";
 import { Explore } from "@/components/site/sections/Explore";
 import { Hero } from "@/components/site/sections/Hero";
+import { Plans } from "@/components/site/sections/Plans";
 import { How } from "@/components/site/sections/How";
 import { Stats } from "@/components/site/sections/Stats";
 import { Upcoming } from "@/components/site/sections/Upcoming";
@@ -23,16 +24,13 @@ export const metadata: Metadata = pageMetadata({ path: "/" });
 export default function Home() {
   return (
     <>
-      <div className="preloader" aria-hidden="true">
-        <img src="/assets/logo.png" alt="" width={84} height={84} />
-        <span className="bar" />
-      </div>
       <SiteSprite />
       <SiteHeader />
       <main id="main">
         <Hero />
         <ArchEdge />
         <Events />
+        <Plans />
         <Stats />
         <Experiences />
         <Upcoming />

@@ -1,12 +1,13 @@
 "use client";
 import { useT } from "@/components/site/LangProvider";
 import { useState } from "react";
+import { EventCouponBox } from "@/components/booking/EventCouponBox";
 import { customerApi } from "@/lib/customer/api";
 import { longDate, money, time as timeLower } from "@/lib/customer/format";
 import { FEATURED_EVENT_SLUG, FEATURED_EVENT_UPI_QR } from "@/components/site/data/featured-event";
 
 const time = (iso: string) => timeLower(iso).toUpperCase();
-import type { EventBooking, EventPayment, EventRegistrationType, EventSchedule } from "@/lib/customer/types";
+import type { CouponPreview, EventBooking, EventPayment, EventRegistrationType, EventSchedule } from "@/lib/customer/types";
 
 const fullDate = (iso: string) =>
   new Date(iso).toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" });
@@ -226,6 +227,7 @@ export function EventBookingPanel({
   const [error, setError] = useState("");
   const [booking, setBooking] = useState<EventBooking | null>(null);
   const [seatsOverride, setSeatsOverride] = useState<Record<string, number | null>>({});
+  const [coupon, setCoupon] = useState<CouponPreview | null>(null);
 
   const selected = schedules.find((s) => s.id === scheduleId);
   const capacity = selected?.capacity ?? null;
@@ -235,7 +237,8 @@ export function EventBookingPanel({
   const groupBlocked = registrationType === "GROUP" && maxCount < 2;
   const participants = Math.min(Math.max(count, minCount), maxCount);
   const unit = price === null ? null : Number(price);
-  const total = unit === null ? null : unit * participants;
+  const listTotal = unit === null ? null : unit * participants;
+  const total = listTotal === null ? null : Math.max(0, listTotal - Number(coupon?.discount ?? 0));
 
   const registerText = [
     `Hello GoHyderabad, I would like to register for ${title}${selected ? ` on ${fullDate(selected.starts_at)}` : ""}.`,
@@ -255,7 +258,7 @@ export function EventBookingPanel({
     try {
       const result = await customerApi.createEventBooking({
         event: slug, schedule: selected.id, name: name.trim(), phone: phone.trim(), email: email.trim(),
-        participant_count: participants, note: note.trim(), consent_to_contact: consent,
+        participant_count: participants, note: note.trim(), coupon: coupon?.code, consent_to_contact: consent,
       });
       setSeatsOverride((prev) => ({ ...prev, [selected.id]: result.seats_left }));
       setBooking(result);
@@ -271,7 +274,7 @@ export function EventBookingPanel({
       {booking ? (
         <>
           <h2>Booking request received</h2>
-          <BookingResult key={booking.reference} booking={booking} phone={phone} onReset={() => { setBooking(null); setConsent(false); }} />
+          <BookingResult key={booking.reference} booking={booking} phone={phone} onReset={() => { setBooking(null); setConsent(false); setCoupon(null); }} />
         </>
       ) : (
         <>
@@ -287,8 +290,8 @@ export function EventBookingPanel({
 
           {!schedules.length ? (
             <>
-              <p className="bk-hint">There are no open dates for this event right now.</p>
-              {waRegister && <a className="btn event-whatsapp" href={waRegister} target="_blank" rel="noreferrer">Ask on WhatsApp</a>}
+              <p className="bk-hint">Upcoming — dates will be announced soon. Message us to register your interest.</p>
+              {waRegister && <a className="btn event-whatsapp" href={waRegister} target="_blank" rel="noreferrer">Register interest on WhatsApp</a>}
             </>
           ) : soldOut || groupBlocked ? (
             <>
@@ -334,7 +337,8 @@ export function EventBookingPanel({
                 <label htmlFor="notes">{t("Anything else?")} <span className="bk-label-optional">{t("Optional")}</span></label>
                 <textarea id="notes" maxLength={1000} placeholder={t("Add a note for the event team")} value={note} onChange={(e) => setNote(e.target.value)} />
               </div>
-              <div className="bk-total"><span>Estimated total{participants > 1 && unit !== null ? ` (${participants} × ${money(unit)})` : ""}</span><strong>{total !== null ? money(total) : "TBC"}</strong></div>
+              {unit !== null && unit > 0 && <EventCouponBox event={slug} participants={participants} phone={phone} applied={coupon} onChange={setCoupon} />}
+              <div className="bk-total"><span>Estimated total{participants > 1 && unit !== null ? ` (${participants} × ${money(unit)}${coupon ? ` − ${money(coupon.discount)}` : ""})` : ""}</span><strong>{total !== null ? money(total) : "TBC"}</strong></div>
               <label className="bk-check">
                 <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} required />
                 <span>{t("GoHyderabad may contact me about this registration request. I understand that submitting this form does not confirm my booking.")}</span>

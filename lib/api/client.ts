@@ -85,7 +85,8 @@ export function createApiClient({ baseUrl, storageKey }: { baseUrl: string; stor
   return refreshing;
 }
 
-  async function api<T = any>(path: string, init: RequestOptions = {}, retry = true): Promise<T> {
+  /** Sends the request with the access token, refreshing it once on a 401. Throws ApiError for any non-2xx answer. */
+  async function send(path: string, init: RequestOptions = {}, retry = true): Promise<Response> {
     const { auth = true, json, headers, ...rest } = init;
     const h = new Headers(headers);
     const isForm = typeof FormData !== "undefined" && json instanceof FormData;   // file uploads: the browser sets the multipart boundary
@@ -98,12 +99,32 @@ export function createApiClient({ baseUrl, storageKey }: { baseUrl: string; stor
     } catch {
       throw new ApiError(0, `Can't reach the API at ${new URL(baseUrl).origin}. Check that Django is running and CORS_ALLOWED_ORIGINS includes this site's origin.`);
     }
-    if (res.status === 401 && auth && retry && (await refresh())) return api<T>(path, init, false);
-    if (res.status === 204) return undefined as T;
-    const body = await res.json().catch(() => null);
-    if (!res.ok) throw new ApiError(res.status, messageFrom(body, res.statusText || "Request failed"), body);
-    return body as T;
+    if (res.status === 401 && auth && retry && (await refresh())) return send(path, init, false);
+    if (!res.ok) {
+      const body = await res.json().catch(() => null);
+      throw new ApiError(res.status, messageFrom(body, res.statusText || "Request failed"), body);
+    }
+    return res;
   }
 
-  return { api, tokenStore };
+  async function api<T = any>(path: string, init: RequestOptions = {}): Promise<T> {
+    const res = await send(path, init);
+    if (res.status === 204) return undefined as T;
+    return (await res.json().catch(() => null)) as T;
+  }
+
+  /** Fetches a file (e.g. a CSV export) with the same sign-in, and hands it to the browser as a download. */
+  async function download(path: string, fallbackName: string): Promise<void> {
+    const res = await send(path);
+    const disposition = res.headers.get("Content-Disposition") || "";
+    const name = /filename="([^"]+)"/.exec(disposition)?.[1] || fallbackName;
+    const url = URL.createObjectURL(await res.blob());
+    const link = Object.assign(document.createElement("a"), { href: url, download: name });
+    document.body.append(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  return { api, download, tokenStore };
 }
