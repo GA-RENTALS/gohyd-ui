@@ -5,7 +5,7 @@ import { API_URL } from "@/lib/config";
 export { ApiError };
 
 const client = createApiClient({ baseUrl: API_URL, storageKey: "gh_admin_tokens" });
-export const { api, tokenStore } = client;
+export const { api, download, tokenStore } = client;
 
 export const adminApi = {
   requestOtp: (phone_number: string) => api("/auth/request-otp/", { method: "POST", auth: false, json: { phone_number } }),
@@ -36,9 +36,17 @@ export const adminApi = {
   counts: () => api<Partial<Record<"payments" | "event_bookings" | "enquiries", number>>>("/admin/counts/"),
   search: (q: string) => api<{ results: SearchHit[] }>(`/admin/search/?q=${encodeURIComponent(q)}`),
   bookings: (qs: URLSearchParams) => api<ListPage<BookingRow>>(`/admin/lists/bookings/?${qs}`),
-  payments: (qs: URLSearchParams) => api<ListPage<any>>(`/admin/lists/payments/?${qs}`),
-  customers: (qs: URLSearchParams) => api<ListPage<CustomerRow>>(`/admin/lists/customers/?${qs}`),
+  payments: (qs: URLSearchParams) => api<PaymentsPage>(`/admin/lists/payments/?${qs}`),
+  /** Same filters as the list, as a CSV file. */
+  exportCsv: (path: string, qs: URLSearchParams, name: string) => { qs.set("export", "csv"); return download(`${path}?${qs}`, name); },
+  customers: (qs: URLSearchParams) => api<CustomersPage>(`/admin/lists/customers/?${qs}`),
+  marketing: <T>(tab: MarketingTab, qs: URLSearchParams) => api<MarketingPage<T>>(`/admin/marketing/${tab}/?${qs}`),
+  team: (qs: URLSearchParams) => api<TeamPage>(`/admin/team/?${qs}`),
+  inviteStaff: (body: { name: string; phone: string; role: string }) => api<TeamMember>("/admin/team/", { method: "POST", json: body }),
+  updateStaff: (id: string, body: { role?: string; active?: boolean }) => api<TeamMember>(`/admin/team/${id}/`, { method: "PATCH", json: body }),
   customer: (id: string) => api<CustomerPage>(`/admin/customers/${id}/`),
+  blockCustomer: (id: string, blocked: boolean, reason = "") => api<{ active: boolean }>(`/admin/customers/${id}/block/`, { method: "POST", json: { blocked, reason } }),
+  addCustomerNote: (id: string, text: string, channel: NoteChannel) => api<CustomerNote[]>(`/admin/customers/${id}/notes/`, { method: "POST", json: { text, channel } }),
   catalog: (kind: "trips" | "events", search = "") => api<{ results: CatalogItem[]; can_create: boolean }>(`/admin/catalog/${kind}/${search ? `?search=${encodeURIComponent(search)}` : ""}`),
   overview: (kind: "trip" | "event", id: string, schedule?: string) =>
     api<Overview>(`/admin/overview/${kind}s/${id}/${schedule ? `?schedule=${encodeURIComponent(schedule)}` : ""}`),
@@ -104,11 +112,35 @@ export type BookingRow = {
   id: string; type: "trip" | "event"; reference: string; name: string; phone: string; customer_id: string | null;
   title: string; parent_id: string; starts_at: string; people: number; total: string; paid: string; due: string;
   status: string; status_label: string; bucket: "awaiting" | "paid" | "cancelled";
-  checkout_id?: string; advance_due?: string; proof_url?: string | null; utr?: string; note?: string; created_at: string;
+  checkout_id?: string; advance_due?: string; proof_url?: string | null; utr?: string; utr_duplicate?: boolean; note?: string; staff_note?: string; created_at: string;
 };
-export type CustomerRow = { id: string; name: string; phone: string; email: string; joined: string; trip_bookings: number; event_bookings: number; spent: string; active: boolean };
+
+export type TripPayment = {
+  id: string; amount: string; status: string; kind: string; method: string; reference: string; name: string; phone: string;
+  customer_id: string; bookings: string[]; title: string; parent_id: string | null; failure_reason: string; created_at: string;
+};
+export type RefundRow = {
+  id: string; amount: string; status: string; reason: string; booking: string; booking_id: string; name: string; phone: string;
+  customer_id: string; title: string; parent_id: string; approved_by: string; created_at: string; updated_at: string;
+};
+/** Money at a glance on the Payments page. A figure is missing when the staff member can't see its source. */
+export type PaymentSummary = {
+  received_month?: { amount: string };
+  to_verify?: { count: number; amount: string };
+  refunds_waiting?: { count: number; amount: string };
+  balance_due?: { count: number; amount: string };
+  as_of: string;
+};
+export type PaymentsPage = ListPage<TripPayment | BookingRow | RefundRow> & { summary: PaymentSummary };
+export type CustomerRow = { id: string; name: string; phone: string; email: string; joined: string; trip_bookings: number; event_bookings: number; spent: string; due: string; active: boolean };
+export type CustomersPage = ListPage<CustomerRow> & { summary: { total: number; new_month: number; with_due: number; blocked: number } };
+export type NoteChannel = "note" | "call" | "whatsapp" | "email" | "in_person";
+export type CustomerNote = { id: string; channel: NoteChannel; text: string; by: string; created_at: string };
 export type CustomerPage = {
-  id: string; name: string; phone: string; email: string; language: string; joined: string; active: boolean; can_edit: boolean;
+  id: string; name: string; phone: string; email: string; language: string; joined: string; active: boolean;
+  can_edit: boolean; can_block: boolean; can_note: boolean;
+  /** null when the staff member may not see notes. */
+  notes: CustomerNote[] | null;
   stats: { trip_bookings: number; event_bookings: number; spent: string; due: string };
   trip_bookings: BookingRow[]; event_bookings: BookingRow[];
   payments: { id: string; amount: string; status: string; kind: string; method: string; reference: string; created_at: string }[];
@@ -129,4 +161,46 @@ export type Home = {
   activity: { type: string; at: string; name: string; text: string; amount: string; status: string; href: string }[];
   setup: Dashboard["setup"];
   can: Record<string, boolean>;
+};
+
+/* ---------- marketing ---------- */
+
+export type MarketingTab = "coupons" | "campaigns" | "subscribers" | "referrals";
+export type CouponRow = {
+  id: string; code: string; discount_label: string; percent: number | null; fixed_amount: string | null;
+  state: "active" | "scheduled" | "ended" | "paused"; is_active: boolean; uses: number; max_redemptions: number | null; per_user_limit: number;
+  discount_total: string; valid_from: string | null; valid_until: string | null; trips: string[]; trips_text: string;
+};
+export type CampaignRow = {
+  id: string; name: string; utm_campaign: string; is_active: boolean; starts_on: string | null; ends_on: string | null;
+  spend: string; visitors: number; bookings: number; revenue: string; cost_per_booking: string | null;
+};
+export type SubscriberRow = { id: string; email: string; consent_at: string; unsubscribed_at: string | null; subscribed: boolean };
+export type ReferralRow = {
+  id: string; name: string; is_active: boolean; referrer_reward: string; referee_discount: string; referrals: number; rewarded: number; rewards_owed: string;
+};
+export type MarketingSummary = {
+  coupons?: { live: number; uses_month: number; discount_month: string };
+  campaigns?: { running: number; spend_month: string };
+  subscribers?: { total: number; new_month: number };
+  referrals?: { month: number; unrewarded: number };
+};
+export type MarketingPage<T> = Omit<ListPage<T>, "can"> & {
+  summary: MarketingSummary;
+  can: { create: boolean; update: boolean; add_cost?: boolean; tabs: MarketingTab[] };
+};
+
+/* ---------- team ---------- */
+
+export type AccessLevel = "" | "view" | "edit" | "full";
+export type TeamMember = {
+  id: string; name: string; phone: string; email: string; role: string; is_admin: boolean; active: boolean;
+  last_sign_in: string | null; added_at: string; is_you: boolean; is_superuser: boolean;
+};
+export type RoleInfo = { name: string; description: string; access: Record<string, AccessLevel>; exists: boolean };
+export type TeamPage = {
+  results: TeamMember[];
+  roles: RoleInfo[];
+  areas: { key: string; label: string }[];
+  can: { manage: boolean; roles: string[] };
 };

@@ -122,3 +122,16 @@
 
 /* Sections filled from the backend stay hidden until they have content. */
 section[hidden] { display: none !important; }
+
+/* Footer newsletter sign-up */
+.foot-news { display: grid; gap: 8px; margin-bottom: 18px; }
+.foot-news label { color: var(--text-soft); font-size: 14px; }
+.foot-news-row { display: flex; gap: 8px; }
+.foot-news input { flex: 1; min-width: 0; height: 42px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; background: transparent; color: inherit; font: inherit; font-size: 14px; }
+.foot-news input:focus { outline: 2px solid var(--sand-light); outline-offset: 1px; }
+.foot-news button { height: 42px; padding: 0 16px; border: 0; border-radius: 10px; background: var(--sand-light); color: var(--char); font: inherit; font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
+.foot-news button:disabled { opacity: .6; cursor: default; }
+.foot-news small { color: var(--text-soft); font-size: 12px; }
+.foot-news-ok { margin: 0 0 18px; color: var(--sand-light); font-size: 14px; }
+.foot-news-error { margin: 0; color: #f2b3aa; font-size: 13px; }
+

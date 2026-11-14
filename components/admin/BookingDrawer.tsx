@@ -47,7 +47,7 @@ export function BookingDrawer({ row, onClose, onChanged, can }: {
               title: `Cancel ${row.reference}`,
               label: isTrip ? "Reason (a refund is requested automatically per the refund policy)" : "Reason",
               run: (reason) => act(() => isTrip ? adminApi.action("cancel-booking", { booking_id: row.id, reason })
-                : adminApi.update("event-registrations", row.id, { status: "CANCELLED", staff_note: reason }), "Booking cancelled"),
+                : adminApi.update("event-registrations", row.id, { status: "CANCELLED", staff_note: withNote(row.staff_note, `Cancelled: ${reason}`) }), "Booking cancelled"),
             })}>Cancel booking</Button>
           )}
         </>}>
@@ -82,4 +82,9 @@ export function BookingDrawer({ row, onClose, onChanged, can }: {
       )}
     </>
   );
+}
+
+/** Adds a line to the staff note instead of replacing what other staff wrote before. */
+function withNote(existing: string | undefined, line: string): string {
+  return [existing?.trim(), line].filter(Boolean).join("\n");
 }

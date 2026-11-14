@@ -51,8 +51,8 @@ async function loadPageData(slug: string): Promise<EventPageData | null> {
     const plan = getPlanBySlug(event.slug);
     const cover_url = event.cover_url
       || (event.slug === FEATURED_EVENT_SLUG ? FEATURED_EVENT_POSTER : plan ? `/${plan.photo.src.replace(/^\//, "")}` : null);
-    // A price of 0 means "not set yet" (the upcoming plan events): show "Ask for price", not ₹0.
-    const price = event.price !== null && Number(event.price) > 0 ? event.price : null;
+    // ₹0 means "price not announced yet" (e.g. the upcoming plan events) unless the event is marked free.
+    const price = event.price !== null && (Number(event.price) > 0 || event.is_free) ? event.price : null;
     return { ...event, cover_url, price, is_live: true };
   }
 
@@ -289,7 +289,7 @@ export default async function EventPage({ params }: Props) {
           ))}
         </div>
 
-        {event.is_live ? (
+        {event.is_live && event.price !== null ? (
           <EventBookingPanel
             slug={event.slug}
             title={event.title}

@@ -56,6 +56,12 @@ function isTrip(value: unknown): value is PublicTrip {
     && isNullableString(value.cover_url);
 }
 
+type PublicCategory = { slug: string; name: string };
+
+function isCategory(value: unknown): value is PublicCategory {
+  return isRecord(value) && typeof value.slug === "string" && typeof value.name === "string";
+}
+
 function isEvent(value: unknown): value is PublicEvent {
   return isRecord(value)
     && typeof value.slug === "string"
@@ -306,8 +312,11 @@ function renderEvents(events: PublicEvent[]): void {
   }
 }
 
-/** "Plan your next trip": published events with no date yet, in homepage plan order, with category chips. */
-function renderPlans(events: PublicEvent[]): void {
+/**
+ * "Plan your next trip": published events with no date yet, in homepage plan order, with category chips.
+ * Chips follow the admin's category order and names (GET /categories/); without them, the events' own labels are used.
+ */
+function renderPlans(events: PublicEvent[], categoryList: PublicCategory[] = []): void {
   const section = document.getElementById("plans");
   const grid = document.getElementById("plans-grid");
   const chipBox = document.getElementById("plans-chips");
@@ -321,11 +330,13 @@ function renderPlans(events: PublicEvent[]): void {
   const cards = plans.map(renderEventCard);
   grid.replaceChildren(...cards);
 
-  const categories = new Map<string, string>();
+  const present = new Map<string, string>();
   for (const event of plans) {
     const slug = event.category_slug || "events";
-    if (!categories.has(slug)) categories.set(slug, event.category || categoryLabel(slug));
+    if (!present.has(slug)) present.set(slug, event.category || categoryLabel(slug));
   }
+  const categories = new Map<string, string>(categoryList.filter((c) => present.has(c.slug)).map((c) => [c.slug, c.name]));
+  present.forEach((label, slug) => { if (!categories.has(slug)) categories.set(slug, label); });
   const chips = [["all", tx("All")] as [string, string], ...categories.entries()].map(([slug, label]) => {
     const chip = element("button", "chip", label);
     chip.type = "button";
@@ -507,6 +518,7 @@ export async function loadPublicContent(): Promise<void> {
     fetchAll(`/api/v1/destinations/?is_hyderabad_explore=true&lang=${clientLang()}`, isDestination),
     fetchAll(`/api/v1/testimonials/?lang=${clientLang()}`, isTestimonial),
     fetchSiteSettings(),
+    fetchAll(`/api/v1/categories/?lang=${clientLang()}`, isCategory),
   ]);
   const notices: string[] = [];
 
@@ -518,7 +530,7 @@ export async function loadPublicContent(): Promise<void> {
 
   if (results[1].status === "fulfilled") {
     renderEvents(results[1].value);
-    renderPlans(results[1].value);
+    renderPlans(results[1].value, results[5].status === "fulfilled" ? results[5].value : []);
   } else {
     console.error("Could not load published events from the backend.", results[1].reason);
     notices.push("Live events are unavailable right now; showing the featured event.");

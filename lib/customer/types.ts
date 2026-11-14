@@ -56,6 +56,8 @@ export type EventDetail = {
   next_date: string | null;
   next_time_tbd: boolean;
   is_featured: boolean;
+  /** A free event takes bookings at ₹0; otherwise ₹0 means the price isn't announced yet. */
+  is_free?: boolean;
   booking_whatsapp_number: string;
   venue_name: string;
   venue_address: string;
@@ -89,6 +91,9 @@ export type EventBooking = {
   contact_name: string;
   participant_count: number;
   unit_price: string | null;
+  /** Taken off by a coupon (0 when none). */
+  discount_amount?: string;
+  coupon_code?: string | null;
   total_amount: string;
   reserved_until: string | null;
   confirmed_at: string | null;

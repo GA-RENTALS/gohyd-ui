@@ -67,6 +67,9 @@ export const getBlog = async (slug: string, lang?: string) => getJson<PublicBlog
 export const getCmsPage = async (slug: string, lang?: string) => getJson<PublicPage>(`/pages/${encodeURIComponent(slug)}/?lang=${await L(lang)}`);
 export const listFaqs = async (lang?: string) => getCollection<PublicFaq>(`/faqs/?lang=${await L(lang)}`);
 export const listEvents = async (lang?: string) => getCollection<PublicEvent>(`/events/?lang=${await L(lang)}`);
+export type MembershipPlan = { id: number; name: string; price: string; duration_days: number; discount_percent: number; benefits: string[] };
+/** Active plans, cheapest first (GET /membership-plans/). */
+export const listMembershipPlans = async () => (await getJson<MembershipPlan[]>("/membership-plans/")) ?? [];
 
 /** Render CMS rich text as safe, readable plain text rather than injecting stored HTML into the page. */
 export function contentText(value: string): string {

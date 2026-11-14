@@ -1,8 +1,5 @@
 "use client";
-import {
-  RiApps2Line, RiArticleLine, RiCalendarEventLine, RiChat3Line, RiCloseLine, RiGroupLine, RiHomeLine, RiLogoutBoxRLine,
-  RiMapPinLine, RiMenuLine, RiRoadMapLine, RiSearchLine, RiSettings4Line, RiTicket2Line, RiWallet3Line,
-} from "@remixicon/react";
+import { RiApps2Line, RiArticleLine, RiCalendarEventLine, RiChat3Line, RiCloseLine, RiGroupLine, RiHomeLine, RiLogoutBoxRLine, RiMapPinLine, RiMegaphoneLine, RiMenuLine, RiRoadMapLine, RiSearchLine, RiSettings4Line, RiShieldUserLine, RiTicket2Line, RiWallet3Line } from "@remixicon/react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ComponentType, type ReactNode } from "react";
@@ -13,10 +10,10 @@ import { Breadcrumb, BreadcrumbItem } from "@/components/base/breadcrumb/breadcr
 import { Button } from "@/components/base/buttons/button";
 import { Skeleton } from "@/components/base/skeleton/skeleton";
 import { adminApi, tokenStore, type Module } from "@/lib/admin/api";
-import { activeNav, buildNav, type NavSection } from "@/lib/admin/nav";
+import { activeNav, buildNav, type Features, type NavSection } from "@/lib/admin/nav";
 import { cx } from "@/utils/cx";
 
-type Session = { id: number; name: string; phone_number: string; email: string; permissions: string[] };
+type Session = { id: number; name: string; phone_number: string; email: string; permissions: string[]; features?: Features };
 type Ctx = { session: Session; modules: Module[]; nav: NavSection[]; refreshCounts: () => void; openSearch: () => void };
 const AdminCtx = createContext<Ctx | null>(null);
 export const useAdmin = () => useContext(AdminCtx)!;
@@ -24,6 +21,7 @@ export const useAdmin = () => useContext(AdminCtx)!;
 const ICONS: Record<string, ComponentType<{ className?: string; "aria-hidden"?: boolean | "true" | "false" }>> = {
   home: RiHomeLine, map: RiRoadMapLine, calendar: RiCalendarEventLine, ticket: RiTicket2Line, wallet: RiWallet3Line, users: RiGroupLine,
   chat: RiChat3Line, pin: RiMapPinLine, article: RiArticleLine, settings: RiSettings4Line, grid: RiApps2Line,
+  megaphone: RiMegaphoneLine, shield: RiShieldUserLine,
 };
 
 export function AdminShell({ children }: { children: ReactNode }) {
@@ -58,7 +56,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  const ctx = useMemo<Ctx | null>(() => state && { ...state, nav: buildNav(state.modules), refreshCounts, openSearch: () => setSearch(true) }, [state, refreshCounts]);
+  const ctx = useMemo<Ctx | null>(() => state && { ...state, nav: buildNav(state.modules, state.session.features), refreshCounts, openSearch: () => setSearch(true) }, [state, refreshCounts]);
 
   if (error) return (
     <div className="grid min-h-screen place-items-center p-6 text-center">

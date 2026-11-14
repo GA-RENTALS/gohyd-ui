@@ -1,7 +1,9 @@
 "use client";
-import { RiEditLine, RiMailLine, RiPhoneLine, RiWhatsappLine } from "@remixicon/react";
+import { RiEditLine, RiForbidLine, RiMailLine, RiPhoneLine, RiWhatsappLine } from "@remixicon/react";
 import { useCallback, useEffect, useState } from "react";
 import { BookingDrawer } from "@/components/admin/BookingDrawer";
+import { CustomerNotes } from "@/components/admin/CustomerNotes";
+import { FormModal, useFormSubmit } from "@/components/admin/FormModal";
 import { schemaOf } from "@/components/admin/RelatedList";
 import { RecordForm } from "@/components/admin/ResourceView";
 import { PageHeader, useAdmin } from "@/components/admin/Shell";
@@ -23,6 +25,7 @@ export function CustomerPage({ id }: { id: string }) {
   const [tab, setTab] = useState<"bookings" | "payments" | "enquiries">("bookings");
   const [open, setOpen] = useState<BookingRow | null>(null);
   const [editing, setEditing] = useState<{ schema: Schema; row: any } | null>(null);
+  const [blocking, setBlocking] = useState(false);
   const load = useCallback(() => { adminApi.customer(id).then(setD).catch((e) => setErr(e.message)); }, [id]);
   useEffect(load, [load]);
 
@@ -43,7 +46,10 @@ export function CustomerPage({ id }: { id: string }) {
   return (
     <>
       <PageHeader crumbs={[{ label: "Customers", href: "/admin/customers" }, d.name]} title=""
-        actions={d.can_edit && <Button variant="secondary" leadingIcon={RiEditLine} onClick={() => Promise.all([schemaOf("customers"), adminApi.get("customers", d.id)]).then(([schema, row]) => setEditing({ schema, row })).catch((e) => toast(e.message, { status: "error" }))}>Edit</Button>} />
+        actions={<>
+          {d.can_block && <Button variant="secondary" leadingIcon={d.active ? RiForbidLine : undefined} onClick={() => setBlocking(true)}>{d.active ? "Block" : "Unblock"}</Button>}
+          {d.can_edit && <Button variant="secondary" leadingIcon={RiEditLine} onClick={() => Promise.all([schemaOf("customers"), adminApi.get("customers", d.id)]).then(([schema, row]) => setEditing({ schema, row })).catch((e) => toast(e.message, { status: "error" }))}>Edit</Button>}
+        </>} />
 
       <section className="-mt-4 mb-6 flex flex-wrap items-center gap-4">
         <Initials name={d.name} size="lg" />
@@ -54,7 +60,7 @@ export function CustomerPage({ id }: { id: string }) {
             {wa && <a href={`https://wa.me/${wa}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:text-text-primary"><RiWhatsappLine className="size-4" aria-hidden />WhatsApp</a>}
             {d.email && <a href={`mailto:${d.email}`} className="inline-flex items-center gap-1 hover:text-text-primary"><RiMailLine className="size-4" aria-hidden />{d.email}</a>}
             <span>Customer since {dateOnly(d.joined)}</span>
-            {!d.active && <StatusPill status="BLOCKED" tone="red" label="Inactive" />}
+            {!d.active && <StatusPill status="BLOCKED" tone="red" label="Blocked: can't sign in or book" />}
           </p>
         </div>
       </section>
@@ -88,8 +94,40 @@ export function CustomerPage({ id }: { id: string }) {
         ]} />}
       </Card>
 
+      {d.notes && <div className="mt-6"><CustomerNotes key={d.notes.length} customerId={d.id} notes={d.notes} canAdd={d.can_note} /></div>}
+
       <BookingDrawer row={open} onClose={() => setOpen(null)} onChanged={load} can={can} />
+      {blocking && <BlockDialog customer={d} onClose={() => setBlocking(false)} onDone={() => { setBlocking(false); load(); }} />}
       {editing && <RecordForm schema={editing.schema} row={editing.row} onClose={() => setEditing(null)} onSaved={() => { setEditing(null); toast("Saved", { status: "success" }); load(); }} />}
     </>
+  );
+}
+
+/** Block (with a reason, kept as a staff note) or unblock. Blocked customers can't sign in or book. */
+function BlockDialog({ customer, onClose, onDone }: { customer: Data; onClose: () => void; onDone: () => void }) {
+  const blocking = customer.active;
+  const [reason, setReason] = useState("");
+  const { busy, errors, general, submit } = useFormSubmit();
+  const save = async () => {
+    if (await submit(() => adminApi.blockCustomer(customer.id, blocking, reason.trim()))) {
+      toast(blocking ? `${customer.name} is blocked` : `${customer.name} can sign in and book again`, { status: "success" });
+      onDone();
+    }
+  };
+  return (
+    <FormModal title={blocking ? `Block ${customer.name}?` : `Unblock ${customer.name}?`}
+      description={blocking ? "They are signed out straight away and can't sign in or book. Existing bookings are not cancelled." : undefined}
+      submitLabel={blocking ? "Block" : "Unblock"} busy={busy} general={general || errors.detail} canSubmit={!blocking || !!reason.trim()} onSubmit={save} onClose={onClose}>
+      {blocking ? (
+        <div className="flex flex-col gap-1">
+          <label htmlFor="block-reason" className="text-body-medium text-text-primary">Reason</label>
+          <textarea id="block-reason" rows={3} value={reason} onChange={(e) => setReason(e.target.value)} maxLength={500}
+            placeholder="e.g. Sent the same payment screenshot for two bookings"
+            className="rounded-xl border border-border-button-default bg-background-primary-default px-3 py-2 text-body-medium text-text-primary outline-none focus:border-text-secondary" />
+          {errors.reason && <p role="alert" className="text-caption-1-medium text-rose-600 dark:text-rose-400">{errors.reason}</p>}
+          <p className="text-caption-1-medium text-text-tertiary">Saved as a staff note so others know why.</p>
+        </div>
+      ) : <p className="text-body-regular text-text-secondary">They will be able to sign in and book again.</p>}
+    </FormModal>
   );
 }

@@ -2,8 +2,10 @@
 /**
  * The admin's shared building blocks. Every page uses these, so tables, statuses and money look the same everywhere.
  */
-import { RiArrowLeftSLine, RiArrowRightSLine, RiCloseLine, RiSearchLine } from "@remixicon/react";
-import { useEffect, type ReactNode } from "react";
+import { RiArrowLeftSLine, RiArrowRightSLine, RiCloseLine, RiDownload2Line, RiSearchLine } from "@remixicon/react";
+import { useEffect, useState, type ReactNode } from "react";
+import { Button } from "@/components/base/buttons/button";
+import { toast } from "@/components/base/toast/toast";
 import { cx } from "@/utils/cx";
 
 /* ---------- formatting ---------- */
@@ -249,6 +251,85 @@ export function Facts({ items }: { items: [string, ReactNode][] }) {
         <div key={k} className="min-w-0"><dt className="text-caption-1-medium text-text-tertiary">{k}</dt><dd className="break-words text-body-medium text-text-primary">{v}</dd></div>
       ))}
     </dl>
+  );
+}
+
+/* ---------- numbers, dates, export ---------- */
+
+/** One figure in a summary strip: label, big value, one line of context. `tone` colours the value when it needs attention. */
+export function StatTile({ label, value, sub, tone, onClick }: { label: string; value: ReactNode; sub?: ReactNode; tone?: "red" | "amber"; onClick?: () => void }) {
+  const body = (
+    <>
+      <span className="block text-caption-1-medium text-text-tertiary">{label}</span>
+      <span className={cx("mt-1 block text-title-3-semibold tabular-nums",
+        tone === "red" ? "text-rose-600 dark:text-rose-400" : tone === "amber" ? "text-amber-700 dark:text-amber-400" : "text-text-primary")}>{value}</span>
+      {sub && <span className="mt-0.5 block text-caption-1-medium text-text-secondary">{sub}</span>}
+    </>
+  );
+  const box = "rounded-2xl border border-border-button-default bg-background-primary-default p-4 text-start shadow-xs";
+  return onClick
+    ? <button type="button" onClick={onClick} className={cx(box, "transition-colors hover:bg-background-secondary-default/70")}>{body}</button>
+    : <div className={box}>{body}</div>;
+}
+
+export type DateRange = { from: string; to: string };
+
+const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+/** Named ranges, worked out in the browser's local calendar (staff are in India, the same as the server). */
+function presetRanges(): { key: string; label: string; range: DateRange }[] {
+  const now = new Date();
+  const y = now.getFullYear(), m = now.getMonth();
+  const daysAgo = (n: number) => { const d = new Date(now); d.setDate(d.getDate() - n); return d; };
+  return [
+    { key: "all", label: "All time", range: { from: "", to: "" } },
+    { key: "month", label: "This month", range: { from: iso(new Date(y, m, 1)), to: iso(now) } },
+    { key: "last-month", label: "Last month", range: { from: iso(new Date(y, m - 1, 1)), to: iso(new Date(y, m, 0)) } },
+    { key: "30d", label: "Last 30 days", range: { from: iso(daysAgo(29)), to: iso(now) } },
+  ];
+}
+
+/** Date filter: a few named ranges plus "Custom" with two date boxes. Empty strings mean "no limit". */
+export function DateRangeFilter({ value, onChange, label = "Date" }: { value: DateRange; onChange: (r: DateRange) => void; label?: string }) {
+  const presets = presetRanges();
+  const matched = presets.find((p) => p.range.from === value.from && p.range.to === value.to)?.key;
+  const [custom, setCustom] = useState(!matched);
+  const selected = custom ? "custom" : matched ?? "custom";
+  const field = "h-10 rounded-xl border border-border-button-default bg-background-primary-default px-3 text-body-medium text-text-primary outline-none focus:border-text-secondary";
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <label className="sr-only" htmlFor="date-range">{label}</label>
+      <select id="date-range" value={selected} className={field}
+        onChange={(e) => {
+          const preset = presets.find((p) => p.key === e.target.value);
+          setCustom(!preset);
+          if (preset) onChange(preset.range);
+        }}>
+        {presets.map((p) => <option key={p.key} value={p.key}>{p.label}</option>)}
+        <option value="custom">Custom dates…</option>
+      </select>
+      {selected === "custom" && (
+        <>
+          <input type="date" aria-label="From" className={field} value={value.from} max={value.to || undefined} onChange={(e) => onChange({ ...value, from: e.target.value })} />
+          <span className="text-text-tertiary" aria-hidden>–</span>
+          <input type="date" aria-label="To" className={field} value={value.to} min={value.from || undefined} onChange={(e) => onChange({ ...value, to: e.target.value })} />
+        </>
+      )}
+    </div>
+  );
+}
+
+/** "Export CSV" button: downloads the rows that match the current filters. */
+export function ExportButton({ onExport, label = "Export CSV" }: { onExport: () => Promise<void>; label?: string }) {
+  const [busy, setBusy] = useState(false);
+  return (
+    <Button variant="secondary" leadingIcon={RiDownload2Line} disabled={busy}
+      onClick={async () => {
+        setBusy(true);
+        try { await onExport(); } catch (e: any) { toast(e?.message || "Export failed", { status: "error" }); } finally { setBusy(false); }
+      }}>
+      {busy ? "Preparing…" : label}
+    </Button>
   );
 }
 

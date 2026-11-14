@@ -4,7 +4,9 @@ import type { Module } from "./api";
  * Sidebar, grouped the way the teams work. Each item needs view access to one table; items a person can't open are hidden.
  * `badge` names a number from /admin/counts/ (work waiting for someone).
  */
-type Item = { key: string; label: string; icon: string; href: string; needs?: [module: string, resource: string]; badge?: string; match?: RegExp };
+export type Features = { team?: boolean };
+/** `needs`: view access to one table. `feature`: a page the session says this person may open (see AdminSessionView). */
+type Item = { key: string; label: string; icon: string; href: string; needs?: [module: string, resource: string]; feature?: keyof Features; badge?: string; match?: RegExp };
 export const SECTIONS: { title: string | null; items: Item[] }[] = [
   { title: null, items: [{ key: "home", label: "Dashboard", icon: "home", href: "/admin", match: /^\/admin\/?$/ }] },
   {
@@ -13,6 +15,7 @@ export const SECTIONS: { title: string | null; items: Item[] }[] = [
       { key: "events", label: "Events", icon: "calendar", href: "/admin/events", needs: ["events", "events"], match: /^\/admin\/(events(\/events)?$|overview\/event)/ },
       { key: "bookings", label: "Bookings", icon: "ticket", href: "/admin/bookings", needs: ["bookings", "bookings"], badge: "event_bookings", match: /^\/admin\/bookings\/?$/ },
       { key: "payments", label: "Payments", icon: "wallet", href: "/admin/payments", needs: ["payments", "payments"], badge: "payments", match: /^\/admin\/payments\/?$/ },
+      { key: "marketing", label: "Marketing", icon: "megaphone", href: "/admin/marketing", needs: ["marketing", "coupons"], match: /^\/admin\/marketing\/?$/ },
     ],
   },
   {
@@ -30,6 +33,7 @@ export const SECTIONS: { title: string | null; items: Item[] }[] = [
   {
     title: "Settings", items: [
       { key: "settings", label: "Business settings", icon: "settings", href: "/admin/system/settings", needs: ["system", "settings"] },
+      { key: "team", label: "Team & roles", icon: "shield", href: "/admin/team", feature: "team", match: /^\/admin\/team\/?$/ },
       { key: "all", label: "All data", icon: "grid", href: "/admin/all", match: /^\/admin\/all/ },
     ],
   },
@@ -41,8 +45,9 @@ export type NavSection = { title: string | null; items: NavItem[] };
 const canView = (modules: Module[], module: string, resource: string) =>
   !!modules.find((m) => m.key === module)?.resources.some((r) => r.key === resource && r.actions.view !== false);
 
-export function buildNav(modules: Module[]): NavSection[] {
-  return SECTIONS.map((s) => ({ ...s, items: s.items.filter((i) => !i.needs || canView(modules, ...i.needs)) })).filter((s) => s.items.length);
+export function buildNav(modules: Module[], features: Features = {}): NavSection[] {
+  const allowed = (i: Item) => (!i.needs || canView(modules, ...i.needs)) && (!i.feature || !!features[i.feature]);
+  return SECTIONS.map((s) => ({ ...s, items: s.items.filter(allowed) })).filter((s) => s.items.length);
 }
 
 export const CORE_RESOURCES: Set<string> = new Set(SECTIONS.flatMap((s) => s.items.flatMap((i) => (i.needs ? [i.needs[1]] : []))));
