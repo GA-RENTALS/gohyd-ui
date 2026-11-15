@@ -2,6 +2,7 @@
 
 import { type FormEvent, useState } from "react";
 import { API_URL } from "@/lib/config";
+import { track } from "@/lib/analytics";
 
 type Props = { kind: "contact" | "corporate" };
 
@@ -50,6 +51,8 @@ export function PublicEnquiryForm({ kind }: Props) {
         const body = await response.json().catch(() => null) as { detail?: string } | null;
         throw new Error(body?.detail || "Please check the details and try again.");
       }
+      if (corporate) track("corporate_enquiry", { group_size: Number(values.get("group_size")) || 0 });
+      else track("generate_lead", { lead_type: "contact" });
       form.reset();
       setSuccess(true);
       setMessage(corporate ? "Thanks. The team will be in touch about your outing." : "Thanks for getting in touch. The team will reply soon.");

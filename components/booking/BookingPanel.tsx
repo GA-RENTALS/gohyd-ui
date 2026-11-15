@@ -8,6 +8,7 @@ import { customerApi } from "@/lib/customer/api";
 import { longDate, money, time } from "@/lib/customer/format";
 import type { PickupPoint, Schedule } from "@/lib/customer/types";
 import { useCustomer } from "./CustomerProvider";
+import { track } from "@/lib/analytics";
 
 const MAX_PEOPLE = 10;
 const scheduleDateRange = (startsAt: string, endsAt: string) => {
@@ -52,6 +53,10 @@ export function BookingPanel({ slug, schedules, pickups, isOpen }: { slug: strin
     setBusy(true);
     try {
       const order = await customerApi.createCheckout(schedule.id, count, pickup || null, coupon.trim());
+      track("begin_checkout", {
+      currency: "INR", value: total,
+      items: [{ item_id: slug, item_name: slug, price: Number(schedule.price_per_participant), quantity: count }],
+        });
       router.push(`/checkout/${order.id}`);
     } catch (e) {
       const err = e as ApiError;
@@ -67,7 +72,12 @@ export function BookingPanel({ slug, schedules, pickups, isOpen }: { slug: strin
     setError(""); setAdded(false);
     if (!user) { router.push(`/login?next=${encodeURIComponent(`/trips/${slug}`)}`); return; }
     setBusy(true);
-    try { await customerApi.addToCart(schedule.id, count, pickup || null); setAdded(true); }
+    try { await customerApi.addToCart(schedule.id, count, pickup || null); 
+      track("add_to_cart", {
+      currency: "INR", value: total,
+      items: [{ item_id: slug, item_name: slug, price: Number(schedule.price_per_participant), quantity: count }],
+    });
+setAdded(true); }
     catch (e) { setError((e as Error).message); }
     finally { setBusy(false); }
   }

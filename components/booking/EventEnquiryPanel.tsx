@@ -5,6 +5,7 @@ import { longDate, money, time as timeLower } from "@/lib/customer/format";
 
 const time = (iso: string) => timeLower(iso).toUpperCase();
 import type { EventSchedule } from "@/lib/customer/types";
+import { track } from "@/lib/analytics";
 
 function isoDateInHyderabad(value: string) {
   const parts = new Intl.DateTimeFormat("en-CA", {
@@ -91,6 +92,7 @@ export function EventEnquiryPanel({
         message: details,
         consent_to_contact: consent,
       });
+      track("generate_lead", { lead_type: "event_enquiry", event_slug: slug, group_size: count });
       setSent(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "We couldn't send your request. Please try again.");

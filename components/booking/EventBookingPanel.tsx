@@ -8,6 +8,7 @@ import { FEATURED_EVENT_SLUG, FEATURED_EVENT_UPI_QR } from "@/components/site/da
 
 const time = (iso: string) => timeLower(iso).toUpperCase();
 import type { CouponPreview, EventBooking, EventPayment, EventRegistrationType, EventSchedule } from "@/lib/customer/types";
+import { track } from "@/lib/analytics";
 
 const fullDate = (iso: string) =>
   new Date(iso).toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" });
@@ -64,7 +65,10 @@ function PaymentStep({ booking, phone, onUploaded }: { booking: EventBooking; ph
     if (!file) { setError("Choose the screenshot of your payment."); return; }
     setBusy(true); setError("");
     try {
-      onUploaded(await customerApi.uploadEventPayment(booking.reference, phone, file, utr.trim()));
+      // onUploaded(await customerApi.uploadEventPayment(booking.reference, phone, file, utr.trim()));
+      const updated = await customerApi.uploadEventPayment(booking.reference, phone, file, utr.trim());
+      onUploaded(updated);
+      track("event_payment_proof_uploaded", { currency: "INR", value: Number(booking.total_amount), event_slug: booking.event_slug });
       setReplacing(false); setFile(null); setUtr("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "We couldn't upload your screenshot. Please try again.");
@@ -260,6 +264,7 @@ export function EventBookingPanel({
         event: slug, schedule: selected.id, name: name.trim(), phone: phone.trim(), email: email.trim(),
         participant_count: participants, note: note.trim(), coupon: coupon?.code, consent_to_contact: consent,
       });
+      track("event_booking_request", { currency: "INR", value: total ?? 0, event_slug: slug, participants, has_coupon: Boolean(coupon) });
       setSeatsOverride((prev) => ({ ...prev, [selected.id]: result.seats_left }));
       setBooking(result);
     } catch (err) {
