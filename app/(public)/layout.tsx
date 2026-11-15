@@ -1,21 +1,20 @@
 import type { Metadata, Viewport } from "next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { Barlow_Condensed, Fraunces, Manrope } from "next/font/google";
 import "lenis/dist/lenis.css";
 import "./globals.css";
 import "./animations.css";
 import "./sections.css";
-import { GoogleAnalytics } from "@next/third-parties/google";
-
 import { OG_IMAGE, SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_TITLE, SITE_URL, SOCIAL_PROFILES, absoluteUrl, jsonLd } from "@/lib/site";
 import { LANGS } from "@/lib/lang";
 import { serverLang } from "@/lib/lang-server";
 import { LangProvider } from "@/components/site/LangProvider";
 import { VisitorTracking } from "@/components/site/VisitorTracking";
+import { GA_ID } from "@/lib/analytics";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: SITE_TITLE, template: `%s | ${SITE_NAME}` },
-  verification: { google: "Exkl0mtaKCiPYYeqJcOhdwGuPAObz5xVSf2-LunYGqI" },
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
   keywords: [
@@ -38,12 +37,10 @@ export const metadata: Metadata = {
   },
   twitter: { card: "summary_large_image", title: SITE_TITLE, description: SITE_DESCRIPTION, images: [OG_IMAGE.url] },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
-  // Search Console: set NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION to the code from the "HTML tag" method.
-  // verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } : undefined,
+  // Search Console "HTML tag" verification code (public; it is printed in every page's <head>).
+  verification: { google: "Exkl0mtaKCiPYYeqJcOhdwGuPAObz5xVSf2-LunYGqI" },
   category: "travel",
 };
-
-
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -84,8 +81,6 @@ const siteJsonLd = [
   },
 ];
 
-const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
-
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const lang = await serverLang();
   return (
@@ -95,6 +90,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(siteJsonLd) }} />
       </head>
       <body><LangProvider lang={lang}>{children}<VisitorTracking /></LangProvider></body>
+      {/* GA4 for every visitor (owner's decision); the consent banner still controls /track/ and PostHog. */}
       {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
     </html>
   );

@@ -2,13 +2,13 @@
 import { useT } from "@/components/site/LangProvider";
 import { useState } from "react";
 import { EventCouponBox } from "@/components/booking/EventCouponBox";
+import { track, trackWhatsApp } from "@/lib/analytics";
 import { customerApi } from "@/lib/customer/api";
 import { longDate, money, time as timeLower } from "@/lib/customer/format";
 import { FEATURED_EVENT_SLUG, FEATURED_EVENT_UPI_QR } from "@/components/site/data/featured-event";
 
 const time = (iso: string) => timeLower(iso).toUpperCase();
 import type { CouponPreview, EventBooking, EventPayment, EventRegistrationType, EventSchedule } from "@/lib/customer/types";
-import { track } from "@/lib/analytics";
 
 const fullDate = (iso: string) =>
   new Date(iso).toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" });
@@ -65,10 +65,12 @@ function PaymentStep({ booking, phone, onUploaded }: { booking: EventBooking; ph
     if (!file) { setError("Choose the screenshot of your payment."); return; }
     setBusy(true); setError("");
     try {
-      // onUploaded(await customerApi.uploadEventPayment(booking.reference, phone, file, utr.trim()));
       const updated = await customerApi.uploadEventPayment(booking.reference, phone, file, utr.trim());
+      // Count the first proof only: replacing a screenshot is not a new payment.
+      if (!booking.payment_submitted) {
+        track("event_payment_proof_uploaded", { currency: "INR", value: Number(booking.total_amount), event_slug: booking.event_slug });
+      }
       onUploaded(updated);
-      track("event_payment_proof_uploaded", { currency: "INR", value: Number(booking.total_amount), event_slug: booking.event_slug });
       setReplacing(false); setFile(null); setUtr("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "We couldn't upload your screenshot. Please try again.");
@@ -155,7 +157,8 @@ function BookingResult({ booking: initial, phone, onReset }: { booking: EventBoo
         <PaymentStep booking={booking} phone={phone} onUploaded={setBooking} />
       )}
       {wa && booking.status === "PENDING" && (
-        <a className="btn event-whatsapp" href={wa} target="_blank" rel="noreferrer">Confirm on WhatsApp</a>
+        <a className="btn event-whatsapp" href={wa} target="_blank" rel="noreferrer"
+          onClick={() => trackWhatsApp("event_confirm", booking.event_slug)}>Confirm on WhatsApp</a>
       )}
       <p className="bk-hint">Save your reference to check the status later with the same mobile number.</p>
       {onReset && <button type="button" className="bk-linkbtn" onClick={onReset}>Make another booking</button>}
@@ -264,9 +267,9 @@ export function EventBookingPanel({
         event: slug, schedule: selected.id, name: name.trim(), phone: phone.trim(), email: email.trim(),
         participant_count: participants, note: note.trim(), coupon: coupon?.code, consent_to_contact: consent,
       });
-      track("event_booking_request", { currency: "INR", value: total ?? 0, event_slug: slug, participants, has_coupon: Boolean(coupon) });
       setSeatsOverride((prev) => ({ ...prev, [selected.id]: result.seats_left }));
       setBooking(result);
+      track("event_booking_request", { currency: "INR", value: total ?? 0, event_slug: slug, participants, has_coupon: Boolean(coupon) });
     } catch (err) {
       setError(err instanceof Error ? err.message : "We couldn't send your booking request. Please try again.");
     } finally {
@@ -296,12 +299,14 @@ export function EventBookingPanel({
           {!schedules.length ? (
             <>
               <p className="bk-hint">Upcoming — dates will be announced soon. Message us to register your interest.</p>
-              {waRegister && <a className="btn event-whatsapp" href={waRegister} target="_blank" rel="noreferrer">Register interest on WhatsApp</a>}
+              {waRegister && <a className="btn event-whatsapp" href={waRegister} target="_blank" rel="noreferrer"
+                onClick={() => trackWhatsApp("event_interest", slug)}>Register interest on WhatsApp</a>}
             </>
           ) : soldOut || groupBlocked ? (
             <>
               <p className="bk-hint">All slots for this date are taken or on hold. Unconfirmed holds are released after {holdHours} hours, so check back or ask the team about a waiting list.</p>
-              {waRegister && <a className="btn event-whatsapp" href={waRegister} target="_blank" rel="noreferrer">Join the waiting list on WhatsApp</a>}
+              {waRegister && <a className="btn event-whatsapp" href={waRegister} target="_blank" rel="noreferrer"
+                onClick={() => trackWhatsApp("event_waitlist", slug)}>Join the waiting list on WhatsApp</a>}
             </>
           ) : (
             <form onSubmit={submit}>
@@ -350,7 +355,8 @@ export function EventBookingPanel({
               </label>
               {error && <p className="bk-error" role="alert">{error}</p>}
               <button className="btn" type="submit" disabled={busy}>{busy ? t("Sending…") : t("Request a booking")}</button>
-              {waRegister && <a className="btn event-whatsapp" href={waRegister} target="_blank" rel="noreferrer">{t("Register on WhatsApp")}</a>}
+              {waRegister && <a className="btn event-whatsapp" href={waRegister} target="_blank" rel="noreferrer"
+                onClick={() => trackWhatsApp("event_register_form", slug)}>{t("Register on WhatsApp")}</a>}
               <p className="bk-hint">{takesUpiPayment
                 ? `This holds your slots for up to ${holdHours} hours. Next you'll see a UPI QR code: pay the entry fee and upload the payment screenshot. Your slot is confirmed after the team checks your payment.`
                 : `This submits a registration request and holds your slots for up to ${holdHours} hours. Your slot is confirmed after the event team verifies availability and sends confirmation. No payment is collected online.`}</p>

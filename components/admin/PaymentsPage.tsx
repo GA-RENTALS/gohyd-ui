@@ -5,7 +5,7 @@
  * Data: GET /admin/lists/payments/ (admin_api/payments.py).
  */
 import { RiAlertLine, RiCheckLine, RiImageLine } from "@remixicon/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BookingDrawer } from "@/components/admin/BookingDrawer";
 import { FormModal, useFormSubmit } from "@/components/admin/FormModal";
 import { listQuery, useAction, useList, useQueryState } from "@/components/admin/hooks";
@@ -36,6 +36,8 @@ export function PaymentsPage() {
   const { refreshCounts } = useAdmin();
   const [f, setF] = useQueryState({ type: "trip", status: "all", from: "", to: "" });
   const [search, setSearch] = useState("");
+  // Links from the dashboard open the page already searched (?search=<booking reference>).
+  useEffect(() => { setSearch(new URLSearchParams(window.location.search).get("search") ?? ""); }, []);
   const [openPayment, setOpenPayment] = useState<TripPayment | null>(null);
   const [openBooking, setOpenBooking] = useState<BookingRow | null>(null);
   const [openRefund, setOpenRefund] = useState<RefundRow | null>(null);

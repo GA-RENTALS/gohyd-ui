@@ -1,13 +1,13 @@
 "use client";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { track } from "@/lib/analytics";
 import { customerApi } from "@/lib/customer/api";
-import { longDate, money, statusLabel } from "@/lib/customer/format";
+import { longDate, money, statusLabel, time } from "@/lib/customer/format";
 import { payWithRazorpay } from "@/lib/customer/razorpay";
 import type { Checkout, Participant } from "@/lib/customer/types";
 import { useCustomer } from "./CustomerProvider";
 import { blankPerson, ParticipantsForm } from "./ParticipantsForm";
-import { track } from "@/lib/analytics";
 
 /** Shown when the payment gateway isn't set up: never leak the technical reason to a customer. */
 const PAYMENT_UNAVAILABLE = "Online payment isn't available right now. Your booking is saved. Please message GoHyderabad on Instagram to complete your payment.";
@@ -72,16 +72,17 @@ export function CheckoutView({ id }: { id: string }) {
       }
       const payment = await customerApi.startPayment(order.id, "ADVANCE");
       const paid = await payWithRazorpay(payment, { name: user?.full_name, contact: user?.phone_number, email: user?.email ?? undefined }, `Advance for ${order.bookings.map((b) => b.trip_title).join(", ")}`);
-      track("purchase", {
-      transaction_id: order.reference,
-      currency: "INR",
-      value: Number(order.advance_total),
-      items: order.bookings.map((b) => ({ item_id: b.trip_title, item_name: b.trip_title, quantity: b.participant_count })),
-    });
       await customerApi.confirmPayment(order.id, payment.payment, paid.razorpay_payment_id, paid.razorpay_signature);
+      // Only here, never from load(): a reload of the paid page must not count the purchase twice.
+      // The value is the advance paid now, not the full trip price.
+      track("purchase", {
+        transaction_id: order.reference, currency: "INR", value: Number(order.advance_total),
+        items: order.bookings.map((b) => ({ item_id: b.trip_title, item_name: b.trip_title, quantity: b.participant_count })),
+      });
       await load();
       setState("paid");
     } catch (e: any) {
+      if (e?.body?.code === "checkout_expired") { await load(); return; }   // shows the "seats released" screen
       setError(friendly(e.message || "Something went wrong. Please try again."));
       setState("ready");
     }
@@ -89,6 +90,20 @@ export function CheckoutView({ id }: { id: string }) {
 
   if (state === "loading") return <p className="bk-note" role="status">Loading your booking…</p>;
   if (!order) return <p className="bk-error" role="alert">{error || "Something went wrong."}</p>;
+
+  if (order.status === "EXPIRED") {
+    const trip = order.bookings[0]?.trip;
+    return (
+      <div className="bk-narrow">
+        <div className="eyebrow">Checkout expired</div>
+        <h1 className="bk-title">Your seats were <em>released.</em></h1>
+        <div className="bk-card" style={{ marginTop: 24 }}>
+          <p className="bk-note">This checkout wasn't paid in time, so the seats went back on sale. Nothing was charged.</p>
+          <Link className="btn" href={trip ? `/trips/${trip}` : "/trips"} style={{ marginTop: 16 }}>Book again</Link>
+        </div>
+      </div>
+    );
+  }
 
   if (state === "paid") {
     return (
@@ -157,6 +172,7 @@ export function CheckoutView({ id }: { id: string }) {
         <button type="button" className="btn" disabled={state === "working" || !activeWaiver} onClick={pay} style={{ marginTop: 12 }}>
           {state === "working" ? "Please wait…" : `Pay ${money(order.advance_total)} to confirm`}
         </button>
+        {order.hold_until && <p className="bk-hint" style={{ marginTop: 10 }}>Your seats are held until {time(order.hold_until)}, {longDate(order.hold_until)}. After that they go back on sale.</p>}
         <p className="bk-hint" style={{ marginTop: 10 }}>Secure payment by Razorpay (UPI, cards, netbanking).</p>
       </aside>
     </div>

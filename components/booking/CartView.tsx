@@ -3,6 +3,7 @@ import { useT } from "@/components/site/LangProvider";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { track } from "@/lib/analytics";
 import { ApiError } from "@/lib/api/client";
 import { customerApi } from "@/lib/customer/api";
 import { longDate, money, time } from "@/lib/customer/format";
@@ -45,6 +46,10 @@ export function CartView() {
     setError(""); setBusy(true);
     try {
       const order = await customerApi.createCheckoutFor(lines, preview?.code ?? "");
+      track("begin_checkout", {
+        currency: "INR", value: listTotal,
+        items: bookable.map((i) => ({ item_id: i.trip_title, item_name: i.trip_title, price: Number(i.price_per_participant), quantity: i.participant_count })),
+      });
       router.push(`/checkout/${order.id}`);
     } catch (e) {
       const err = e as ApiError;

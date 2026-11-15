@@ -182,6 +182,8 @@ export type Booking = {
   paid: string | number;
   outstanding: string | number;
   is_overdue: boolean;
+  /** The customer may still cancel online (decided on the server: not after the trip starts). */
+  can_cancel: boolean;
   participants: Participant[];
 };
 
@@ -195,6 +197,8 @@ export type Checkout = {
   total_amount: string;
   advance_total: string;
   created_at: string;
+  /** When an unpaid checkout releases its seats; null once anything is paid. */
+  hold_until: string | null;
   bookings: Booking[];
 };
 

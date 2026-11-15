@@ -37,7 +37,7 @@ export function BookingCard({ booking, onChanged }: { booking: Booking; onChange
   const status = statusInfo(booking);
   const steps = timeline(booking, shortDate);
   const unpaid = Number(booking.paid) === 0 && bucket !== "cancelled";
-  const canCancel = bucket === "upcoming";
+  const canCancel = booking.can_cancel && bucket === "upcoming";
 
   async function payBalance() {
     setBusy(true); setError("");

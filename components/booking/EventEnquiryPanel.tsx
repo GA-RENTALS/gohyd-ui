@@ -1,11 +1,11 @@
 "use client";
 import { useState } from "react";
+import { track, trackWhatsApp } from "@/lib/analytics";
 import { customerApi } from "@/lib/customer/api";
 import { longDate, money, time as timeLower } from "@/lib/customer/format";
 
 const time = (iso: string) => timeLower(iso).toUpperCase();
 import type { EventSchedule } from "@/lib/customer/types";
-import { track } from "@/lib/analytics";
 
 function isoDateInHyderabad(value: string) {
   const parts = new Intl.DateTimeFormat("en-CA", {
@@ -106,7 +106,8 @@ export function EventEnquiryPanel({
       <div className="bk-card bk-sticky" id="book" role="status">
         <h2>Request received</h2>
         <p className="bk-note">Our team will contact you to confirm the date, price, and available places. Your place is not reserved yet.</p>
-        {whatsAppDigits && <a className="btn event-whatsapp" href={`https://wa.me/${whatsAppDigits}?text=${encodeURIComponent(whatsAppMessage())}`} target="_blank" rel="noreferrer">Continue on WhatsApp</a>}
+        {whatsAppDigits && <a className="btn event-whatsapp" href={`https://wa.me/${whatsAppDigits}?text=${encodeURIComponent(whatsAppMessage())}`} target="_blank" rel="noreferrer"
+          onClick={() => trackWhatsApp("enquiry_sent", slug)}>Continue on WhatsApp</a>}
       </div>
     );
   }
@@ -158,7 +159,8 @@ export function EventEnquiryPanel({
       <button type="submit" className="btn" disabled={busy} style={{ marginTop: 16 }}>
         {busy ? "Sending…" : upcoming ? "Register interest" : "Book now"}
       </button>
-      {whatsAppDigits && <a className="btn event-whatsapp" href={`https://wa.me/${whatsAppDigits}?text=${encodeURIComponent(whatsAppMessage())}`} target="_blank" rel="noreferrer">Register on WhatsApp</a>}
+      {whatsAppDigits && <a className="btn event-whatsapp" href={`https://wa.me/${whatsAppDigits}?text=${encodeURIComponent(whatsAppMessage())}`} target="_blank" rel="noreferrer"
+        onClick={() => trackWhatsApp("enquiry_form", slug)}>Register on WhatsApp</a>}
       <p className="bk-hint" style={{ marginBottom: 0 }}>{upcoming
         ? "This doesn't book a place or take payment. We'll contact you when dates are announced."
         : "This sends a request for staff confirmation. It does not hold a slot or take payment."}</p>

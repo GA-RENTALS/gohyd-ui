@@ -1,8 +1,8 @@
 "use client";
 
 import { type FormEvent, useState } from "react";
-import { API_URL } from "@/lib/config";
 import { track } from "@/lib/analytics";
+import { API_URL } from "@/lib/config";
 
 type Props = { kind: "contact" | "corporate" };
 

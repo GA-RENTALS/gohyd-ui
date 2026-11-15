@@ -142,7 +142,7 @@ export default async function TripPage({ params }: Props) {
           )}
           {tiers.length > 0 && <section className="bk-card bk-detail-section" aria-labelledby="trip-cancel-title"><h2 id="trip-cancel-title">{t("Cancellation & refunds")}</h2><ul className="bk-list">{tiers.map((t) => <li key={t.days_before}>{refundText(t)}</li>)}</ul></section>}
         </div>
-        <BookingPanel slug={trip.slug} schedules={trip.schedules} pickups={trip.pickup_points} isOpen={trip.operational_status === "OPEN"} />
+        <BookingPanel slug={trip.slug} title={trip.title || trip.slug} schedules={trip.schedules} pickups={trip.pickup_points} isOpen={trip.operational_status === "OPEN"} />
       </div>
       {trip.operational_status === "OPEN" && trip.from_price !== null && trip.schedules.length > 0 && <MobileBookBar price={money(trip.from_price)} />}
     </div>

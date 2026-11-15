@@ -3,12 +3,12 @@ import { useT } from "@/components/site/LangProvider";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import { track } from "@/lib/analytics";
 import { ApiError } from "@/lib/api/client";
 import { customerApi } from "@/lib/customer/api";
 import { longDate, money, time } from "@/lib/customer/format";
 import type { PickupPoint, Schedule } from "@/lib/customer/types";
 import { useCustomer } from "./CustomerProvider";
-import { track } from "@/lib/analytics";
 
 const MAX_PEOPLE = 10;
 const scheduleDateRange = (startsAt: string, endsAt: string) => {
@@ -19,7 +19,7 @@ const scheduleDateRange = (startsAt: string, endsAt: string) => {
 };
 
 /** Choose a date, how many people and a pickup point, then continue to checkout. */
-export function BookingPanel({ slug, schedules, pickups, isOpen }: { slug: string; schedules: Schedule[]; pickups: PickupPoint[]; isOpen: boolean }) {
+export function BookingPanel({ slug, title, schedules, pickups, isOpen }: { slug: string; title: string; schedules: Schedule[]; pickups: PickupPoint[]; isOpen: boolean }) {
   const t = useT();
   const router = useRouter();
   const { user, loading } = useCustomer();
@@ -46,6 +46,13 @@ export function BookingPanel({ slug, schedules, pickups, isOpen }: { slug: strin
     );
   }
 
+  /** GA4 ecommerce payload for the current choice (list price, before any coupon). The item is the trip title,
+   *  the same key the cart and checkout use, so one trip is one product in GA4. */
+  const cartEvent = (s: Schedule) => ({
+    currency: "INR", value: total,
+    items: [{ item_id: title, item_name: title, price: Number(s.price_per_participant), quantity: count }],
+  });
+
   async function continueToCheckout() {
     if (!schedule) return;
     setError("");
@@ -53,10 +60,7 @@ export function BookingPanel({ slug, schedules, pickups, isOpen }: { slug: strin
     setBusy(true);
     try {
       const order = await customerApi.createCheckout(schedule.id, count, pickup || null, coupon.trim());
-      track("begin_checkout", {
-      currency: "INR", value: total,
-      items: [{ item_id: slug, item_name: slug, price: Number(schedule.price_per_participant), quantity: count }],
-        });
+      track("begin_checkout", cartEvent(schedule));
       router.push(`/checkout/${order.id}`);
     } catch (e) {
       const err = e as ApiError;
@@ -72,12 +76,11 @@ export function BookingPanel({ slug, schedules, pickups, isOpen }: { slug: strin
     setError(""); setAdded(false);
     if (!user) { router.push(`/login?next=${encodeURIComponent(`/trips/${slug}`)}`); return; }
     setBusy(true);
-    try { await customerApi.addToCart(schedule.id, count, pickup || null); 
-      track("add_to_cart", {
-      currency: "INR", value: total,
-      items: [{ item_id: slug, item_name: slug, price: Number(schedule.price_per_participant), quantity: count }],
-    });
-setAdded(true); }
+    try {
+      await customerApi.addToCart(schedule.id, count, pickup || null);
+      track("add_to_cart", cartEvent(schedule));
+      setAdded(true);
+    }
     catch (e) { setError((e as Error).message); }
     finally { setBusy(false); }
   }
