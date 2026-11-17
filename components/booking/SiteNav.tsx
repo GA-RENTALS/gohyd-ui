@@ -32,6 +32,7 @@ export function SiteNav() {
         <nav className="bk-nav" aria-label="Main navigation">
           <Link href="/trips">{t("Trips")}</Link>
           <Link href="/destinations">{t("Places")}</Link>
+          <Link href="/events">{t("Events")}</Link>
           <Link href="/experiences">{t("Experiences")}</Link>
           <Link href="/blogs">{t("Blog")}</Link>
           <Link href="/cart">{t("Cart")}</Link>
@@ -59,6 +60,7 @@ export function SiteNav() {
         <nav className="bk-mobile-links" aria-label={t("Main navigation")}>
           <Link href="/trips" onClick={() => setMenuOpen(false)}>{t("Trips")}</Link>
           <Link href="/destinations" onClick={() => setMenuOpen(false)}>{t("Places")}</Link>
+          <Link href="/events" onClick={() => setMenuOpen(false)}>{t("Events")}</Link>
           <Link href="/experiences" onClick={() => setMenuOpen(false)}>{t("Experiences")}</Link>
           <Link href="/blogs" onClick={() => setMenuOpen(false)}>{t("Blog")}</Link>
           <Link href="/cart" onClick={() => setMenuOpen(false)}>{t("Cart")}</Link>

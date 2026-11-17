@@ -47,7 +47,7 @@ export function ContentList({ kind }: { kind: ContentKind }) {
 
       {canCreate && missingPages.length > 0 && !search && (
         <div className="mb-5 rounded-2xl border border-amber-300 bg-amber-50 p-4 dark:border-amber-700 dark:bg-amber-950/40">
-          <p className="text-body-medium text-text-primary">The website links to these pages, but they haven't been written yet:</p>
+          <p className="text-body-medium text-text-primary">These pages show built-in text on the website. Add one here to replace it with your own wording:</p>
           <div className="mt-3 flex flex-wrap gap-2">
             {missingPages.map((p) => (
               <Button key={p.slug} size="small" variant="secondary" leadingIcon={RiAddLine} onClick={() => setAdding(p)}>{p.title}</Button>

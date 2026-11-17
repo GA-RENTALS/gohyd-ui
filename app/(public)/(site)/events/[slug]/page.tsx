@@ -90,7 +90,8 @@ async function loadPageData(slug: string): Promise<EventPageData | null> {
     schedule_note: content?.schedule_note ?? "",
     registration_type: "BOTH",
     max_participants_per_booking: null,
-    reservation_hold_hours: 24,
+    hold_minutes: 30,
+    advance_percent: 100,
     is_live: false,
   };
 }
@@ -314,8 +315,8 @@ export default async function EventPage({ params }: Props) {
             venue={venue}
             registrationType={event.registration_type}
             maxPerBooking={event.max_participants_per_booking}
-            holdHours={event.reservation_hold_hours}
-            takesUpiPayment={Boolean(event.payment)}
+            holdMinutes={event.hold_minutes}
+            advancePercent={event.advance_percent}
           />
         ) : (
           <EventEnquiryPanel slug={event.slug} title={event.title} price={event.price} schedules={event.schedules} whatsappNumber={event.booking_whatsapp_number || ""} venue={venue} />

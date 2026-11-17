@@ -1,15 +1,16 @@
 "use client";
-import { useT } from "@/components/site/LangProvider";
+import Link from "next/link";
 import { useState } from "react";
+import { useCustomer } from "@/components/booking/CustomerProvider";
 import { EventCouponBox } from "@/components/booking/EventCouponBox";
+import { useT } from "@/components/site/LangProvider";
 import { track, trackWhatsApp } from "@/lib/analytics";
 import { customerApi } from "@/lib/customer/api";
+import { openCashfreeCheckout } from "@/lib/customer/cashfree";
 import { longDate, money, time as timeLower } from "@/lib/customer/format";
-import { FEATURED_EVENT_SLUG, FEATURED_EVENT_UPI_QR } from "@/components/site/data/featured-event";
+import type { CouponPreview, EventBooking, EventRegistrationType, EventSchedule } from "@/lib/customer/types";
 
 const time = (iso: string) => timeLower(iso).toUpperCase();
-import type { CouponPreview, EventBooking, EventPayment, EventRegistrationType, EventSchedule } from "@/lib/customer/types";
-
 const fullDate = (iso: string) =>
   new Date(iso).toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" });
 
@@ -23,123 +24,23 @@ function whatsAppLink(number: string, text: string) {
   return digits ? `https://wa.me/${digits}?text=${encodeURIComponent(text)}` : "";
 }
 
-const STATUS_NOTE: Record<EventBooking["status"], string> = {
-  PENDING: "Your slots are held while our team verifies availability. This is not a confirmed registration yet — we'll send a confirmation.",
-  CONFIRMED: "You're in! Your registration is confirmed. See you there.",
-  CANCELLED: "This booking was cancelled. Contact us on WhatsApp if this is unexpected.",
-  EXPIRED: "The hold on these slots ran out before confirmation. Request again or message us on WhatsApp.",
-};
-
-const PAYMENT_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const PAYMENT_MAX_BYTES = 5 * 1024 * 1024;
-
-function upiLink(p: EventPayment, amount: string, reference: string) {
-  if (!p.upi_id) return "";
-  const q = new URLSearchParams({ pa: p.upi_id, cu: "INR", am: Number(amount).toFixed(2), tn: reference });
-  if (p.payee_name) q.set("pn", p.payee_name);
-  return `upi://pay?${q.toString()}`;
+/** Sends the customer to Cashfree for what the booking can pay now. Cashfree returns them to their account. */
+async function payOnline(booking: EventBooking) {
+  if (!booking.pay_now) return;
+  const session = await customerApi.createPaymentOrder({ event_booking: booking.reference }, booking.pay_now.kind);
+  await openCashfreeCheckout(session);
 }
 
-/** Pay by UPI QR, then upload the payment screenshot. The team checks it before confirming the booking. */
-function PaymentStep({ booking, phone, onUploaded }: { booking: EventBooking; phone: string; onUploaded: (b: EventBooking) => void }) {
-  const p = booking.payment!;
-  const [file, setFile] = useState<File | null>(null);
-  const [utr, setUtr] = useState("");
+/** A booking that was made but not paid yet (the payment page couldn't open), or a free booking that is confirmed. */
+function BookingResult({ booking, onReset }: { booking: EventBooking; onReset: () => void }) {
+  const t = useT();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [replacing, setReplacing] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const upi = upiLink(p, booking.total_amount, booking.reference);
-  const qr = p.qr_url || (booking.event_slug === FEATURED_EVENT_SLUG ? FEATURED_EVENT_UPI_QR : null);
-
-  function choose(e: React.ChangeEvent<HTMLInputElement>) {
-    const f = e.target.files?.[0] ?? null;
-    setError("");
-    if (f && !PAYMENT_TYPES.includes(f.type)) { setError("Choose a JPG, PNG or WebP screenshot."); setFile(null); return; }
-    if (f && f.size > PAYMENT_MAX_BYTES) { setError("The screenshot must be smaller than 5 MB."); setFile(null); return; }
-    setFile(f);
-  }
-
-  async function upload(e: React.FormEvent) {
-    e.preventDefault();
-    if (!file) { setError("Choose the screenshot of your payment."); return; }
+  async function pay() {
     setBusy(true); setError("");
-    try {
-      const updated = await customerApi.uploadEventPayment(booking.reference, phone, file, utr.trim());
-      // Count the first proof only: replacing a screenshot is not a new payment.
-      if (!booking.payment_submitted) {
-        track("event_payment_proof_uploaded", { currency: "INR", value: Number(booking.total_amount), event_slug: booking.event_slug });
-      }
-      onUploaded(updated);
-      setReplacing(false); setFile(null); setUtr("");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "We couldn't upload your screenshot. Please try again.");
-    } finally {
-      setBusy(false);
-    }
+    try { await payOnline(booking); }
+    catch (err) { setError(err instanceof Error ? err.message : "The payment page didn't open. Please try again."); setBusy(false); }
   }
-
-  async function copyUpi() {
-    try { await navigator.clipboard.writeText(p.upi_id); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch {}
-  }
-
-  if (booking.payment_submitted && !replacing) {
-    return (
-      <div className="bk-pay">
-        <p className="bk-pay-done">Payment screenshot received. The team will check it and confirm your booking on WhatsApp.</p>
-        <button type="button" className="bk-linkbtn" onClick={() => setReplacing(true)}>Upload a different screenshot</button>
-      </div>
-    );
-  }
-
-  return (
-    <form className="bk-pay" onSubmit={upload}>
-      <h3>Pay {money(booking.total_amount)} to confirm</h3>
-      <ol className="bk-pay-steps">
-        <li>{qr ? "Scan the QR code" : "Pay to the UPI ID below"} with any UPI app (GPay, PhonePe, Paytm) and pay <strong>{money(booking.total_amount)}</strong>.</li>
-        <li>Take a screenshot of the payment.</li>
-        <li>Upload it below.</li>
-      </ol>
-      {qr && (
-        <a href={qr} target="_blank" rel="noreferrer" className="bk-pay-qr">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={qr} alt={`UPI QR code${p.payee_name ? ` for ${p.payee_name}` : ""}`} />
-        </a>
-      )}
-      {(p.upi_id || p.payee_name) && (
-        <dl className="bk-booking-facts">
-          {p.payee_name && <><dt>Paying to</dt><dd>{p.payee_name}</dd></>}
-          {p.upi_id && <><dt>UPI ID</dt><dd><strong>{p.upi_id}</strong> <button type="button" className="bk-linkbtn" onClick={copyUpi}>{copied ? "Copied" : "Copy"}</button></dd></>}
-        </dl>
-      )}
-      {upi && <a className="btn btn-ghost bk-pay-app" href={upi}>Open UPI app on this phone</a>}
-      <div className="bk-field">
-        <label htmlFor={`pay-shot-${booking.reference}`}>Payment screenshot</label>
-        <input id={`pay-shot-${booking.reference}`} type="file" accept="image/png,image/jpeg,image/webp" onChange={choose} required />
-      </div>
-      <div className="bk-field">
-        <label htmlFor={`pay-utr-${booking.reference}`}>UPI transaction ID <span className="bk-label-optional">(optional)</span></label>
-        <input id={`pay-utr-${booking.reference}`} inputMode="numeric" maxLength={40} placeholder="12-digit UTR number" value={utr} onChange={(e) => setUtr(e.target.value)} />
-      </div>
-      {error && <p className="bk-error" role="alert">{error}</p>}
-      <button type="submit" className="btn" disabled={busy}>{busy ? "Uploading…" : "Upload screenshot"}</button>
-      {replacing && <button type="button" className="bk-linkbtn" onClick={() => setReplacing(false)}>Keep the earlier screenshot</button>}
-    </form>
-  );
-}
-
-function BookingResult({ booking: initial, phone, onReset }: { booking: EventBooking; phone: string; onReset?: () => void }) {
-  const [booking, setBooking] = useState(initial);
-  const t = useT();
-  const confirmText = [
-    `Hello GoHyderabad, please confirm my booking ${booking.reference}.`,
-    `Event: ${booking.event_title}`,
-    `Date: ${scheduleLabel(booking)}`,
-    `Participants: ${booking.participant_count}`,
-    `Total: ${money(booking.total_amount)}`,
-    `Name: ${booking.contact_name}`,
-  ].join("\n");
-  const wa = whatsAppLink(booking.booking_whatsapp_number, confirmText);
   return (
     <div role="status">
       <div className={`bk-status bk-status-${booking.status.toLowerCase()}`}>{booking.status_label}</div>
@@ -152,62 +53,27 @@ function BookingResult({ booking: initial, phone, onReset }: { booking: EventBoo
           <><dt>Held until</dt><dd>{longDate(booking.reserved_until)} · {time(booking.reserved_until)}</dd></>
         )}
       </dl>
-      <p className="bk-hint">{STATUS_NOTE[booking.status]}</p>
-      {booking.payment && (booking.status === "PENDING" || booking.status === "CONFIRMED") && (
-        <PaymentStep booking={booking} phone={phone} onUploaded={setBooking} />
+      {booking.pay_now ? (
+        <>
+          <p className="bk-hint">Pay {money(booking.pay_now.amount)} online to confirm your places. They are held until then.</p>
+          {error && <p className="bk-error" role="alert">{error}</p>}
+          <button type="button" className="btn" disabled={busy} onClick={pay}>{busy ? "Opening payment…" : `Pay ${money(booking.pay_now.amount)}`}</button>
+        </>
+      ) : (
+        <p className="bk-hint">{booking.status === "CONFIRMED" ? "You're in! Your booking is confirmed. See you there." : "This booking is no longer active."}</p>
       )}
-      {wa && booking.status === "PENDING" && (
-        <a className="btn event-whatsapp" href={wa} target="_blank" rel="noreferrer"
-          onClick={() => trackWhatsApp("event_confirm", booking.event_slug)}>Confirm on WhatsApp</a>
-      )}
-      <p className="bk-hint">Save your reference to check the status later with the same mobile number.</p>
-      {onReset && <button type="button" className="bk-linkbtn" onClick={onReset}>Make another booking</button>}
+      <p className="bk-hint"><Link href="/account">See all your bookings</Link></p>
+      <button type="button" className="bk-linkbtn" onClick={onReset}>Make another booking</button>
     </div>
   );
 }
 
-function StatusLookup() {
-  const t = useT();
-  const [open, setOpen] = useState(false);
-  const [reference, setReference] = useState("");
-  const [phone, setPhone] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
-  const [booking, setBooking] = useState<EventBooking | null>(null);
-
-  async function lookUp(e: React.FormEvent) {
-    e.preventDefault();
-    setError(""); setBooking(null); setBusy(true);
-    try { setBooking(await customerApi.eventBookingStatus(reference, phone)); }
-    catch (err) { setError(err instanceof Error ? err.message : "We couldn't find that booking."); }
-    finally { setBusy(false); }
-  }
-
-  if (!open) return <button type="button" className="bk-linkbtn" onClick={() => setOpen(true)}>{t("Already booked? Check your booking status")}</button>;
-  return (
-    <form className="bk-lookup" onSubmit={lookUp}>
-      <h3>Check booking status</h3>
-      <div className="bk-field">
-        <label htmlFor="lookup-ref">Booking reference</label>
-        <input id="lookup-ref" placeholder="GHE-XXXXXX" value={reference} onChange={(e) => setReference(e.target.value)} required maxLength={16} />
-      </div>
-      <div className="bk-field">
-        <label htmlFor="lookup-phone">Mobile number used to book</label>
-        <input id="lookup-phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required maxLength={20} />
-      </div>
-      {error && <p className="bk-error" role="alert">{error}</p>}
-      <button type="submit" className="btn btn-ghost" disabled={busy}>{busy ? "Checking…" : "Check status"}</button>
-      {booking && <div style={{ marginTop: 16 }}><BookingResult key={booking.reference} booking={booking} phone={phone} /></div>}
-    </form>
-  );
-}
-
 /**
- * "Reserve your spot" panel. The server re-checks capacity, registration type and price, and returns a PENDING
- * booking with a reference; staff confirm it in the admin panel.
+ * "Reserve your spot" panel. Booking needs a signed-in account. The server re-checks capacity, registration type and
+ * price, holds the places, and the customer pays the advance on Cashfree; a verified payment confirms the booking.
  */
 export function EventBookingPanel({
-  slug, title, price, schedules, whatsappNumber, venue, registrationType, maxPerBooking, holdHours, takesUpiPayment = false,
+  slug, title, price, schedules, whatsappNumber, venue, registrationType, maxPerBooking, holdMinutes, advancePercent,
 }: {
   slug: string;
   title: string;
@@ -217,17 +83,17 @@ export function EventBookingPanel({
   venue: string;
   registrationType: EventRegistrationType;
   maxPerBooking: number | null;
-  holdHours: number;
-  /** The event shows a UPI QR after booking and asks for a payment screenshot. */
-  takesUpiPayment?: boolean;
+  /** How long places stay held while the customer pays. */
+  holdMinutes: number;
+  /** Share of the price paid online when booking (100 = all of it). */
+  advancePercent: number;
 }) {
   const t = useT();
+  const { user, loading } = useCustomer();
   const minCount = registrationType === "GROUP" ? 2 : 1;
   const [scheduleId, setScheduleId] = useState(schedules[0]?.id ?? "");
   const [count, setCount] = useState(minCount);
   const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
   const [note, setNote] = useState("");
   const [consent, setConsent] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -246,13 +112,14 @@ export function EventBookingPanel({
   const unit = price === null ? null : Number(price);
   const listTotal = unit === null ? null : unit * participants;
   const total = listTotal === null ? null : Math.max(0, listTotal - Number(coupon?.discount ?? 0));
+  const advance = total === null ? null : Math.round(total * Math.min(100, advancePercent)) / 100;
+  const bookerName = name.trim();
 
   const registerText = [
     `Hello GoHyderabad, I would like to register for ${title}${selected ? ` on ${fullDate(selected.starts_at)}` : ""}.`,
     venue ? `Location: ${venue}.` : "",
     `Participants: ${participants}.`,
-    `Name: ${name.trim() || "Not provided"}.`,
-    `Mobile: ${phone.trim() || "Not provided"}.`,
+    bookerName ? `Name: ${bookerName}.` : "",
     total !== null ? `Estimated total: ${money(total)}.` : "",
     "Please confirm availability.",
   ].filter(Boolean).join(" ");
@@ -262,32 +129,42 @@ export function EventBookingPanel({
     e.preventDefault();
     if (!selected) return;
     setError(""); setBusy(true);
+    let made: EventBooking | null = null;
     try {
-      const result = await customerApi.createEventBooking({
-        event: slug, schedule: selected.id, name: name.trim(), phone: phone.trim(), email: email.trim(),
-        participant_count: participants, note: note.trim(), coupon: coupon?.code, consent_to_contact: consent,
+      made = await customerApi.createEventBooking({
+        event: slug, schedule: selected.id, name: bookerName, participant_count: participants, note: note.trim(),
+        coupon: coupon?.code, consent_to_contact: consent,
       });
-      setSeatsOverride((prev) => ({ ...prev, [selected.id]: result.seats_left }));
-      setBooking(result);
+      setSeatsOverride((prev) => ({ ...prev, [selected.id]: made!.seats_left }));
       track("event_booking_request", { currency: "INR", value: total ?? 0, event_slug: slug, participants, has_coupon: Boolean(coupon) });
+      if (made.pay_now) {
+        await payOnline(made);     // leaves the page for Cashfree; it brings the customer back to their account
+        return;
+      }
+      setBooking(made);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "We couldn't send your booking request. Please try again.");
+      // The booking may exist with its places held: show it, with a Pay button to try the payment again.
+      if (made) setBooking(made);
+      setError(err instanceof Error ? err.message : "We couldn't make your booking. Please try again.");
     } finally {
       setBusy(false);
     }
   }
 
+  const reset = () => { setBooking(null); setConsent(false); setCoupon(null); setError(""); };
+
   return (
     <div className="bk-card bk-sticky" id="book">
       {booking ? (
         <>
-          <h2>Booking request received</h2>
-          <BookingResult key={booking.reference} booking={booking} phone={phone} onReset={() => { setBooking(null); setConsent(false); setCoupon(null); }} />
+          <h2>{booking.status === "CONFIRMED" ? "You're booked" : "Booking made"}</h2>
+          {error && <p className="bk-error" role="alert">{error}</p>}
+          <BookingResult key={booking.reference} booking={booking} onReset={reset} />
         </>
       ) : (
         <>
           <h2>{t("Book your slot")}</h2>
-          <p className="bk-note">{t("Register yourself or bring your friends along. Our team will confirm availability.")}</p>
+          <p className="bk-note">{t("Register yourself or bring your friends along.")}</p>
           <div className="bk-total"><span>{t("Entry fee per person")}</span><strong>{price !== null ? money(price) : "TBC"}</strong></div>
 
           {capacity !== null && (
@@ -304,9 +181,16 @@ export function EventBookingPanel({
             </>
           ) : soldOut || groupBlocked ? (
             <>
-              <p className="bk-hint">All slots for this date are taken or on hold. Unconfirmed holds are released after {holdHours} hours, so check back or ask the team about a waiting list.</p>
+              <p className="bk-hint">All slots for this date are taken or held. Unpaid holds are released after {holdMinutes} minutes, so check back or ask the team about a waiting list.</p>
               {waRegister && <a className="btn event-whatsapp" href={waRegister} target="_blank" rel="noreferrer"
                 onClick={() => trackWhatsApp("event_waitlist", slug)}>Join the waiting list on WhatsApp</a>}
+            </>
+          ) : !user ? (
+            <>
+              <p className="bk-hint">Sign in with your WhatsApp number to book and pay online. Your bookings and receipts stay in your account.</p>
+              <Link className="btn" href={`/login?next=${encodeURIComponent(`/events/${slug}#book`)}`} aria-disabled={loading}>Sign in to book</Link>
+              {waRegister && <a className="btn event-whatsapp" href={waRegister} target="_blank" rel="noreferrer"
+                onClick={() => trackWhatsApp("event_register_form", slug)}>{t("Register on WhatsApp")}</a>}
             </>
           ) : (
             <form onSubmit={submit}>
@@ -329,42 +213,40 @@ export function EventBookingPanel({
               <p className="bk-hint">
                 {registrationType === "INDIVIDUAL"
                   ? "Individual registrations only for this event."
-                  : `${capacity !== null ? `Maximum total event capacity is ${capacity}. ` : ""}Group requests are subject to remaining slots${seatsLeft !== null ? ` (up to ${maxCount} now)` : ""}.`}
+                  : `${capacity !== null ? `Maximum total event capacity is ${capacity}. ` : ""}Group bookings are subject to remaining slots${seatsLeft !== null ? ` (up to ${maxCount} now)` : ""}.`}
               </p>
               <div className="bk-field">
                 <label htmlFor="name">{participants > 1 ? t("Primary participant name") : t("Your name")}</label>
-                <input id="name" type="text" autoComplete="name" maxLength={150} placeholder={t("Enter your full name")} value={name} onChange={(e) => setName(e.target.value)} required />
+                <input id="name" type="text" autoComplete="name" maxLength={150} placeholder={t("Enter your full name")}
+                  value={name} onChange={(e) => setName(e.target.value)} required />
               </div>
-              <div className="bk-field">
-                <label htmlFor="phone">{t("Mobile number")}</label>
-                <input id="phone" type="tel" autoComplete="tel" inputMode="tel" maxLength={20} placeholder={t("Enter your mobile number")} value={phone} onChange={(e) => setPhone(e.target.value)} required />
-              </div>
-              <div className="bk-field">
-                <label htmlFor="email">{t("Email address")} <span className="bk-label-optional">{t("(optional)")}</span></label>
-                <input id="email" type="email" autoComplete="email" placeholder={t("Enter your email")} value={email} onChange={(e) => setEmail(e.target.value)} />
-              </div>
+              <p className="bk-hint">Booking updates go to {user.phone_number} on WhatsApp.</p>
               <div className="bk-field">
                 <label htmlFor="notes">{t("Anything else?")} <span className="bk-label-optional">{t("Optional")}</span></label>
                 <textarea id="notes" maxLength={1000} placeholder={t("Add a note for the event team")} value={note} onChange={(e) => setNote(e.target.value)} />
               </div>
-              {unit !== null && unit > 0 && <EventCouponBox event={slug} participants={participants} phone={phone} applied={coupon} onChange={setCoupon} />}
-              <div className="bk-total"><span>Estimated total{participants > 1 && unit !== null ? ` (${participants} × ${money(unit)}${coupon ? ` − ${money(coupon.discount)}` : ""})` : ""}</span><strong>{total !== null ? money(total) : "TBC"}</strong></div>
+              {unit !== null && unit > 0 && <EventCouponBox event={slug} participants={participants} phone={user.phone_number} applied={coupon} onChange={setCoupon} />}
+              <div className="bk-total"><span>Total{participants > 1 && unit !== null ? ` (${participants} × ${money(unit)}${coupon ? ` − ${money(coupon.discount)}` : ""})` : ""}</span><strong>{total !== null ? money(total) : "TBC"}</strong></div>
+              {advance !== null && total !== null && total > 0 && advancePercent < 100 && (
+                <div className="bk-total" style={{ borderTop: 0 }}><span>Pay now to confirm ({advancePercent}%)</span><strong>{money(advance)}</strong></div>
+              )}
               <label className="bk-check">
                 <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} required />
-                <span>{t("GoHyderabad may contact me about this registration request. I understand that submitting this form does not confirm my booking.")}</span>
+                <span>GoHyderabad may contact me about this booking. I agree to the <a href="/terms" target="_blank" rel="noopener">terms</a> and the <a href="/refund-policy" target="_blank" rel="noopener">cancellation and refund policy</a>.</span>
               </label>
               {error && <p className="bk-error" role="alert">{error}</p>}
-              <button className="btn" type="submit" disabled={busy}>{busy ? t("Sending…") : t("Request a booking")}</button>
-              {waRegister && <a className="btn event-whatsapp" href={waRegister} target="_blank" rel="noreferrer"
-                onClick={() => trackWhatsApp("event_register_form", slug)}>{t("Register on WhatsApp")}</a>}
-              <p className="bk-hint">{takesUpiPayment
-                ? `This holds your slots for up to ${holdHours} hours. Next you'll see a UPI QR code: pay the entry fee and upload the payment screenshot. Your slot is confirmed after the team checks your payment.`
-                : `This submits a registration request and holds your slots for up to ${holdHours} hours. Your slot is confirmed after the event team verifies availability and sends confirmation. No payment is collected online.`}</p>
+              <button className="btn" type="submit" disabled={busy}>
+                {busy ? t("Please wait…") : total === 0 ? "Confirm free booking" : `Book and pay ${money(advancePercent < 100 && advance !== null ? advance : total ?? 0)}`}
+              </button>
+              <p className="bk-hint">
+                {total === 0
+                  ? "Nothing to pay: your places are confirmed straight away."
+                  : `Your places are held for ${holdMinutes} minutes while you pay securely with Cashfree (UPI, cards, netbanking). Paying confirms your booking.${advancePercent < 100 ? " The rest can be paid later from your account." : ""}`}
+              </p>
             </form>
           )}
         </>
       )}
-      <StatusLookup />
     </div>
   );
 }

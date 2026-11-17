@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { customerApi } from "@/lib/customer/api";
+import { openCashfreeCheckout } from "@/lib/customer/cashfree";
 import { longDate, money, time } from "@/lib/customer/format";
 import type { EventBooking } from "@/lib/customer/types";
 
@@ -9,7 +10,7 @@ const STATUS_CLASS: Record<EventBooking["status"], string> = {
   PENDING: "is-wait", CONFIRMED: "is-good", CANCELLED: "is-bad", EXPIRED: "is-bad",
 };
 
-/** Event bookings (paid by UPI, confirmed by our team): reference, date, people, total, cancelling and any refund. */
+/** Event bookings: reference, date, people, what is paid and due (paid online through Cashfree), cancelling and any refund. */
 export function EventBookingsList({ bookings, onChanged }: { bookings: EventBooking[]; onChanged: (booking: EventBooking) => void }) {
   return (
     <div className="ac-list">
@@ -31,13 +32,14 @@ function EventBookingCard({ booking: b, onChanged }: { booking: EventBooking; on
           <li>{longDate(b.starts_at)}{b.time_tbd ? " · Time to be confirmed" : ` · ${time(b.starts_at)}`}</li>
           {b.venue && <li>{b.venue}</li>}
           <li>{b.participant_count} {b.participant_count === 1 ? "participant" : "participants"}</li>
-          {b.status === "PENDING" && b.reserved_until && <li>Slots held until {longDate(b.reserved_until)} · {time(b.reserved_until)}</li>}
-          {b.payment && b.status !== "CANCELLED" && <li>Payment screenshot: <strong>{b.payment_submitted ? "sent" : "not sent yet"}</strong></li>}
+          {b.status === "PENDING" && b.reserved_until && <li>Places held until {longDate(b.reserved_until)} · {time(b.reserved_until)}</li>}
+          {Number(b.paid) > 0 && <li>Paid: <strong>{money(b.paid)}</strong>{Number(b.outstanding) > 0 ? <> · Still to pay: <strong>{money(b.outstanding)}</strong></> : ""}</li>}
         </ul>
         <div className="ac-bottom">
           <span className="ac-price">{money(b.total_amount)}</span>
           <span className="ac-caption">{caption(b)}</span>
         </div>
+        {b.pay_now && <PayNow booking={b} />}
         {b.status === "CANCELLED" && <RefundNote booking={b} />}
         {b.cancellation && <CancelBox booking={b} onChanged={onChanged} />}
       </div>
@@ -47,16 +49,43 @@ function EventBookingCard({ booking: b, onChanged }: { booking: EventBooking; on
 
 function caption(b: EventBooking) {
   if (b.status === "CONFIRMED") return "See you there!";
-  if (b.status !== "PENDING") return "";
-  if (!b.payment) return "Our team will confirm your place. Pay at the venue.";
-  if (b.payment_submitted) return "We're checking your payment and will confirm on WhatsApp.";
-  return <>To pay, open the <Link href={`/events/${b.event_slug}#book`}>event page</Link> and use “Check your booking status”.</>;
+  if (b.status === "PENDING") return "Pay to confirm your places before the hold runs out.";
+  if (b.status === "EXPIRED") return <>The hold ran out before payment. <Link href={`/events/${b.event_slug}#book`}>Book again</Link> if places are left.</>;
+  return "";
+}
+
+/** Pay the advance (to confirm) or the balance on Cashfree; it brings the customer back here, where the payment is checked. */
+function PayNow({ booking: b }: { booking: EventBooking }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const pay = b.pay_now!;
+  async function start() {
+    setBusy(true); setError("");
+    try { await openCashfreeCheckout(await customerApi.createPaymentOrder({ event_booking: b.reference }, pay.kind)); }
+    catch (e) { setError(e instanceof Error ? e.message : "The payment page didn't open. Please try again."); setBusy(false); }
+  }
+  return (
+    <div className="ac-actions" style={{ marginTop: 12 }}>
+      <button type="button" className="ac-btn is-primary" disabled={busy} onClick={start}>
+        {busy ? "Opening payment…" : `${pay.kind === "ADVANCE" ? "Pay to confirm" : "Pay balance"} · ${money(pay.amount)}`}
+      </button>
+      {error && <p className="ac-error" role="alert">{error}</p>}
+    </div>
+  );
 }
 
 function RefundNote({ booking: b }: { booking: EventBooking }) {
   const r = b.refund;
   const who = b.cancelled_by_customer ? "You cancelled this booking" : "This booking was cancelled by our team";
   if (!r) return <p className="ac-caption ac-note">{who}{b.cancelled_at ? ` on ${longDate(b.cancelled_at)}` : ""}. No refund is due.</p>;
+  if (r.online) {
+    return (
+      <p className="ac-caption ac-note">
+        {who}. Refund of <strong>{money(r.amount)}</strong> to the account you paid from: {r.status_label.toLowerCase()}.
+        {r.status === "PROCESSING" ? " Banks usually take 5–7 working days." : ""}
+      </p>
+    );
+  }
   return (
     <p className="ac-caption ac-note">
       {who}. {r.status === "DUE" && <>Refund of <strong>{money(r.amount)}</strong>: our team will send it to you by UPI and message you on WhatsApp.</>}
@@ -84,7 +113,7 @@ function CancelBox({ booking: b, onChanged }: { booking: EventBooking; onChanged
   }
 
   const refund = !c.paid ? "Nothing has been paid, so there is nothing to refund."
-    : Number(c.refund_amount) > 0 ? <>You'll get <strong>{money(c.refund_amount)}</strong> back ({c.refund_percent}%), sent by UPI by our team.</>
+    : Number(c.refund_amount) > 0 ? <>You'll get <strong>{money(c.refund_amount)}</strong> back ({c.refund_percent}% of what you paid), to the account you paid from.</>
     : "Under this event's refund policy, cancelling now gives no refund.";
 
   return (
