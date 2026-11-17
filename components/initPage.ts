@@ -2,6 +2,8 @@
 // Original page script. Runs as soon as the page content is ready; the map part loads Leaflet itself, only when needed.
 const LEAFLET_CSS = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
 const LEAFLET_JS = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";
+/** Widest window that shows the header menu button instead of the links (the 1240px media query in globals.css). */
+const MENU_BREAKPOINT = 1240;
 
 export function initPage() {
     (function () {
@@ -55,7 +57,7 @@ export function initPage() {
       document.addEventListener("keydown", function (e) {
         if (e.key === "Escape" && menuBtn.getAttribute("aria-expanded") === "true") { setMenu(false); menuBtn.focus(); }
       });
-      window.addEventListener("resize", function () { if (window.innerWidth > 860) setMenu(false); });
+      window.addEventListener("resize", function () { if (window.innerWidth > MENU_BREAKPOINT) setMenu(false); });
 
       // Scroll reveal
       var items = document.querySelectorAll("[data-reveal]");

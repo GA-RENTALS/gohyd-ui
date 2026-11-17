@@ -21,6 +21,7 @@ const DICT: Record<string, Entry> = {
   "Book a trip": { te: "ట్రిప్ బుక్ చేయండి", hi: "ट्रिप बुक करें" },
   "Trips": { te: "ట్రిప్‌లు", hi: "ट्रिप्स" },
   "Places": { te: "ప్రదేశాలు", hi: "जगहें" },
+  "Blog": { te: "బ్లాగ్", hi: "ब्लॉग" },
   "Main navigation": { te: "ప్రధాన నావిగేషన్", hi: "मुख्य नेविगेशन" },
   "Open navigation": { te: "నావిగేషన్ తెరవండి", hi: "नेविगेशन खोलें" },
   "Close navigation": { te: "నావిగేషన్ మూసివేయండి", hi: "नेविगेशन बंद करें" },

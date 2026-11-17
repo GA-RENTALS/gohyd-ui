@@ -196,6 +196,8 @@ export type Home = {
   name: string | null; as_of: string;
   kpis: { key: string; label: string; value: string | number; format: "money" | "number"; delta: number | null; hint: string }[];
   todo: {
+    /** Razorpay events still failing after its own retries: a payment may not be recorded yet. */
+    failed_payment_events?: { count: number; items: { id: string; event_type: string; error: string; created_at: string }[] };
     verify_payments?: { count: number; items: { id: string; amount: string; payer: string; reference: string; kind: string; created_at: string; title: string; parent_id: string | null }[] };
     confirm_events?: { count: number; with_proof: number; items: BookingRow[] };
     balance_due?: { count: number; items: BookingRow[] };

@@ -46,7 +46,8 @@ export default function Dashboard() {
   if (!d) return <DashboardSkeleton />;
 
   const t = d.todo;
-  const waiting = (t.verify_payments?.count ?? 0) + (t.confirm_events?.count ?? 0) + (t.balance_due?.count ?? 0) + (t.enquiries?.count ?? 0);
+  const waiting = (t.failed_payment_events?.count ?? 0) + (t.verify_payments?.count ?? 0) + (t.confirm_events?.count ?? 0)
+    + (t.balance_due?.count ?? 0) + (t.enquiries?.count ?? 0);
   const today = new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" });
 
   return (
@@ -89,6 +90,17 @@ export default function Dashboard() {
             </div>
           ) : (
             <div className="divide-y divide-separator-border">
+              {!!t.failed_payment_events?.count && (
+                <TodoGroup icon={RiAlertLine} title="Payment updates that failed" count={t.failed_payment_events.count}
+                  note="A customer may have paid without it being recorded" href="/admin/audit/gateway-events">
+                  {t.failed_payment_events.items.map((e) => (
+                    <TodoRow key={e.id} lead={<RiAlertLine className="size-5 shrink-0 text-rose-600" aria-hidden />} title={e.event_type || "Razorpay event"}
+                      sub={<>{e.error} · {ago(e.created_at)}</>}
+                      actions={<Button size="small" variant="primary" disabled={busy === e.id}
+                        onClick={() => quiet(act(e.id, () => adminApi.action("retry-webhook", { event_id: e.id }), "Payment update processed"))}>Retry</Button>} />
+                  ))}
+                </TodoGroup>
+              )}
               {!!t.confirm_events?.count && (
                 <TodoGroup icon={RiTicket2Line} title="Event bookings to confirm" count={t.confirm_events.count}
                   note={t.confirm_events.with_proof ? `${t.confirm_events.with_proof} sent a payment screenshot` : undefined} href="/admin/payments?type=event&status=pending">

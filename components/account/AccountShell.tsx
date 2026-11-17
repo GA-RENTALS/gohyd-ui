@@ -10,6 +10,7 @@ const NAV = [
   { href: "/account", label: "My bookings", icon: "M3 5h18v16H3zM16 3v4M8 3v4M3 10h18" },
   { href: "/account/profile", label: "My details", icon: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c1-4 4-6 8-6s7 2 8 6" },
   { href: "/trips", label: "Browse trips", icon: "M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z" },
+  { href: "/blogs", label: "Stories & guides", icon: "M4 4h11l5 5v11H4zM15 4v5h5M8 13h8M8 17h5" },
 ] as const;
 
 function NavIcon({ d }: { d: string }) {

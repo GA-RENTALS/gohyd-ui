@@ -59,11 +59,20 @@
 /* Header: keep every label on one line so the bar stays tidy at any width */
 .header .brand b, .header .brand small, .nav-links a, .nav .btn { white-space: nowrap; }
 .nav { gap: clamp(16px, 2vw, 28px); }
-.nav .btn { margin-left: 4px; }
+.nav .btn { margin-left: 4px; flex-shrink: 0; }   /* "Book a trip" keeps its size; the links make room instead */
 .nav-links .nav-book { display: none; }
-@media (max-width: 1180px) { .header .brand small { display: none; } .nav-links { gap: clamp(14px, 1.8vw, 24px); } }
+/* Narrower than this, six links and the button don't fit: the tagline goes and "Book a trip" moves into the links,
+   highlighted (it stays there inside the menu below 1240px, see globals.css). */
+@media (max-width: 1400px) {
+  .header .brand small { display: none; }
+  .nav-links { gap: clamp(14px, 1.8vw, 26px); }
+  .nav > .btn { display: none; }
+  .nav-links .nav-book { display: block; color: var(--lime); }
+}
 @media (max-width: 960px) { .nav-links a { letter-spacing: .08em; } }
-@media (max-width: 860px) { .nav-links .nav-book { display: block; color: var(--lime); } .nav { gap: 12px; } }
+/* Tablet widths use the menu button too; keep language, account and menu together on the right (phones spread them). */
+@media (min-width: 861px) and (max-width: 1240px) { .nav > .brand { margin-right: auto; } }
+@media (max-width: 860px) { .nav { gap: 12px; } }
 
 /* Account avatar in the header (home page and booking pages) */
 .acct { position: relative; flex: none; }

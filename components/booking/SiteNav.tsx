@@ -33,6 +33,7 @@ export function SiteNav() {
           <Link href="/trips">{t("Trips")}</Link>
           <Link href="/destinations">{t("Places")}</Link>
           <Link href="/experiences">{t("Experiences")}</Link>
+          <Link href="/blogs">{t("Blog")}</Link>
           <Link href="/cart">{t("Cart")}</Link>
         </nav>
         <LanguageSwitcher className="bk-lang-desktop" />
@@ -59,6 +60,7 @@ export function SiteNav() {
           <Link href="/trips" onClick={() => setMenuOpen(false)}>{t("Trips")}</Link>
           <Link href="/destinations" onClick={() => setMenuOpen(false)}>{t("Places")}</Link>
           <Link href="/experiences" onClick={() => setMenuOpen(false)}>{t("Experiences")}</Link>
+          <Link href="/blogs" onClick={() => setMenuOpen(false)}>{t("Blog")}</Link>
           <Link href="/cart" onClick={() => setMenuOpen(false)}>{t("Cart")}</Link>
         </nav>
         <div className="bk-mobile-language"><span>{t("Language")}</span><LanguageSwitcher /></div>

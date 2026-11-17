@@ -58,6 +58,7 @@ export function AccountMenu() {
           <Link role="menuitem" href="/account" onClick={() => setOpen(false)}>{t("My bookings")}</Link>
           <Link role="menuitem" href="/cart" onClick={() => setOpen(false)}>{t("My cart")}</Link>
           <Link role="menuitem" href="/trips" onClick={() => setOpen(false)}>{t("Book a trip")}</Link>
+          <Link role="menuitem" href="/blogs" onClick={() => setOpen(false)}>{t("Stories & guides")}</Link>
           <button role="menuitem" type="button" onClick={async () => { setOpen(false); await signOut(); router.push("/"); }}>{t("Sign out")}</button>
         </div>
       )}

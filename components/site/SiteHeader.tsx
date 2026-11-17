@@ -29,6 +29,8 @@ export async function SiteHeader() {
             {" "}
             <a href="#how">{t("How it works")}</a>
             {" "}
+            <a href="/blogs">{t("Blog")}</a>
+            {" "}
             <a className="nav-book" href="/trips">{t("Book a trip")}</a>
           </nav>
           <a className="btn" href="/trips">

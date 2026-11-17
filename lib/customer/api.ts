@@ -44,6 +44,9 @@ export const customerApi = {
   previewEventCoupon: (data: { event: string; participant_count: number; code: string; phone?: string }) =>
     api<CouponPreview>("/event-bookings/coupon-preview/", { method: "POST", auth: false, json: data }),
   newsletterSignup: (email: string) => api<{ status: string }>("/newsletter/", { method: "POST", auth: false, json: { email, consent: true } }),
+  /** The signed token from a newsletter's unsubscribe link. */
+  newsletterUnsubscribe: (token: string) =>
+    api<{ status: string; email: string }>("/newsletter/unsubscribe/", { method: "POST", auth: false, json: { token } }),
   /** Reference + the phone used to book. */
   eventBookingStatus: (reference: string, phone: string) =>
     api<EventBooking>(`/event-bookings/${encodeURIComponent(reference.trim().toUpperCase())}/`, { method: "POST", auth: false, json: { phone } }),
