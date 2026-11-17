@@ -2,7 +2,7 @@ import { serverT } from "@/lib/lang-server";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { contentText, getDestination, type PublicDestination } from "@/lib/customer/public-content";
+import { getDestination, type PublicDestination } from "@/lib/customer/public-content";
 import { metaDescription, pageMetadata } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
@@ -38,7 +38,8 @@ export default async function DestinationDetailPage({ params }: Props) {
       <h1 className="bk-title">{place.name}</h1>
       {place.cover_url && <img className="bk-hero-img" src={place.cover_url} alt={place.name} />}
       {place.summary && <p className="bk-lede">{place.summary}</p>}
-      {place.body && <div className="bk-card bk-prose">{contentText(place.body)}</div>}
+      {/* The API keeps only safe formatting tags (content/html.py). */}
+      {place.body && <div className="bk-card bk-prose bk-rich" dangerouslySetInnerHTML={{ __html: place.body }} />}
       <p className="bk-btn-row" style={{ marginTop: 24 }}><Link className="btn" href="/trips">{t("Find a trip nearby")}</Link><Link href="/destinations">{t("All places")}</Link></p>
     </article>
   );

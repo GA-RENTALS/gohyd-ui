@@ -1,8 +1,8 @@
 "use client";
 import { use } from "react";
-import { BlogEditor } from "@/components/admin/BlogEditor";
+import { ContentEditor } from "@/components/admin/ContentEditor";
 
 export default function BlogPostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  return <BlogEditor id={id} />;
+  return <ContentEditor kind="blogs" id={id} />;
 }

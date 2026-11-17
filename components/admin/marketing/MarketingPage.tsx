@@ -30,7 +30,7 @@ export function MarketingPage() {
   const [creating, setCreating] = useState(false);
   const tab = (f.tab in TABS ? f.tab : "coupons") as MarketingTab;
   const { data, loading, page, setPage, reload, search: settledSearch } =
-    useList((qs) => adminApi.marketing<any>(tab, qs), { tab, status: f.status }, search);
+    useList((qs) => adminApi.marketing<any>(tab, qs), { tab, status: f.status }, search, ["tab"]);
 
   const config = TABS[tab];
   const can = data?.can ?? { create: false, update: false, tabs: [] as MarketingTab[] };

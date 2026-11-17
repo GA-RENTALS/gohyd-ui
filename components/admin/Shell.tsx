@@ -1,5 +1,5 @@
 "use client";
-import { RiApps2Line, RiArticleLine, RiCalendarEventLine, RiChat3Line, RiCloseLine, RiGroupLine, RiHomeLine, RiLogoutBoxRLine, RiMapPinLine, RiMegaphoneLine, RiMenuLine, RiRoadMapLine, RiSearchLine, RiSettings4Line, RiShieldUserLine, RiTicket2Line, RiWallet3Line } from "@remixicon/react";
+import { RiApps2Line, RiArticleLine, RiChatQuoteLine, RiFileTextLine, RiImageLine, RiMessage2Line, RiQuestionLine, RiCalendarEventLine, RiChat3Line, RiCloseLine, RiGroupLine, RiHomeLine, RiLogoutBoxRLine, RiMapPinLine, RiMegaphoneLine, RiMenuLine, RiRoadMapLine, RiSearchLine, RiSettings4Line, RiShieldUserLine, RiTicket2Line, RiWallet3Line } from "@remixicon/react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ComponentType, type ReactNode } from "react";
@@ -20,7 +20,8 @@ export const useAdmin = () => useContext(AdminCtx)!;
 
 const ICONS: Record<string, ComponentType<{ className?: string; "aria-hidden"?: boolean | "true" | "false" }>> = {
   home: RiHomeLine, map: RiRoadMapLine, calendar: RiCalendarEventLine, ticket: RiTicket2Line, wallet: RiWallet3Line, users: RiGroupLine,
-  chat: RiChat3Line, pin: RiMapPinLine, article: RiArticleLine, settings: RiSettings4Line, grid: RiApps2Line,
+  chat: RiChat3Line, pin: RiMapPinLine, article: RiArticleLine, file: RiFileTextLine, question: RiQuestionLine, quote: RiChatQuoteLine,
+  image: RiImageLine, message: RiMessage2Line, settings: RiSettings4Line, grid: RiApps2Line,
   megaphone: RiMegaphoneLine, shield: RiShieldUserLine,
 };
 

@@ -127,7 +127,14 @@ export function BookingCard({ booking, onChanged }: { booking: Booking; onChange
                 <>
                   <label htmlFor={`r-${booking.id}`}>Reason (optional)</label>
                   <input id={`r-${booking.id}`} value={reason} onChange={(e) => setReason(e.target.value)} />
-                  <p className="ac-caption">Any refund is worked out from the trip's cancellation policy and processed by our team.</p>
+                  {booking.cancellation_quote && <p className="ac-caption">
+                    {Number(booking.cancellation_quote.paid) <= 0
+                      ? "Nothing has been paid, so there is no refund due."
+                      : Number(booking.cancellation_quote.refund_amount) > 0
+                        ? <>You would get <strong>{money(booking.cancellation_quote.refund_amount)}</strong> back ({booking.cancellation_quote.refund_percent}%), processed by our team.</>
+                        : "The trip's policy gives no refund if you cancel now."}
+                    {booking.cancellation_quote.policy_cutoff && <> The current refund tier applies until {longDate(booking.cancellation_quote.policy_cutoff)}.</>}
+                  </p>}
                   <div className="ac-actions"><button type="button" className="ac-btn is-danger" disabled={busy} onClick={cancel}>Yes, cancel it</button><button type="button" className="ac-btn" onClick={() => setConfirming(false)}>Keep it</button></div>
                 </>
               )}

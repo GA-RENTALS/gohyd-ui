@@ -18,7 +18,7 @@ export function BookingsPage() {
   const [f, setF] = useQueryState({ type: "trip", status: "all" });
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState<BookingRow | null>(null);
-  const { data, loading, page, setPage, reload } = useList(adminApi.bookings, { type: f.type, status: f.status }, search);
+  const { data, loading, page, setPage, reload } = useList(adminApi.bookings, { type: f.type, status: f.status }, search, ["type"]);
   const c = data?.counts ?? {};
   const isTrip = f.type === "trip";
 

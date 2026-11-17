@@ -6,13 +6,14 @@ import { type Column, DataTable, dateOnly, Empty, FilterPills, money, StatusPill
 import { Button } from "@/components/base/buttons/button";
 import { Input } from "@/components/base/input/input";
 import { adminApi, type CouponRow } from "@/lib/admin/api";
-import { CopyButton, dayEnd, dayStart, setActive, type TabProps } from "./shared";
+import { CopyButton, dayEnd, dayStart, setActive, toDay, type TabProps } from "./shared";
 
 const STATE_LABEL: Record<CouponRow["state"], string> = { active: "Live", scheduled: "Starts later", ended: "Ended", paused: "Paused" };
 const STATE_TONE: Record<CouponRow["state"], "green" | "blue" | "gray" | "amber"> = { active: "green", scheduled: "blue", ended: "gray", paused: "amber" };
 
 export function CouponsTab({ rows, loading, can, onChanged, creating, onCloseCreate }: TabProps<CouponRow>) {
   const { busy, run } = useAction(onChanged);
+  const [editing, setEditing] = useState<CouponRow | null>(null);
   const toggle = (c: CouponRow) =>
     run(c.id, () => setActive("coupons", c.id, !c.is_active), c.is_active ? `${c.code} paused` : `${c.code} is live again`).catch(() => {});
 
@@ -34,10 +35,15 @@ export function CouponsTab({ rows, loading, can, onChanged, creating, onCloseCre
     <>
       <DataTable rows={rows} loading={loading} rowKey={(c) => c.id} columns={columns}
         actions={can.update ? (c) => (
-          <Button size="small" variant="secondary" disabled={busy === c.id} onClick={() => toggle(c)}>{c.is_active ? "Pause" : "Resume"}</Button>
+          <>
+            <Button size="small" variant="secondary" onClick={() => setEditing(c)}>Edit</Button>
+            <Button size="small" variant="secondary" disabled={busy === c.id} onClick={() => toggle(c)}>{c.is_active ? "Pause" : "Resume"}</Button>
+          </>
         ) : undefined}
         empty={<Empty title="No coupons here" sub="Create a code customers can enter at checkout, e.g. MONSOON10." />} />
-      {creating && <CouponForm onClose={onCloseCreate} onSaved={() => { onCloseCreate(); onChanged(); }} />}
+      {creating && !editing && <CouponForm onClose={onCloseCreate} onSaved={() => { onCloseCreate(); onChanged(); }} />}
+      {editing && <CouponForm key={editing.id} coupon={editing} onClose={() => setEditing(null)}
+        onSaved={() => { setEditing(null); onChanged(); }} />}
     </>
   );
 }
@@ -49,21 +55,22 @@ function validity(c: CouponRow) {
   return `${dateOnly(c.valid_from)} – ${dateOnly(c.valid_until)}`;
 }
 
-function CouponForm({ onClose, onSaved }: { onClose: () => void; onSaved: () => void }) {
-  const [code, setCode] = useState("");
-  const [kind, setKind] = useState<"percent" | "fixed">("percent");
-  const [value, setValue] = useState("");
-  const [limit, setLimit] = useState("");
-  const [perPerson, setPerPerson] = useState("1");
-  const [from, setFrom] = useState("");
-  const [until, setUntil] = useState("");
+function CouponForm({ coupon, onClose, onSaved }: { coupon?: CouponRow; onClose: () => void; onSaved: () => void }) {
+  const [code, setCode] = useState(coupon?.code ?? "");
+  // A new coupon starts as a percentage; an existing one keeps the kind it has.
+  const [kind, setKind] = useState<"percent" | "fixed">(coupon && coupon.percent == null ? "fixed" : "percent");
+  const [value, setValue] = useState(coupon?.percent != null ? String(coupon.percent) : coupon?.fixed_amount ?? "");
+  const [limit, setLimit] = useState(coupon?.max_redemptions == null ? "" : String(coupon.max_redemptions));
+  const [perPerson, setPerPerson] = useState(String(coupon?.per_user_limit ?? 1));
+  const [from, setFrom] = useState(toDay(coupon?.valid_from ?? null));
+  const [until, setUntil] = useState(toDay(coupon?.valid_until ?? null));
   const { busy, errors, general, submit } = useFormSubmit();
 
   const amount = Number(value);
   const valid = code.trim().length > 0 && amount > 0 && (kind === "fixed" || amount <= 100);
 
   const save = async () => {
-    const ok = await submit(() => adminApi.create("coupons", {
+    const body = {
       code: code.trim().toUpperCase(),
       percent_basis_points: kind === "percent" ? Math.round(amount * 100) : null,
       fixed_amount: kind === "fixed" ? amount.toFixed(2) : null,
@@ -71,14 +78,20 @@ function CouponForm({ onClose, onSaved }: { onClose: () => void; onSaved: () => 
       per_user_limit: Number(perPerson) || 1,
       valid_from: dayStart(from),
       valid_until: dayEnd(until),
-      is_active: true,
-    }));
+      is_active: coupon?.is_active ?? true,
+    };
+    const ok = await submit(() => coupon
+      ? adminApi.update("coupons", coupon.id, body)
+      : adminApi.create("coupons", body));
     if (ok) onSaved();
   };
 
   return (
-    <FormModal title="New coupon" description="Customers type this code at checkout or when booking an event. It works on every trip and event; to limit it to some, edit it under All data → Coupons."
-      submitLabel="Create coupon" busy={busy} general={general} canSubmit={valid} onSubmit={save} onClose={onClose}>
+    <FormModal title={coupon ? `Edit coupon · ${coupon.code}` : "New coupon"}
+      description={coupon
+        ? "Change the code, discount, limits or dates. Existing trip and event restrictions are kept; change those under All data → Coupons."
+        : "Customers type this code at checkout or when booking an event. It works on every trip and event; to limit it to some, edit it under All data → Coupons."}
+      submitLabel={coupon ? "Save changes" : "Create coupon"} busy={busy} general={general} canSubmit={valid} onSubmit={save} onClose={onClose}>
       <Input label="Code" value={code} onChange={(v) => setCode(v.toUpperCase().replace(/\s/g, ""))} placeholder="MONSOON10" errorMessage={errors.code} />
       <div className="flex flex-col gap-2">
         <span className="text-body-medium text-text-primary">Discount</span>

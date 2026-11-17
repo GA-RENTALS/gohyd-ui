@@ -140,7 +140,7 @@ export default function Dashboard() {
                       actions={<>
                         {e.phone && <a href={`tel:${e.phone}`} className="inline-flex h-8 items-center gap-1 rounded-lg border border-border-button-default px-2.5 text-body-medium hover:bg-background-secondary-default"><RiPhoneLine className="size-4" aria-hidden />Call</a>}
                         <Button size="small" variant="primary" disabled={busy === e.id}
-                          onClick={() => quiet(act(e.id, () => adminApi.update("enquiries", e.id, { status: "CONTACTED" }), `${e.name} marked as contacted`))}>Mark contacted</Button>
+                          onClick={() => quiet(act(e.id, () => adminApi.update(e.type === "corporate" ? "corporate-enquiries" : "enquiries", e.id, { status: "CONTACTED" }), `${e.name} marked as contacted`))}>Mark contacted</Button>
                       </>} />
                   ))}
                 </TodoGroup>

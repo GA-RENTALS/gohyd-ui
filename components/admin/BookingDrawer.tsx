@@ -17,7 +17,7 @@ export function BookingDrawer({ row, onClose, onChanged, can }: {
   row: BookingRow | null; onClose: () => void; onChanged: () => void;
   can: { cancel?: boolean; confirm?: boolean; record_payment?: boolean };
 }) {
-  const { refreshCounts } = useAdmin();
+  const { refreshCounts, session } = useAdmin();
   const [busy, setBusy] = useState(false);
   const [prompt, setPrompt] = useState<{ title: string; label: string; run: (t: string) => Promise<void> } | null>(null);
   const [paying, setPaying] = useState(false);
@@ -32,6 +32,9 @@ export function BookingDrawer({ row, onClose, onChanged, can }: {
   if (!row) return null;
   const isTrip = row.type === "trip";
   const open = row.bucket !== "cancelled";
+  // Lets a customer travel although a balance is still due (bookings.services.grant_departure_exception).
+  const canExcuseBalance = isTrip && open && Number(row.due) > 0 && !row.departure_exception
+    && session.permissions.includes("bookings.grant_departure_exception");
   return (
     <>
       <Drawer open onClose={onClose} title={row.name} sub={<span className="flex flex-wrap items-center gap-2">{row.reference}<StatusPill status={row.status} label={row.status_label} /></span>}
@@ -41,6 +44,13 @@ export function BookingDrawer({ row, onClose, onChanged, can }: {
           )}
           {isTrip && can.record_payment && Number(row.due) > 0 && (
             <Button variant="primary" onClick={() => setPaying(true)}>Record payment</Button>
+          )}
+          {canExcuseBalance && (
+            <Button variant="secondary" onClick={() => setPrompt({
+              title: `Let ${row.name} travel with ${money(row.due)} due`,
+              label: "Why is the balance excused? (recorded in the audit log)",
+              run: (reason) => act(() => adminApi.action("departure-exception", { booking_id: row.id, reason }), "Departure exception granted"),
+            })}>Allow travel with balance due</Button>
           )}
           {can.cancel && open && (
             <Button variant="secondary" onClick={() => setPrompt({
@@ -62,6 +72,7 @@ export function BookingDrawer({ row, onClose, onChanged, can }: {
             ["Phone", row.phone ? <a key="p" href={`tel:${row.phone}`} className="inline-flex items-center gap-1 underline"><RiPhoneLine className="size-3.5" aria-hidden />{row.phone}</a> : "—"],
             ...(!isTrip ? [["UPI transaction ID", row.utr || "—"] as [string, React.ReactNode]] : []),
             ["Booked", dateTime(row.created_at)],
+            ...(row.departure_exception ? [["Balance", "Excused: may travel with the balance due"] as [string, React.ReactNode]] : []),
           ]} />
           {row.note && <p className="rounded-xl bg-background-secondary-default p-3 text-body-regular text-text-secondary">“{row.note}”</p>}
           {!isTrip && (row.proof_url

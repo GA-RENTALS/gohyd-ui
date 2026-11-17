@@ -8,7 +8,7 @@ import { adminApi } from "@/lib/admin/api";
 export type TabProps<T> = {
   rows: T[] | null;
   loading: boolean;
-  can: { create: boolean; update: boolean; add_cost?: boolean };
+  can: { create: boolean; update: boolean; add_cost?: boolean; delete?: boolean };
   /** Reload the list (and the summary) after a change. */
   onChanged: () => void;
   /** The "New …" form is open (the button lives in the page header). */

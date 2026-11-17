@@ -26,13 +26,18 @@ export const SECTIONS: { title: string | null; items: Item[] }[] = [
   },
   {
     title: "Website", items: [
-      { key: "destinations", label: "Destinations", icon: "pin", href: "/admin/destinations/destinations", needs: ["destinations", "destinations"] },
-      { key: "blogs", label: "Blog posts", icon: "article", href: "/admin/cms/blogs", needs: ["cms", "blogs"] },
+      { key: "destinations", label: "Destinations", icon: "pin", href: "/admin/destinations/destinations", needs: ["destinations", "destinations"], match: /^\/admin\/(destinations\/destinations$|overview\/destination\/)/ },
+      { key: "blogs", label: "Blog posts", icon: "article", href: "/admin/cms/blogs", needs: ["cms", "blogs"], match: /^\/admin\/(cms\/blogs$|overview\/blog\/)/ },
+      { key: "pages", label: "Pages", icon: "file", href: "/admin/cms/cms-pages", needs: ["cms", "cms-pages"], match: /^\/admin\/(cms\/cms-pages$|overview\/page\/)/ },
+      { key: "faqs", label: "FAQs", icon: "question", href: "/admin/cms/faqs", needs: ["cms", "faqs"] },
+      { key: "testimonials", label: "Testimonials", icon: "quote", href: "/admin/cms/testimonials", needs: ["cms", "testimonials"] },
+      { key: "media", label: "Media library", icon: "image", href: "/admin/cms/media-assets", needs: ["cms", "media-assets"] },
     ],
   },
   {
     title: "Settings", items: [
       { key: "settings", label: "Business settings", icon: "settings", href: "/admin/system/settings", needs: ["system", "settings"] },
+      { key: "templates", label: "Message templates", icon: "message", href: "/admin/notifications/notification-templates", needs: ["notifications", "notification-templates"] },
       { key: "team", label: "Team & roles", icon: "shield", href: "/admin/team", feature: "team", match: /^\/admin\/team\/?$/ },
       { key: "all", label: "All data", icon: "grid", href: "/admin/all", match: /^\/admin\/all/ },
     ],
@@ -64,6 +69,8 @@ export function overviewHref(resourceKey: string, id: string): string | null {
   if (resourceKey === "trips") return `/admin/overview/trip/${id}`;
   if (resourceKey === "events") return `/admin/overview/event/${id}`;
   if (resourceKey === "blogs") return `/admin/overview/blog/${id}`;
+  if (resourceKey === "cms-pages") return `/admin/overview/page/${id}`;
+  if (resourceKey === "destinations") return `/admin/overview/destination/${id}`;
   if (resourceKey === "customers") return `/admin/customer/${id}`;
   return null;
 }

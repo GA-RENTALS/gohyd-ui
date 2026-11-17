@@ -2,10 +2,10 @@
 import { createApiClient, type Tokens } from "@/lib/api/client";
 import { API_URL } from "@/lib/config";
 import { clientLang } from "@/lib/lang";
-import type { Booking, CartItem, Checkout, CheckoutLineInput, CouponPreview, EventBooking, Invoice, Participant, PayKind, PaymentOrder, Profile } from "./types";
+import type { Booking, CartItem, Checkout, CheckoutLineInput, CouponPreview, DeletionRequest, EventBooking, Invoice, MessagePreferences, Participant, PayKind, PaymentOrder, Profile } from "./types";
 
 const client = createApiClient({ baseUrl: API_URL, storageKey: "gh_customer_tokens" });
-export const { api, tokenStore } = client;
+export const { api, download, tokenStore } = client;
 
 const newKey = () => (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : String(Date.now()) + Math.random());
 const results = <T,>(d: T[] | { results: T[] }): T[] => (Array.isArray(d) ? d : d.results);
@@ -26,7 +26,12 @@ export const customerApi = {
     tokenStore.clear();
   },
   me: () => api<Profile>("/me/"),
-  saveProfile: (data: Partial<Pick<Profile, "full_name" | "email" | "preferred_language">>) => api<Profile>("/me/", { method: "PATCH", json: data }),
+  saveProfile: (data: Partial<Pick<Profile, "full_name" | "email" | "preferred_language">> & { customer_profile?: Partial<MessagePreferences> }) =>
+    api<Profile>("/me/", { method: "PATCH", json: data }),
+  /** Everything GoHyderabad holds about the customer, as a JSON file. */
+  downloadMyData: () => download("/me/data-export/", "gohyderabad-my-data.json"),
+  deletionRequests: () => api<{ results: DeletionRequest[] }>("/me/data-requests/"),
+  requestDeletion: (reason: string) => api<{ results: DeletionRequest[] }>("/me/data-requests/", { method: "POST", json: { reason } }),
 
   /** Sends an event or plan booking request to the staff CRM inbox; this does not reserve a seat or take payment. */
   submitEventEnquiry: (data: { name: string; phone: string; event?: string; event_schedule?: string; preferred_date?: string; group_size: number; source: string; message: string; consent_to_contact: boolean }) =>
@@ -41,7 +46,7 @@ export const customerApi = {
   newsletterSignup: (email: string) => api<{ status: string }>("/newsletter/", { method: "POST", auth: false, json: { email, consent: true } }),
   /** Reference + the phone used to book. */
   eventBookingStatus: (reference: string, phone: string) =>
-    api<EventBooking>(`/event-bookings/${encodeURIComponent(reference.trim().toUpperCase())}/?phone=${encodeURIComponent(phone)}`, { auth: false }),
+    api<EventBooking>(`/event-bookings/${encodeURIComponent(reference.trim().toUpperCase())}/`, { method: "POST", auth: false, json: { phone } }),
   /** Uploads the UPI payment screenshot for a booking (reference + the phone used to book). */
   uploadEventPayment: (reference: string, phone: string, screenshot: File, utr = "") => {
     const form = new FormData();
@@ -71,6 +76,8 @@ export const customerApi = {
   checkout: (id: string) => api<Checkout>(`/checkouts/${id}/`),
   startPayment: (checkoutId: string, kind: PayKind, bookings?: string[]) =>
     api<PaymentOrder>(`/checkouts/${checkoutId}/pay/`, { method: "POST", json: { kind, ...(bookings ? { bookings } : {}) }, headers: { "Idempotency-Key": newKey() } }),
+  completeFreeCheckout: (checkoutId: string) =>
+    api<Checkout>(`/checkouts/${checkoutId}/complete-free/`, { method: "POST", json: {} }),
   confirmPayment: (checkoutId: string, payment: string, razorpay_payment_id: string, razorpay_signature: string) =>
     api<{ status: string }>(`/checkouts/${checkoutId}/confirm/`, { method: "POST", json: { payment, razorpay_payment_id, razorpay_signature } }),
 

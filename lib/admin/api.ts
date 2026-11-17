@@ -50,11 +50,14 @@ export const adminApi = {
   catalog: (kind: "trips" | "events", search = "") => api<{ results: CatalogItem[]; can_create: boolean }>(`/admin/catalog/${kind}/${search ? `?search=${encodeURIComponent(search)}` : ""}`),
   overview: (kind: "trip" | "event", id: string, schedule?: string) =>
     api<Overview>(`/admin/overview/${kind}s/${id}/${schedule ? `?schedule=${encodeURIComponent(schedule)}` : ""}`),
-  blogs: (search = "") => api<{ results: BlogCard[]; can_create: boolean }>(`/admin/catalog/blogs/${search ? `?search=${encodeURIComponent(search)}` : ""}`),
-  /** A new draft post with its English title; returns its id for the post page. */
-  createBlog: (title: string) => api<{ id: string; slug: string }>("/admin/catalog/blogs/", { method: "POST", json: { title } }),
-  blog: (id: string) => api<BlogPost>(`/admin/overview/blogs/${id}/`),
-  deleteBlog: (id: string) => api(`/admin/overview/blogs/${id}/`, { method: "DELETE" }),
+  /** Blog posts, website pages or destinations as cards (admin_api/content_editor.py). */
+  content: (kind: ContentKind, search = "") =>
+    api<{ results: ContentCard[]; can_create: boolean; existing_slugs: string[] }>(`/admin/content/${kind}/${search ? `?search=${encodeURIComponent(search)}` : ""}`),
+  /** A new draft with its English title (and, for pages, optionally an exact address); returns its id for the editor. */
+  createContent: (kind: ContentKind, title: string, slug?: string) =>
+    api<{ id: string; slug: string }>(`/admin/content/${kind}/`, { method: "POST", json: { title, ...(slug ? { slug } : {}) } }),
+  contentItem: (kind: ContentKind, id: string) => api<ContentItem>(`/admin/content/${kind}/${id}/`),
+  deleteContent: (kind: ContentKind, id: string) => api(`/admin/content/${kind}/${id}/`, { method: "DELETE" }),
 };
 
 export type Actions = { view?: boolean; create: boolean; update: boolean; delete: boolean };
@@ -83,7 +86,7 @@ export type Page = { count: number; next: string | null; previous: string | null
 
 /** One trip or event with its numbers, bookings, payments to verify and participants (GET /admin/overview/<kind>s/<id>/). */
 export type Overview = {
-  kind: "trip" | "event"; id: string; slug: string; title: string; status: string;
+  kind: "trip" | "event"; id: string; slug: string; title: string; status: string; publish_at?: string | null;
   operational_status?: string; operational_label?: string; price?: string; venue?: string;
   schedules: { id: string; starts_at: string; ends_at: string | null; capacity: number | null; booked: number; price?: string; is_open: boolean }[];
   schedule: string | null;
@@ -111,24 +114,31 @@ export type CatalogItem = {
   bookings: number; pending: number; revenue: string;
 };
 
-/* ---------- blog posts ---------- */
+/* ---------- blog posts, website pages and destinations (one editor) ---------- */
 
-export type BlogLang = "en" | "te" | "hi";
-export type BlogCard = {
-  id: string; slug: string; title: string; summary: string; status: string; published_at: string | null; updated_at: string;
-  cover_url: string | null; category: string | null; languages: BlogLang[]; author: string | null;
+export type ContentKind = "blogs" | "pages" | "destinations";
+export type Lang = "en" | "te" | "hi";
+export type ContentCard = {
+  id: string; slug: string; title: string; summary: string; status: string; publish_at: string | null; published_at: string | null;
+  updated_at: string; cover_url: string | null; languages: Lang[];
+  /** Category and author for a post, region for a destination, address for a page. */
+  subtitle: string;
 };
-/** One language's text of a post (a row of the `blog-translations` resource). */
-export type BlogText = { id: number; title: string; summary: string; body: string; seo_title: string; seo_description: string };
-export type BlogPost = {
-  id: string; slug: string; title: string; status: string; published_at: string | null; updated_at: string;
-  /** The address can't change once the post has been published. */
+/** One language's text (a row of the kind's translation resource, e.g. `blog-translations`). */
+export type ContentText = { id: number; title: string; summary: string; body: string; seo_title: string; seo_description: string };
+export type ContentItem = {
+  kind: ContentKind; id: string; slug: string; title: string; status: string; publish_at: string | null; published_at: string | null;
+  updated_at: string; public_url: string;
+  /** The address can't change once published (or, for built-in pages, ever). */
   slug_locked: boolean;
-  cover: string | null; cover_url: string | null; category: number | null; tags: number[]; author: string | null;
-  translations: Partial<Record<BlogLang, BlogText>>;
-  options: { categories: { id: number; name: string }[]; tags: { id: number; name: string }[] };
+  translations: Partial<Record<Lang, ContentText>>;
   limits: { title: number; seo_title: number; seo_description: number };
   permissions: { edit: boolean; add_text: boolean; edit_text: boolean; delete_text: boolean; delete: boolean };
+};
+/** Blog posts also carry their cover, category, tags and author. */
+export type BlogPost = ContentItem & {
+  cover: string | null; cover_url: string | null; category: number | null; tags: number[]; author: string | null;
+  options: { categories: { id: number; name: string }[]; tags: { id: number; name: string }[] };
 };
 
 export type SearchHit = { type: string; label: string; sub: string; href: string };
@@ -137,7 +147,9 @@ export type BookingRow = {
   id: string; type: "trip" | "event"; reference: string; name: string; phone: string; customer_id: string | null;
   title: string; parent_id: string; starts_at: string; people: number; total: string; paid: string; due: string;
   status: string; status_label: string; bucket: "awaiting" | "paid" | "cancelled";
-  checkout_id?: string; advance_due?: string; proof_url?: string | null; utr?: string; utr_duplicate?: boolean; note?: string; staff_note?: string; created_at: string;
+  checkout_id?: string; advance_due?: string; proof_url?: string | null;
+  /** Trip only: a manager let this customer travel with a balance still due. */
+  departure_exception?: boolean; utr?: string; utr_duplicate?: boolean; note?: string; staff_note?: string; created_at: string;
 };
 
 export type TripPayment = {
@@ -187,7 +199,7 @@ export type Home = {
     verify_payments?: { count: number; items: { id: string; amount: string; payer: string; reference: string; kind: string; created_at: string; title: string; parent_id: string | null }[] };
     confirm_events?: { count: number; with_proof: number; items: BookingRow[] };
     balance_due?: { count: number; items: BookingRow[] };
-    enquiries?: { count: number; items: { id: string; name: string; phone: string; message: string; created_at: string }[] };
+    enquiries?: { count: number; items: { id: string; type?: "ordinary" | "corporate"; name: string; phone: string; message: string; created_at: string }[] };
   };
   revenue_30d: { date: string; trips: number; events: number }[];
   upcoming: { kind: "trip" | "event"; parent_id: string; schedule_id: string; title: string; starts_at: string; booked: number; capacity: number | null; is_open: boolean }[];

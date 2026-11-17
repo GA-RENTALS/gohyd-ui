@@ -184,6 +184,8 @@ export type Booking = {
   is_overdue: boolean;
   /** The customer may still cancel online (decided on the server: not after the trip starts). */
   can_cancel: boolean;
+  /** Server quote at request time; the saved cancellation record remains authoritative. */
+  cancellation_quote: { refund_percent: number; refund_amount: string; paid: string; policy_cutoff: string | null } | null;
   participants: Participant[];
 };
 
@@ -210,7 +212,13 @@ export type Profile = {
   preferred_language: string;
   is_profile_complete: boolean;
   kind: string;
+  /** This operator's settings for the customer (null until first saved). */
+  customer_profile: MessagePreferences | null;
 };
+
+/** Which channels may carry booking messages and reminders (CustomerProfile; login codes always go by WhatsApp). */
+export type MessagePreferences = { notify_whatsapp: boolean; notify_email: boolean; marketing_opt_in: boolean };
+export type DeletionRequest = { id: string; kind: "DELETION"; status: "REQUESTED" | "IN_PROGRESS" | "COMPLETED" | "REJECTED"; created_at: string; completed_at: string | null };
 
 export type PaymentOrder = { payment: string; order_id: string; amount: string | number; currency: string; key_id: string };
 export type PayKind = "ADVANCE" | "BALANCE" | "FULL";

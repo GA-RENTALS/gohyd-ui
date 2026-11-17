@@ -183,3 +183,10 @@
   .inv, .inv * { visibility: visible; }
   .inv { position: absolute; inset: 0 auto auto 0; width: 100%; max-width: none; border: 0; border-radius: 0; padding: 0; }
 }
+
+/* Profile: message choices and the "your data" panel */
+.ac-panel { margin-top: 20px; }
+.ac-panel h2 { margin: 0 0 6px; font-size: 20px; letter-spacing: -.2px; }
+.ac-panel > .ac-caption { margin: 0 0 14px; }
+.ac-check { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; font-size: 15px; cursor: pointer; }
+.ac-check input { width: 18px; height: 18px; accent-color: var(--ac-moss); }

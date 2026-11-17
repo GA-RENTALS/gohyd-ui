@@ -44,7 +44,7 @@ export function PaymentsPage() {
   const [openEventRefund, setOpenEventRefund] = useState<EventRefundRow | null>(null);
   const [recording, setRecording] = useState<EventRefundRow | null>(null);
   const [prompt, setPrompt] = useState<Prompt | null>(null);
-  const { data, loading, page, setPage, reload, search: settledSearch } = useList(adminApi.payments, f, search);
+  const { data, loading, page, setPage, reload, search: settledSearch } = useList(adminApi.payments, f, search, ["type"]);
   const { busy, run } = useAction(() => { reload(); refreshCounts(); setOpenPayment(null); setOpenRefund(null); });
 
   const kind = f.type as Kind;
@@ -59,6 +59,10 @@ export function PaymentsPage() {
   });
   const confirm = (r: BookingRow) => run(r.id, () => adminApi.update("event-registrations", r.id, { status: "CONFIRMED" }), `${r.name}'s booking confirmed`).catch(() => {});
   const approve = (r: RefundRow) => run(r.id, () => adminApi.action("approve-refund", { refund_id: r.id }), "Refund approved").catch(() => {});
+  const rejectRefund = (r: RefundRow) => setPrompt({
+    title: "Reject refund", label: "Why is no refund owed? The customer may ask.",
+    run: (reason) => run(r.id, () => adminApi.action("reject-refund", { refund_id: r.id, reason }), "Refund rejected"),
+  });
 
   const typeTabs: { key: Kind; label: string }[] = [
     { key: "trip", label: "Trip payments" },
@@ -97,7 +101,7 @@ export function PaymentsPage() {
         )}
         {kind === "refund" && (
           <RefundsTable rows={data ? (data.results as RefundRow[]) : null} loading={loading} canApprove={!!can.approve_refund} busy={busy}
-            onOpen={setOpenRefund} onApprove={approve} />
+            onOpen={setOpenRefund} onApprove={approve} onReject={rejectRefund} />
         )}
         {kind === "event_refund" && (
           <EventRefundsTable rows={data ? (data.results as EventRefundRow[]) : null} loading={loading} canRecord={!!can.record_event_refund}
@@ -107,7 +111,7 @@ export function PaymentsPage() {
       </Card>
 
       <PaymentDrawer payment={openPayment} canVerify={!!can.verify} busy={busy} onClose={() => setOpenPayment(null)} onVerify={verify} onReject={reject} />
-      <RefundDrawer refund={openRefund} canApprove={!!can.approve_refund} busy={busy} onClose={() => setOpenRefund(null)} onApprove={approve} />
+      <RefundDrawer refund={openRefund} canApprove={!!can.approve_refund} busy={busy} onClose={() => setOpenRefund(null)} onApprove={approve} onReject={rejectRefund} />
       <EventRefundDrawer refund={openEventRefund} canRecord={!!can.record_event_refund} onClose={() => setOpenEventRefund(null)} onRecord={setRecording} />
       {recording && <RecordRefundForm refund={recording} onClose={() => setRecording(null)} onSaved={recorded} />}
       <BookingDrawer row={openBooking} onClose={() => setOpenBooking(null)} onChanged={reload} can={{ confirm: can.confirm, cancel: can.confirm }} />
@@ -190,8 +194,9 @@ function EventProofsTable({ rows, loading, canConfirm, busy, onOpen, onConfirm }
   );
 }
 
-function RefundsTable({ rows, loading, canApprove, busy, onOpen, onApprove }: {
-  rows: RefundRow[] | null; loading: boolean; canApprove: boolean; busy: string; onOpen: (r: RefundRow) => void; onApprove: (r: RefundRow) => void;
+function RefundsTable({ rows, loading, canApprove, busy, onOpen, onApprove, onReject }: {
+  rows: RefundRow[] | null; loading: boolean; canApprove: boolean; busy: string;
+  onOpen: (r: RefundRow) => void; onApprove: (r: RefundRow) => void; onReject: (r: RefundRow) => void;
 }) {
   const columns: Column<RefundRow>[] = [
     { key: "who", label: "Customer", render: (r) => <Person name={r.name} sub={r.phone} /> },
@@ -203,9 +208,10 @@ function RefundsTable({ rows, loading, canApprove, busy, onOpen, onApprove }: {
   ];
   return (
     <DataTable rows={rows} loading={loading} rowKey={(r) => r.id} columns={columns} onRowClick={onOpen}
-      actions={(r) => r.status === "REQUESTED" && canApprove ? (
+      actions={(r) => r.status === "REQUESTED" && canApprove ? <>
+        <Button size="small" variant="secondary" disabled={busy === r.id} onClick={() => onReject(r)}>Reject</Button>
         <Button size="small" variant="primary" leadingIcon={RiCheckLine} disabled={busy === r.id} onClick={() => onApprove(r)}>Approve</Button>
-      ) : null}
+      </> : null}
       empty={<Empty title="No refunds here" sub="Refunds are requested automatically when a paid trip booking is cancelled." />} />
   );
 }
@@ -257,14 +263,16 @@ function PaymentDrawer({ payment: p, canVerify, busy, onClose, onVerify, onRejec
   );
 }
 
-function RefundDrawer({ refund: r, canApprove, busy, onClose, onApprove }: {
-  refund: RefundRow | null; canApprove: boolean; busy: string; onClose: () => void; onApprove: (r: RefundRow) => void;
+function RefundDrawer({ refund: r, canApprove, busy, onClose, onApprove, onReject }: {
+  refund: RefundRow | null; canApprove: boolean; busy: string; onClose: () => void;
+  onApprove: (r: RefundRow) => void; onReject: (r: RefundRow) => void;
 }) {
   return (
     <Drawer open={!!r} onClose={onClose} title={r ? money(r.amount, 2) : ""} sub={r ? `Refund for ${r.name}` : undefined}
-      footer={r?.status === "REQUESTED" && canApprove && (
+      footer={r?.status === "REQUESTED" && canApprove && <>
+        <Button variant="secondary" disabled={busy === r.id} onClick={() => onReject(r)}>Reject</Button>
         <Button variant="primary" leadingIcon={RiCheckLine} disabled={busy === r.id} onClick={() => onApprove(r)}>Approve refund</Button>
-      )}>
+      </>}>
       {r && (
         <div className="flex flex-col gap-4">
           <StatusPill status={r.status} label={refundStatusLabel(r.status)} />

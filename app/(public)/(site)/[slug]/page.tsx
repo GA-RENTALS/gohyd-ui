@@ -3,13 +3,19 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PublicEnquiryForm } from "@/components/site/PublicEnquiryForm";
 import { MembershipPlans } from "@/components/site/MembershipPlans";
-import { contentText, getCmsPage, listFaqs, listMembershipPlans, type MembershipPlan, type PublicPage } from "@/lib/customer/public-content";
-import { pageMetadata } from "@/lib/site";
+import { getCmsPage, listFaqs, listMembershipPlans, type MembershipPlan, type PublicPage } from "@/lib/customer/public-content";
+import { metaDescription, pageMetadata } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ slug: string }> };
-const knownSlugs = new Set(["about", "how-it-works", "faqs", "contact", "corporate", "community", "membership"]);
+/** Pages the site links to and shows even before staff write them (with built-in text). Any other address shows a
+ * published page from the admin's Website → Pages, or "not found". */
+const knownSlugs = new Set(["about", "how-it-works", "faqs", "contact", "corporate", "community", "membership", "privacy", "terms", "refund-policy"]);
+const policySlugs = new Set(["privacy", "terms", "refund-policy"]);
 const titles: Record<string, string> = {
+  privacy: "Privacy policy",
+  terms: "Terms and conditions",
+  "refund-policy": "Cancellation and refund policy",
   about: "About GoHyderabad",
   "how-it-works": "How it works",
   faqs: "Frequently asked questions",
@@ -19,20 +25,22 @@ const titles: Record<string, string> = {
   membership: "GoHyderabad membership",
 };
 
+async function findPage(slug: string): Promise<{ page: PublicPage | null; failed: boolean }> {
+  try { return { page: await getCmsPage(slug), failed: false }; } catch { return { page: null, failed: true }; }
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  if (!knownSlugs.has(slug)) return pageMetadata({ title: "Page not found", path: `/${encodeURIComponent(slug)}`, noindex: true });
-  let page: PublicPage | null = null;
-  try { page = await getCmsPage(slug); } catch {}
-  return pageMetadata({ title: page?.title || titles[slug], description: page?.body ? page.body : undefined, path: `/${slug}` });
+  const { page } = await findPage(slug);
+  if (!page && !knownSlugs.has(slug)) return pageMetadata({ title: "Page not found", path: `/${encodeURIComponent(slug)}`, noindex: true });
+  return pageMetadata({ title: page?.seo?.title || page?.title || titles[slug], description: metaDescription(page?.seo?.description, page?.body), path: `/${slug}` });
 }
 
 export default async function PublicContentPage({ params }: Props) {
   const { slug } = await params;
-  if (!knownSlugs.has(slug)) notFound();
-  let page: PublicPage | null = null;
-  let pageFailed = false;
-  try { page = await getCmsPage(slug); } catch { pageFailed = true; }
+  const { page, failed } = await findPage(slug);
+  if (!page && !knownSlugs.has(slug)) notFound();
+  const pageFailed = failed && knownSlugs.has(slug);
   let faqs: Awaited<ReturnType<typeof listFaqs>> = [];
   let faqFailed = false;
   if (slug === "faqs") {
@@ -51,7 +59,9 @@ export default async function PublicContentPage({ params }: Props) {
       <h1 className="bk-title">{title}</h1>
       <div className={isEnquiry ? "bk-detail" : "bk-narrow"}>
         <div className="bk-detail-content">
-          {page?.body ? <div className="bk-card bk-prose">{contentText(page.body)}</div> : null}
+          {/* The API keeps only safe formatting tags (content/html.py). */}
+          {page?.body ? <div className="bk-card bk-prose bk-rich" dangerouslySetInnerHTML={{ __html: page.body }} /> : null}
+          {policySlugs.has(slug) && !page?.body && <div className="bk-card bk-prose"><p>This page is being updated. If you have a question about it, <Link href="/contact">send us a message</Link> and the team will reply.</p></div>}
           {pageFailed && <p className="bk-note">Some page details are temporarily unavailable.</p>}
           {slug === "about" && !page?.body && <div className="bk-card bk-prose">GoHyderabad brings people together through local experiences, city explorations and trips from Hyderabad. Find a plan that sounds like your kind of weekend and come along.</div>}
           {slug === "how-it-works" && !page?.body && <div className="bk-card"><h2>Choose a plan and book</h2><p className="bk-prose">Browse a trip or experience, check its details and available dates, then follow the booking steps. Your account keeps your booking details and payment balance in one place.</p><p><Link className="btn" href="/trips">Browse trips</Link></p></div>}

@@ -35,6 +35,9 @@ export async function SiteFooter() {
               <Link href="/about">{t("About")}</Link>
               <Link href="/contact">{t("Contact")}</Link>
               <Link href="/corporate">{t("Corporate outings")}</Link>
+              <Link href="/privacy">{t("Privacy policy")}</Link>
+              <Link href="/terms">{t("Terms and conditions")}</Link>
+              <Link href="/refund-policy">{t("Cancellation and refund policy")}</Link>
             </div>
           </nav>
           <div>

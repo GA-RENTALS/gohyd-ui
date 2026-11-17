@@ -36,6 +36,7 @@ export type PublicPage = {
   title: string;
   body: string;
   blocks: Record<string, unknown>;
+  seo?: { title: string; description: string };
 };
 
 export type PublicFaq = { id: number; question: string; answer: string };

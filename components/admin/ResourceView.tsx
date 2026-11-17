@@ -13,7 +13,9 @@ import { FileUpload } from "@/components/base/file-upload/file-upload";
 import { Switch } from "@/components/base/switch/switch";
 import { Textarea } from "@/components/base/textarea/textarea";
 import { toast } from "@/components/base/toast/toast";
+import { HomepageStatsForm } from "@/components/admin/HomepageStatsForm";
 import { ImageUpload, MediaThumb } from "@/components/admin/ImageUpload";
+import { SchedulePublishButton } from "@/components/admin/SchedulePublishButton";
 import { adminApi, ApiError, type Field, type Page, type Schema } from "@/lib/admin/api";
 import { CORE_RESOURCES, overviewHref } from "@/lib/admin/nav";
 import { cx } from "@/utils/cx";
@@ -21,6 +23,8 @@ import { cx } from "@/utils/cx";
 const SKIP_COLS = new Set(["json", "text", "file", "relation-many"]);
 const META = new Set(["created_at", "updated_at", "deleted_at", "tenant"]);
 const PAGE_SIZE = 20;
+/** Records with a publishing workflow that can be set to go live later. */
+const SCHEDULABLE = new Set(["trips", "events", "destinations", "blogs", "cms-pages"]);
 
 export function Cell({ field, value }: { field: Field; value: any }) {
   if (value === null || value === undefined || value === "") return <span className="text-text-tertiary">—</span>;
@@ -122,8 +126,15 @@ export function ResourceView({ moduleKey, resourceKey }: { moduleKey: string; re
       a.push({ label: "Verify", run: () => run(() => adminApi.action("verify-payment", { payment_id: id, approved: true }), "Payment verified").catch(() => {}) });
       a.push({ label: "Reject", danger: true, run: () => setPrompt({ title: "Reject payment", label: "Reason", run: (note) => run(() => adminApi.action("verify-payment", { payment_id: id, approved: false, note }), "Payment rejected") }) });
     }
-    if (resourceKey === "refunds" && /(PENDING|REQUESTED)/.test(String(row.status))) a.push({ label: "Approve refund", run: () => run(() => adminApi.action("approve-refund", { refund_id: id }), "Refund approved").catch(() => {}) });
-    if (resourceKey === "enquiries" && row.status === "NEW" && schema?.actions.update) a.push({ label: "Mark contacted", run: () => run(() => adminApi.update(resourceKey, String(id), { status: "CONTACTED" }), "Marked as contacted").catch(() => {}) });
+    if (resourceKey === "refunds" && row.status === "REQUESTED") {
+      a.push({ label: "Approve refund", run: () => run(() => adminApi.action("approve-refund", { refund_id: id }), "Refund approved").catch(() => {}) });
+      a.push({ label: "Reject", danger: true, run: () => setPrompt({ title: "Reject refund", label: "Reason", run: (reason) => run(() => adminApi.action("reject-refund", { refund_id: id, reason }), "Refund rejected") }) });
+    }
+    if (resourceKey === "gateway-events" && !row.processed_at)
+      a.push({ label: "Retry", run: () => run(() => adminApi.action("retry-webhook", { event_id: id }), "Payment event processed").catch(() => {}) });
+    if (resourceKey === "notification-jobs" && /^(SKIPPED|FAILED)$/.test(String(row.status)) && row.event !== "otp")
+      a.push({ label: "Send again", run: () => run(() => adminApi.action("resend-notifications", { job_ids: [id] }), "Queued to send again").catch(() => {}) });
+    if (["enquiries", "corporate-enquiries"].includes(resourceKey) && row.status === "NEW" && schema?.actions.update) a.push({ label: "Mark contacted", run: () => run(() => adminApi.update(resourceKey, String(id), { status: "CONTACTED" }), "Marked as contacted").catch(() => {}) });
     if (resourceKey === "participants" && !row.checked_in_at) a.push({ label: "Check in", run: () => run(() => adminApi.action("participant-check-in", { participant_id: id }), "Checked in").catch(() => {}) });
     // Translations need no review step: they show on the website as soon as they are added.
     if (!resourceKey.endsWith("-translations") && statusField?.choices?.some((c) => c.value === "PUBLISHED") && row.status !== "PUBLISHED" && schema?.actions.update)
@@ -142,12 +153,20 @@ export function ResourceView({ moduleKey, resourceKey }: { moduleKey: string; re
   // the second text column is already shown under the name
   if (fields[0]?.type === "string" && fields[1]?.type === "string") columns.splice(1, 1);
 
+  const headerActions = <>
+    {resourceKey === "notification-jobs" && (
+      <Button variant="secondary" onClick={() => run(() => adminApi.action("resend-notifications", {}), "Skipped messages from the last two days queued again").catch(() => {})}>
+        Resend skipped messages
+      </Button>
+    )}
+    {schema?.actions.create && <Button variant="primary" leadingIcon={RiAddLine} onClick={() => setEditing({ row: null })}>Add {singular}</Button>}
+  </>;
+
   return (
     <>
       {isCore
-        ? <PageTitle title={title} actions={schema?.actions.create ? <Button variant="primary" leadingIcon={RiAddLine} onClick={() => setEditing({ row: null })}>Add {singular}</Button> : null} />
-        : <PageHeader crumbs={[{ label: "All data", href: "/admin/all" }, mod?.label || moduleKey, title]} title={title}
-            actions={schema?.actions.create ? <Button variant="primary" leadingIcon={RiAddLine} onClick={() => setEditing({ row: null })}>Add {singular}</Button> : null} />}
+        ? <PageTitle title={title} actions={headerActions} />
+        : <PageHeader crumbs={[{ label: "All data", href: "/admin/all" }, mod?.label || moduleKey, title]} title={title} actions={headerActions} />}
 
       <Card pad={false}>
         <div className="flex flex-wrap items-center gap-3 border-b border-separator-border p-3">
@@ -165,8 +184,10 @@ export function ResourceView({ moduleKey, resourceKey }: { moduleKey: string; re
             empty={<Empty title={q ? `Nothing matches “${q}”` : `No ${title.toLowerCase()} yet`} sub={schema?.actions.create && !q ? `Use “Add ${singular}” to create the first one.` : undefined} />}
             actions={(row) => {
               const extra = rowActions(row);
-              if (!extra.length && !schema?.actions.update && !schema?.actions.delete) return null;
+              const canSchedule = SCHEDULABLE.has(resourceKey) && row.status !== "PUBLISHED" && !!schema?.actions.update;
+              if (!extra.length && !canSchedule && !schema?.actions.update && !schema?.actions.delete) return null;
               return <>
+                {canSchedule && <SchedulePublishButton size="small" resource={resourceKey} id={String(row[pk])} status={String(row.status)} onChanged={load} />}
                 {extra.map((x) => <Button key={x.label} size="small" variant={x.danger ? "secondary" : "primary"} onClick={x.run}>{x.label}</Button>)}
                 {schema?.actions.update && <IconBtn label="Edit" onClick={() => setEditing({ row })}><RiEditLine className="size-4" /></IconBtn>}
                 {schema?.actions.delete && <IconBtn label="Delete" onClick={() => setConfirm(row)} danger><RiDeleteBin6Line className="size-4" /></IconBtn>}
@@ -176,7 +197,10 @@ export function ResourceView({ moduleKey, resourceKey }: { moduleKey: string; re
         {page && <Pager page={n} pages={pages} count={page.count} onChange={setN} />}
       </Card>
 
-      {schema && editing && <RecordForm schema={schema} row={editing.row} onClose={() => setEditing(null)} onSaved={() => { setEditing(null); toast("Saved", { status: "success" }); load(); }} />}
+      {schema && editing && (resourceKey === "settings" && editing.row?.key === "homepage.stats"
+        ? <HomepageStatsForm settingId={String(editing.row[pk])} value={editing.row.value} onClose={() => setEditing(null)}
+            onSaved={() => { setEditing(null); toast("Saved", { status: "success" }); load(); }} />
+        : <RecordForm schema={schema} row={editing.row} onClose={() => setEditing(null)} onSaved={() => { setEditing(null); toast("Saved", { status: "success" }); load(); }} />)}
       {schema && viewing && (
         <RecordDetails schema={schema} row={viewing} onClose={() => setViewing(null)}
           onEdit={schema.actions.update ? () => { setEditing({ row: viewing }); setViewing(null); } : undefined} />

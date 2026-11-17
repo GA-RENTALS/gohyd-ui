@@ -47,7 +47,8 @@ export function CheckoutView({ id }: { id: string }) {
         }
         return next;
       });
-      setState(co.bookings.every((b) => Number(b.paid) > 0) ? "paid" : "ready");
+      setState(co.status === "PAID" || co.bookings.every((b) => b.status === "FULLY_PAID")
+        || co.bookings.every((b) => Number(b.paid) > 0) ? "paid" : "ready");
     } catch (e: any) {
       setError(e.status === 404 ? "We couldn't find this checkout." : e.message);
       setState("ready");
@@ -70,15 +71,19 @@ export function CheckoutView({ id }: { id: string }) {
         await customerApi.saveParticipants(b.id, (people[b.id] ?? []).map((p) => ({ ...p, full_name: p.full_name.trim(), age: p.age ?? null })));
         await customerApi.acceptWaiver(b.id, activeWaiver.id);
       }
-      const payment = await customerApi.startPayment(order.id, "ADVANCE");
-      const paid = await payWithRazorpay(payment, { name: user?.full_name, contact: user?.phone_number, email: user?.email ?? undefined }, `Advance for ${order.bookings.map((b) => b.trip_title).join(", ")}`);
-      await customerApi.confirmPayment(order.id, payment.payment, paid.razorpay_payment_id, paid.razorpay_signature);
-      // Only here, never from load(): a reload of the paid page must not count the purchase twice.
-      // The value is the advance paid now, not the full trip price.
-      track("purchase", {
-        transaction_id: order.reference, currency: "INR", value: Number(order.advance_total),
-        items: order.bookings.map((b) => ({ item_id: b.trip_title, item_name: b.trip_title, quantity: b.participant_count })),
-      });
+      if (Number(order.advance_total) === 0 && Number(order.total_amount) === 0) {
+        await customerApi.completeFreeCheckout(order.id);
+      } else {
+        const payment = await customerApi.startPayment(order.id, "ADVANCE");
+        const paid = await payWithRazorpay(payment, { name: user?.full_name, contact: user?.phone_number, email: user?.email ?? undefined }, `Advance for ${order.bookings.map((b) => b.trip_title).join(", ")}`);
+        await customerApi.confirmPayment(order.id, payment.payment, paid.razorpay_payment_id, paid.razorpay_signature);
+        // Only here, never from load(): a reload of the paid page must not count the purchase twice.
+        // The value is the advance paid now, not the full trip price.
+        track("purchase", {
+          transaction_id: order.reference, currency: "INR", value: Number(order.advance_total),
+          items: order.bookings.map((b) => ({ item_id: b.trip_title, item_name: b.trip_title, quantity: b.participant_count })),
+        });
+      }
       await load();
       setState("paid");
     } catch (e: any) {
@@ -170,10 +175,15 @@ export function CheckoutView({ id }: { id: string }) {
         <div className="bk-total" style={{ borderTop: 0, margin: "0 0 16px" }}><span>Due now (advance)</span><strong>{money(order.advance_total)}</strong></div>
         {error && <p className="bk-error" role="alert">{error}</p>}
         <button type="button" className="btn" disabled={state === "working" || !activeWaiver} onClick={pay} style={{ marginTop: 12 }}>
-          {state === "working" ? "Please wait…" : `Pay ${money(order.advance_total)} to confirm`}
+          {state === "working" ? "Please wait…" : Number(order.advance_total) === 0 && Number(order.total_amount) === 0
+            ? "Confirm free booking" : `Pay ${money(order.advance_total)} to confirm`}
         </button>
         {order.hold_until && <p className="bk-hint" style={{ marginTop: 10 }}>Your seats are held until {time(order.hold_until)}, {longDate(order.hold_until)}. After that they go back on sale.</p>}
-        <p className="bk-hint" style={{ marginTop: 10 }}>Secure payment by Razorpay (UPI, cards, netbanking).</p>
+        {Number(order.advance_total) > 0 && <p className="bk-hint" style={{ marginTop: 10 }}>Secure payment by Razorpay (UPI, cards, netbanking).</p>}
+        <p className="bk-hint" style={{ marginTop: 10 }}>
+          By confirming you agree to the <a href="/terms" target="_blank" rel="noopener">terms</a> and the{" "}
+          <a href="/refund-policy" target="_blank" rel="noopener">cancellation and refund policy</a>.
+        </p>
       </aside>
     </div>
   );

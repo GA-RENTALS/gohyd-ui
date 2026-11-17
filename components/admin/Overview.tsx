@@ -4,8 +4,10 @@ import {
 } from "@remixicon/react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { CancelDateButton } from "@/components/admin/CancelDateButton";
 import { ImageUpload, MediaThumb } from "@/components/admin/ImageUpload";
 import { RelatedList, schemaOf } from "@/components/admin/RelatedList";
+import { SchedulePublishButton } from "@/components/admin/SchedulePublishButton";
 import { Cell, PromptModal, RecordForm } from "@/components/admin/ResourceView";
 import { PageHeader } from "@/components/admin/Shell";
 import { StatusPill } from "@/components/admin/ui";
@@ -24,7 +26,7 @@ const money = (v: string | number) => `₹${Number(v).toLocaleString("en-IN", { 
 const when = (v?: string | null) => (v ? new Date(v).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }) : "—");
 const day = (v: string) => new Date(v).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 const LANG: Record<string, string> = { en: "English", te: "Telugu", hi: "Hindi" };
-const optionLabel = (s: Schema, field: string, value: unknown) => s.fields.find((f) => f.name === field)?.options?.find((o) => o.value === String(value))?.label ?? String(value ?? "—");
+export const optionLabel = (s: Schema, field: string, value: unknown) => s.fields.find((f) => f.name === field)?.options?.find((o) => o.value === String(value))?.label ?? String(value ?? "—");
 const missingLangs = (r: Row, base: string) => {
   const gaps = ["te", "hi"].filter((l) => !String(r[`${base}_${l}`] ?? "").trim()).map((l) => LANG[l]);
   return gaps.length ? <span className="text-caption-1-medium text-text-tertiary">{gaps.join(" & ")} missing</span> : null;
@@ -32,7 +34,7 @@ const missingLangs = (r: Row, base: string) => {
 
 const nice = (s: string) => s.replace(/_/g, " ").toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
 
-const TABS = ["overview", "bookings", "payments", "participants", "details", "dates", "itinerary", "content"] as const;
+const TABS = ["overview", "bookings", "payments", "participants", "details", "dates", "itinerary", "content", "operations"] as const;
 type TabKey = (typeof TABS)[number];
 
 /** Everything about one trip or event on one page: numbers, bookings, payments, people, and all its content. */
@@ -116,9 +118,10 @@ export function OverviewPage({ kind, id }: { kind: "trip" | "event"; id: string 
     dates: `Dates (${data.schedules.length})`,
     itinerary: "Itinerary",
     content: isTrip ? "Inclusions, pickups & policies" : "Highlights, rules, refunds & FAQs",
+    operations: "Staff, vehicles & costs",
   };
-  const visibleTabs = TABS.filter((t) => t !== "payments" || p.payments || !isTrip);
-  const showsDateFilter = ["overview", "bookings", "payments", "participants"].includes(tab) && data.schedules.length > 1;
+  const visibleTabs = TABS.filter((t) => (t !== "payments" || p.payments || !isTrip) && (t !== "operations" || isTrip));
+  const showsDateFilter = ["overview", "bookings", "payments", "participants", "operations"].includes(tab) && data.schedules.length > 1;
 
   /* ---------- tab bodies ---------- */
 
@@ -319,11 +322,16 @@ export function OverviewPage({ kind, id }: { kind: "trip" | "event"; id: string 
     </div>
   );
 
+  // A date that hasn't started can be cancelled as a whole (with all its bookings) by staff who may cancel bookings.
+  const cancellable = (r: Record<string, any>) => !!p.cancel && !r.cancelled_at && new Date(r.starts_at) > new Date();
+  const bookedOn = (r: Record<string, any>) => data.schedules.find((x) => x.id === String(r.id))?.booked ?? 0;
   const datesTab = isTrip ? (
     <RelatedList resource="trip-schedules" parentField="trip" parentId={data.id} title="Departure dates" addLabel="Add date" onChange={load}
       hint="Each date has its own seats and price. Close a date to stop new bookings."
-      primary={(r) => <span className="flex flex-wrap items-center gap-2">{when(r.starts_at)} → {when(r.ends_at)}{!r.is_open && <StatusPill status="closed" tone="gray" label="Closed" />}</span>}
+      primary={(r) => <span className="flex flex-wrap items-center gap-2">{when(r.starts_at)} → {when(r.ends_at)}{r.cancelled_at
+        ? <StatusPill status="cancelled" tone="red" label="Cancelled" /> : !r.is_open && <StatusPill status="closed" tone="gray" label="Closed" />}</span>}
       secondary={(r) => `${r.seats_booked}/${r.capacity} seats booked · ${money(r.price_per_participant)} per person`}
+      extra={(r) => cancellable(r) && <CancelDateButton kind="trip" scheduleId={String(r.id)} label={when(r.starts_at)} booked={Number(r.seats_booked)} onDone={load} />}
       nested={(r) => (
         <RelatedList compact resource="trip-pricing-rules" parentField="schedule" parentId={String(r.id)} title="Price changes for this date" addLabel="Add price rule"
           primary={(x) => `${x.label}: ${Number(x.amount_delta) < 0 ? "−" : "+"}${money(Math.abs(Number(x.amount_delta)))}`}
@@ -332,11 +340,10 @@ export function OverviewPage({ kind, id }: { kind: "trip" | "event"; id: string 
   ) : (
     <RelatedList resource="event-schedules" parentField="event" parentId={data.id} title="Event dates" addLabel="Add date" onChange={load}
       hint="Leave capacity empty for unlimited places."
-      primary={(r) => <span>{when(r.starts_at)}{r.ends_at ? ` → ${when(r.ends_at)}` : ""}{r.time_tbd ? " (time to be confirmed)" : ""}</span>}
-      secondary={(r) => {
-        const sched = data.schedules.find((x) => x.id === String(r.id));
-        return `${sched?.booked ?? 0} booked${r.capacity != null ? ` of ${r.capacity}` : ""}`;
-      }} />
+      primary={(r) => <span className="flex flex-wrap items-center gap-2">{when(r.starts_at)}{r.ends_at ? ` → ${when(r.ends_at)}` : ""}{r.time_tbd ? " (time to be confirmed)" : ""}
+        {r.cancelled_at && <StatusPill status="cancelled" tone="red" label="Cancelled" />}</span>}
+      secondary={(r) => `${bookedOn(r)} booked${r.capacity != null ? ` of ${r.capacity}` : ""}`}
+      extra={(r) => cancellable(r) && <CancelDateButton kind="event" scheduleId={String(r.id)} label={when(r.starts_at)} booked={bookedOn(r)} onDone={load} />} />
   );
 
   const itineraryTab = (
@@ -366,6 +373,9 @@ export function OverviewPage({ kind, id }: { kind: "trip" | "event"; id: string 
       <RelatedList resource="trip-policies" parentField="trip" parentId={data.id} title="Refund policy" addLabel="Add rule"
         hint="Refund % when a customer cancels at least this many days before."
         primary={(r) => `${r.days_before}+ days before: ${Number(r.refund_basis_points) / 100}% refund`} secondary={(r) => r.note || null} sortBy={["days_before"]} />
+      <RelatedList resource="trip-category-links" parentField="trip" parentId={data.id} title="Categories" addLabel="Add category"
+        hint="Categories control which trip filters and website sections include this trip."
+        primary={(r, sc) => optionLabel(sc, "category", r.category)} />
       <RelatedList resource="trip-destinations" parentField="trip" parentId={data.id} title="Destinations visited" addLabel="Add destination"
         primary={(r, sc) => optionLabel(sc, "destination", r.destination)} />
       <RelatedList resource="trip-media" parentField="trip" parentId={data.id} title="Photo gallery" addLabel="Add photo"
@@ -392,9 +402,36 @@ export function OverviewPage({ kind, id }: { kind: "trip" | "event"; id: string 
     </div>
   );
 
+  // Who runs the trip, and per departure: vehicles, drivers, vendors and costs (each list is its own table).
+  const opsDate = schedule || (data.schedules.length === 1 ? data.schedules[0].id : "");
+  const operationsTab = (
+    <div className="flex flex-col gap-4">
+      <RelatedList resource="trip-assignments" parentField="trip" parentId={data.id} title="Trip staff" addLabel="Assign staff"
+        hint="Organisers and guides for every departure of this trip."
+        primary={(r, sc) => optionLabel(sc, "user", r.user)} secondary={(r) => nice(String(r.role || ""))} />
+      {!opsDate ? (
+        <p className="rounded-2xl border border-dashed border-border-button-default p-6 text-center text-body-regular text-text-secondary">
+          {data.schedules.length ? "Choose a date above to see its vehicles, drivers, vendors and costs." : "Add a date first: vehicles, drivers, vendors and costs belong to one departure."}
+        </p>
+      ) : (
+        <>
+          <RelatedList key={`v-${opsDate}`} resource="trip-vehicles" parentField="schedule" parentId={opsDate} title="Vehicles" addLabel="Add vehicle"
+            primary={(r, sc) => optionLabel(sc, "vehicle", r.vehicle)} />
+          <RelatedList key={`d-${opsDate}`} resource="trip-drivers" parentField="schedule" parentId={opsDate} title="Drivers" addLabel="Add driver"
+            primary={(r, sc) => optionLabel(sc, "driver", r.driver)} secondary={(r, sc) => (r.vehicle ? optionLabel(sc, "vehicle", r.vehicle) : null)} />
+          <RelatedList key={`s-${opsDate}`} resource="vendor-trip-assignments" parentField="schedule" parentId={opsDate} title="Vendors" addLabel="Book vendor"
+            primary={(r, sc) => optionLabel(sc, "vendor", r.vendor)} secondary={(r) => (r.agreed_amount ? `Agreed ${money(r.agreed_amount)}` : null)} />
+          <RelatedList key={`e-${opsDate}`} resource="trip-expenses" parentField="schedule" parentId={opsDate} title="Costs" addLabel="Add cost"
+            hint="Link an expense (recorded under All data → Expenses) to this departure."
+            primary={(r, sc) => optionLabel(sc, "expense", r.expense)} secondary={(r) => money(r.amount)} />
+        </>
+      )}
+    </div>
+  );
+
   const body: Record<TabKey, ReactNode> = {
     overview: overviewTab, bookings: bookingsTable(regs), payments: paymentsTab, participants: participantsTab,
-    details: detailsTab, dates: datesTab, itinerary: itineraryTab, content: contentTab,
+    details: detailsTab, dates: datesTab, itinerary: itineraryTab, content: contentTab, operations: operationsTab,
   };
 
   return (
@@ -411,7 +448,10 @@ export function OverviewPage({ kind, id }: { kind: "trip" | "event"; id: string 
             </a>
           )}
           {p.edit && !published && (
-            <Button variant="primary" disabled={busy === "publish"} onClick={() => quiet(act("publish", () => adminApi.action("content-transition", { resource: isTrip ? "trips" : "events", id: data.id, status: "PUBLISHED" }), "Published"))}>Publish</Button>
+            <>
+              <SchedulePublishButton resource={isTrip ? "trips" : "events"} id={data.id} status={data.status} onChanged={load} disabled={!!busy} />
+              <Button variant="primary" disabled={!!busy} onClick={() => quiet(act("publish", () => adminApi.action("content-transition", { resource: isTrip ? "trips" : "events", id: data.id, status: "PUBLISHED" }), "Published"))}>Publish now</Button>
+            </>
           )}
           {p.delete && <Button variant="danger" leadingIcon={RiDeleteBin6Line} onClick={() => setDeleting(true)}>Delete {kind}</Button>}
         </>}
@@ -426,7 +466,7 @@ export function OverviewPage({ kind, id }: { kind: "trip" | "event"; id: string 
           {data.cover_url && <span className="absolute inset-0 hidden place-items-center bg-black/45 text-caption-1-medium text-white group-hover:grid">Change</span>}
         </button>
         <div className="flex flex-wrap items-center gap-2 text-body-regular text-text-secondary">
-          <StatusPill status={data.status} tone={published ? "green" : "amber"} label={published ? "Live on website" : `${nice(data.status)}: not on website`} />
+          <StatusPill status={data.status} tone={published ? "green" : "amber"} label={published ? "Live on website" : data.status === "SCHEDULED" ? `Scheduled for ${when(data.publish_at)}` : `${nice(data.status)}: not on website`} />
           {data.operational_label && <StatusPill status={String(data.operational_status)} tone={data.operational_status === "OPEN" ? "green" : "gray"} label={data.operational_label} />}
           {data.venue && <span>{data.venue}</span>}
           {data.price && Number(data.price) > 0 && <span>· {money(data.price)} per person</span>}
@@ -472,7 +512,7 @@ export function OverviewPage({ kind, id }: { kind: "trip" | "event"; id: string 
 }
 
 /** Cover (and, for events, popup banner and payment QR): upload, replace or remove, saved straight away. */
-function PhotosCard({ resource, id, onSaved }: { resource: string; id: string; onSaved: () => void }) {
+export function PhotosCard({ resource, id, onSaved }: { resource: string; id: string; onSaved: () => void }) {
   const [schema, setSchema] = useState<Schema | null>(null);
   const [row, setRow] = useState<Row | null>(null);
   useEffect(() => { Promise.all([schemaOf(resource), adminApi.get(resource, id)]).then(([s, r]) => { setSchema(s); setRow(r); }).catch(() => {}); }, [resource, id]);
@@ -500,8 +540,8 @@ function PhotosCard({ resource, id, onSaved }: { resource: string; id: string; o
   );
 }
 
-/** The trip's / event's own fields (slug, cover, price, booking rules…) as a readable card with one Edit button. */
-function MainDetails({ resource, id, onSaved }: { resource: string; id: string; onSaved: () => void }) {
+/** A record's own fields (slug, cover, price, booking rules…) as a readable card with one Edit button. */
+export function MainDetails({ resource, id, onSaved }: { resource: string; id: string; onSaved: () => void }) {
   const [schema, setSchema] = useState<Schema | null>(null);
   const [row, setRow] = useState<Row | null>(null);
   const [editing, setEditing] = useState(false);

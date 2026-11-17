@@ -134,7 +134,7 @@ export function VisitorTracking() {
     <aside className="gh-consent" aria-label="Privacy choices">
       <div className="gh-consent-copy">
         <strong>{t("Your privacy choices")}</strong>
-        <p>{t("GoHyderabad uses essential storage for the site. With your permission, we also collect anonymous page views to understand which places and experiences are useful. You can decline and still use the site.")}</p>
+        <p>{t("GoHyderabad uses essential storage for the site. With your permission, we also collect anonymous page views to understand which places and experiences are useful. You can decline and still use the site.")} <a href="/privacy">{t("Privacy policy")}</a></p>
         {error && <p className="gh-consent-error" role="alert">{error}</p>}
       </div>
       <div className="gh-consent-actions">

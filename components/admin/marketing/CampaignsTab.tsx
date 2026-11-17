@@ -2,7 +2,7 @@
 import { RiLinksLine } from "@remixicon/react";
 import { useMemo, useState } from "react";
 import { FormModal, useFormSubmit } from "@/components/admin/FormModal";
-import { type Column, DataTable, dateOnly, Empty, money, StatusPill } from "@/components/admin/ui";
+import { type Column, DataTable, dateOnly, Empty, FilterPills, money, StatusPill } from "@/components/admin/ui";
 import { Button } from "@/components/base/buttons/button";
 import { Input } from "@/components/base/input/input";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "@/components/base/modal/modal";
@@ -11,6 +11,7 @@ import { SITE_URL } from "@/lib/site";
 import { copyText, slugify, toDay, type TabProps } from "./shared";
 
 export function CampaignsTab({ rows, loading, can, onChanged, creating, onCloseCreate }: TabProps<CampaignRow>) {
+  const [editing, setEditing] = useState<CampaignRow | null>(null);
   const [costFor, setCostFor] = useState<CampaignRow | null>(null);
   const [linkFor, setLinkFor] = useState<CampaignRow | null>(null);
 
@@ -34,11 +35,13 @@ export function CampaignsTab({ rows, loading, can, onChanged, creating, onCloseC
     <>
       <DataTable rows={rows} loading={loading} rowKey={(c) => c.id} columns={columns}
         actions={(c) => <>
+          {can.update && <Button size="small" variant="secondary" onClick={() => setEditing(c)}>Edit</Button>}
           {c.utm_campaign && <Button size="small" variant="secondary" leadingIcon={RiLinksLine} onClick={() => setLinkFor(c)}>Link</Button>}
           {can.add_cost && <Button size="small" variant="secondary" onClick={() => setCostFor(c)}>Add cost</Button>}
         </>}
         empty={<Empty title="No campaigns yet" sub="Add a campaign, share its tracked link, and see the visitors and bookings it brings in." />} />
-      {creating && <CampaignForm onClose={onCloseCreate} onSaved={() => { onCloseCreate(); onChanged(); }} />}
+      {creating && !editing && <CampaignForm onClose={onCloseCreate} onSaved={() => { onCloseCreate(); onChanged(); }} />}
+      {editing && <CampaignForm key={editing.id} campaign={editing} onClose={() => setEditing(null)} onSaved={() => { setEditing(null); onChanged(); }} />}
       {costFor && <CostForm campaign={costFor} onClose={() => setCostFor(null)} onSaved={() => { setCostFor(null); onChanged(); }} />}
       {linkFor && <UtmLinkBuilder campaign={linkFor} onClose={() => setLinkFor(null)} />}
     </>
@@ -50,28 +53,39 @@ function runs(c: CampaignRow) {
   return `${c.starts_on ? dateOnly(c.starts_on) : "…"} – ${c.ends_on ? dateOnly(c.ends_on) : "ongoing"}`;
 }
 
-function CampaignForm({ onClose, onSaved }: { onClose: () => void; onSaved: () => void }) {
-  const [name, setName] = useState("");
-  const [tag, setTag] = useState("");
-  const [tagEdited, setTagEdited] = useState(false);
-  const [starts, setStarts] = useState("");
-  const [ends, setEnds] = useState("");
+function CampaignForm({ campaign, onClose, onSaved }: { campaign?: CampaignRow; onClose: () => void; onSaved: () => void }) {
+  const [name, setName] = useState(campaign?.name ?? "");
+  const [tag, setTag] = useState(campaign?.utm_campaign ?? "");
+  const [tagEdited, setTagEdited] = useState(!!campaign);
+  const [starts, setStarts] = useState(campaign?.starts_on ?? "");
+  const [ends, setEnds] = useState(campaign?.ends_on ?? "");
+  const [isActive, setIsActive] = useState(campaign?.is_active ?? true);
   const { busy, errors, general, submit } = useFormSubmit();
   const utm = tagEdited ? tag : slugify(name);
 
   const save = async () => {
-    const ok = await submit(() => adminApi.create("campaigns", { name: name.trim(), utm_campaign: utm, starts_on: starts || null, ends_on: ends || null, is_active: true }));
+    const body = { name: name.trim(), utm_campaign: utm, starts_on: starts || null, ends_on: ends || null, is_active: isActive };
+    const ok = await submit(() => campaign
+      ? adminApi.update("campaigns", campaign.id, body)
+      : adminApi.create("campaigns", body));
     if (ok) onSaved();
   };
   return (
-    <FormModal title="New campaign" description="Bookings from people who arrive through this campaign's link are counted against it."
-      submitLabel="Create campaign" busy={busy} general={general} canSubmit={!!name.trim() && !!utm} onSubmit={save} onClose={onClose}>
+    <FormModal title={campaign ? `Edit campaign · ${campaign.name}` : "New campaign"}
+      description="Bookings from people who arrive through this campaign's link are counted against it."
+      submitLabel={campaign ? "Save changes" : "Create campaign"} busy={busy} general={general}
+      canSubmit={!!name.trim() && !!utm} onSubmit={save} onClose={onClose}>
       <Input label="Name" value={name} onChange={setName} placeholder="Diwali treks — Instagram" errorMessage={errors.name} />
       <Input label="Tracking tag (utm_campaign)" value={utm} onChange={(v) => { setTagEdited(true); setTag(slugify(v)); }}
         hint="Lower-case words joined by dashes. It appears in the link you share." errorMessage={errors.utm_campaign} />
       <div className="grid grid-cols-2 gap-3">
         <Input label="Starts (optional)" type="date" value={starts} onChange={setStarts} errorMessage={errors.starts_on} />
         <Input label="Ends (optional)" type="date" value={ends} onChange={setEnds} errorMessage={errors.ends_on} />
+      </div>
+      <div className="flex flex-col gap-2">
+        <span className="text-body-medium text-text-primary">Status</span>
+        <FilterPills value={isActive ? "active" : "paused"} onChange={(value) => setIsActive(value === "active")}
+          options={[{ key: "active", label: "Active" }, { key: "paused", label: "Paused" }]} />
       </div>
     </FormModal>
   );
