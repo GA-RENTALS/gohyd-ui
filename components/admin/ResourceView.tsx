@@ -338,8 +338,10 @@ export function RecordForm({ schema, row, defaults, hidden, onClose, onSaved }: 
                 else if (f.type === "choice" || (f.type.startsWith("relation") && !f.many && f.options)) {
                   const opts = f.type === "choice" ? f.choices! : f.options!;
                   input = (
-                    <Select label={label} selectedKey={v === "" || v == null ? "" : String(v)} onSelectionChange={(k) => set(f.name, String(k))} popoverClassName="min-w-56">
-                      {[{ value: "", label: "—" }, ...opts].map((o) => <SelectItem key={o.value || "__none"} id={o.value} textValue={o.label}>{o.label}</SelectItem>)}
+                    // Keys are compared as strings on both sides: ids can arrive as numbers or strings, and a mismatch
+                    // leaves the dropdown unable to show (or keep) any choice.
+                    <Select label={label} selectedKey={v === "" || v == null ? "" : String(v)} onSelectionChange={(k) => set(f.name, k == null ? "" : String(k))} popoverClassName="min-w-56">
+                      {[{ value: "", label: "—" }, ...opts].map((o) => <SelectItem key={String(o.value) || "__none"} id={String(o.value)} textValue={o.label}>{o.label}</SelectItem>)}
                     </Select>
                   );
                 } else if (f.many && f.options) {
