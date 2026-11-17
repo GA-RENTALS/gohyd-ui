@@ -22,7 +22,12 @@ export type PublicBlog = {
   published_at: string | null;
   title: string;
   summary: string;
+  /** HTML limited to headings, paragraphs, lists, quotes and links; the API cleans it (content/html.py) before sending. */
   body: string;
+  seo: { title?: string; description?: string };
+  cover_url: string | null;
+  category: { slug: string; name: string } | null;
+  tags: { slug: string; name: string }[];
 };
 
 export type PublicPage = {

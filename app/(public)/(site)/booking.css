@@ -43,6 +43,17 @@
 .bk-chip-hot { border-color: var(--lime); background: var(--lime); color: var(--ink); font-weight: 800; text-transform: uppercase; }
 .bk-list { margin: 0; padding-left: 20px; color: var(--ivory-2); line-height: 1.8; }
 .bk-prose { color: var(--ivory-2); white-space: pre-line; }
+/* Formatted blog posts (HTML cleaned by the API: headings, lists, quotes, links only). */
+.bk-rich { white-space: normal; line-height: 1.75; }
+.bk-rich > * + * { margin-top: 1em; }
+.bk-rich > :first-child { margin-top: 0; }
+.bk-rich h2 { margin: 1.6em 0 .2em; color: var(--ivory); font-size: 22px; line-height: 1.3; }
+.bk-rich h3 { margin: 1.3em 0 .2em; color: var(--ivory); font-size: 18px; line-height: 1.35; }
+.bk-rich ul, .bk-rich ol { padding-left: 1.4em; }
+.bk-rich li + li { margin-top: .35em; }
+.bk-rich blockquote { margin-inline: 0; padding-left: 1em; border-left: 3px solid var(--lime); color: var(--sand-light); font-style: italic; }
+.bk-rich a { color: var(--lime); text-decoration: underline; text-underline-offset: 3px; }
+.bk-rich hr { border: 0; border-top: 1px solid var(--line); }
 .bk-sticky { position: sticky; top: 100px; }
 .bk-itinerary { display: grid; gap: 20px; }
 .bk-itinerary-day h3 { margin: 0 0 12px; color: var(--ivory); font-size: 15px; }

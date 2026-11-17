@@ -1023,3 +1023,16 @@ input[type="search"]::-webkit-search-cancel-button {
     box-shadow: inset 0 0 0 2px var(--color-border-button-hover);
   }
 }
+
+/* Blog post body in the admin editor (components/admin/RichTextEditor.tsx). Tailwind's reset strips heading and list
+   styles, so the few tags the editor can make are styled here to look like they will on the website. */
+.rich-text > * + * { margin-top: 0.75em; }
+.rich-text h2 { font-size: 1.375rem; line-height: 1.3; font-weight: 600; margin-top: 1.1em; }
+.rich-text h3 { font-size: 1.125rem; line-height: 1.4; font-weight: 600; margin-top: 1em; }
+.rich-text ul { list-style: disc; padding-inline-start: 1.5em; }
+.rich-text ol { list-style: decimal; padding-inline-start: 1.5em; }
+.rich-text li + li { margin-top: 0.25em; }
+.rich-text blockquote { border-inline-start: 3px solid var(--color-separator-border); padding-inline-start: 1em; color: var(--color-text-secondary); }
+.rich-text a { text-decoration: underline; text-underline-offset: 2px; }
+.rich-text hr { border-color: var(--color-separator-border); }
+.rich-text:empty::before { content: "Write the post here…"; color: var(--color-text-tertiary); }

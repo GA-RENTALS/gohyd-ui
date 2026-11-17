@@ -50,6 +50,11 @@ export const adminApi = {
   catalog: (kind: "trips" | "events", search = "") => api<{ results: CatalogItem[]; can_create: boolean }>(`/admin/catalog/${kind}/${search ? `?search=${encodeURIComponent(search)}` : ""}`),
   overview: (kind: "trip" | "event", id: string, schedule?: string) =>
     api<Overview>(`/admin/overview/${kind}s/${id}/${schedule ? `?schedule=${encodeURIComponent(schedule)}` : ""}`),
+  blogs: (search = "") => api<{ results: BlogCard[]; can_create: boolean }>(`/admin/catalog/blogs/${search ? `?search=${encodeURIComponent(search)}` : ""}`),
+  /** A new draft post with its English title; returns its id for the post page. */
+  createBlog: (title: string) => api<{ id: string; slug: string }>("/admin/catalog/blogs/", { method: "POST", json: { title } }),
+  blog: (id: string) => api<BlogPost>(`/admin/overview/blogs/${id}/`),
+  deleteBlog: (id: string) => api(`/admin/overview/blogs/${id}/`, { method: "DELETE" }),
 };
 
 export type Actions = { view?: boolean; create: boolean; update: boolean; delete: boolean };
@@ -104,6 +109,26 @@ export type CatalogItem = {
   id: string; slug: string; title: string; status: string; cover_url: string | null; operational_label: string | null; price: string;
   next_date: string | null; next_capacity: number | null; next_booked: number | null; dates: number; upcoming_dates: number;
   bookings: number; pending: number; revenue: string;
+};
+
+/* ---------- blog posts ---------- */
+
+export type BlogLang = "en" | "te" | "hi";
+export type BlogCard = {
+  id: string; slug: string; title: string; summary: string; status: string; published_at: string | null; updated_at: string;
+  cover_url: string | null; category: string | null; languages: BlogLang[]; author: string | null;
+};
+/** One language's text of a post (a row of the `blog-translations` resource). */
+export type BlogText = { id: number; title: string; summary: string; body: string; seo_title: string; seo_description: string };
+export type BlogPost = {
+  id: string; slug: string; title: string; status: string; published_at: string | null; updated_at: string;
+  /** The address can't change once the post has been published. */
+  slug_locked: boolean;
+  cover: string | null; cover_url: string | null; category: number | null; tags: number[]; author: string | null;
+  translations: Partial<Record<BlogLang, BlogText>>;
+  options: { categories: { id: number; name: string }[]; tags: { id: number; name: string }[] };
+  limits: { title: number; seo_title: number; seo_description: number };
+  permissions: { edit: boolean; add_text: boolean; edit_text: boolean; delete_text: boolean; delete: boolean };
 };
 
 export type SearchHit = { type: string; label: string; sub: string; href: string };

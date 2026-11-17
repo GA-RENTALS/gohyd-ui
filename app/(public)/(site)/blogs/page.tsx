@@ -23,7 +23,7 @@ export default async function BlogsPage() {
         <div className="bk-grid">
           {blogs.map((blog) => (
             <Link className="bk-trip" key={blog.id} href={`/blogs/${blog.slug}`}>
-              <div className="bk-cover" aria-hidden="true" />
+              <div className="bk-cover" aria-hidden="true">{blog.cover_url && <img src={blog.cover_url} alt="" loading="lazy" />}</div>
               <div className="bk-body"><div className="eyebrow">{blog.published_at ? new Intl.DateTimeFormat("en-IN", { dateStyle: "medium" }).format(new Date(blog.published_at)) : t("GoHyderabad journal")}</div><h2>{blog.title}</h2>{blog.summary && <p>{blog.summary}</p>}<div className="bk-meta"><span>{t("Read story")}</span><span>↗</span></div></div>
             </Link>
           ))}

@@ -63,6 +63,7 @@ export function activeNav(pathname: string): string {
 export function overviewHref(resourceKey: string, id: string): string | null {
   if (resourceKey === "trips") return `/admin/overview/trip/${id}`;
   if (resourceKey === "events") return `/admin/overview/event/${id}`;
+  if (resourceKey === "blogs") return `/admin/overview/blog/${id}`;
   if (resourceKey === "customers") return `/admin/customer/${id}`;
   return null;
 }
