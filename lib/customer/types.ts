@@ -70,7 +70,10 @@ export type EventDetail = {
   rules: string[];
   registration_type: EventRegistrationType;
   max_participants_per_booking: number | null;
-  reservation_hold_hours: number;
+  /** How long a new booking holds its places while it is paid online. */
+  hold_minutes: number;
+  /** Share of the price paid online when booking (100 = all of it); the rest is paid later from the account. */
+  advance_percent: number;
   /** Online cancellation closes this many hours before the start. */
   cancellation_cutoff_hours?: number;
   /** Refund tiers, most generous first. Empty = no refund on cancellation. */
@@ -83,8 +86,6 @@ export type EventDetail = {
   schedule_note: string;
   seo_title?: string;
   seo_description?: string;
-  /** UPI QR payment details; null/absent when the event doesn't take QR payments. */
-  payment?: EventPayment | null;
 };
 
 export type EventBookingStatus = "PENDING" | "CONFIRMED" | "CANCELLED" | "EXPIRED";
@@ -110,21 +111,23 @@ export type EventBooking = {
   venue: string;
   booking_whatsapp_number: string;
   seats_left: number | null;
-  /** UPI QR details when the event takes payment by QR code; otherwise null. */
-  payment: EventPayment | null;
-  payment_submitted: boolean;
-  payment_submitted_at: string | null;
+  /** Paid online to confirm the booking; the rest of the total is the balance. */
+  advance_amount: string;
+  /** Received so far, and still to pay. */
+  paid: string;
+  outstanding: string;
+  /** What can be paid online now (the advance while held, the balance once confirmed), or null. */
+  pay_now: { kind: "ADVANCE" | "BALANCE"; amount: string } | null;
   cancelled_at?: string | null;
   cancelled_by_customer?: boolean;
   /** Only while the booking is active: whether it can be cancelled online now, and what that would refund. */
   cancellation?: EventCancellation | null;
-  /** The refund on a cancelled, paid booking (sent back by UPI by our team). */
+  /** The refund on a cancelled, paid booking: back through Cashfree, or (paid by UPI QR before) sent by our team. */
   refund?: EventRefund | null;
 };
 export type EventCancellation = { allowed: boolean; until: string; refund_percent: number; refund_amount: string; paid: boolean };
-export type EventRefund = { status: "DUE" | "SENT" | "NOT_REFUNDED"; status_label: string; amount: string; upi_reference: string; recorded_at: string | null };
+export type EventRefund = { status: string; status_label: string; amount: string; upi_reference: string; recorded_at: string | null; online: boolean };
 export type EventRefundTier = { hours_before: number; refund_percent: number; note: string };
-export type EventPayment = { qr_url: string | null; upi_id: string; payee_name: string };
 
 export type PickupPoint = { id: string; name: string; address: string; pickup_time: string | null };
 export type RefundTier = { days_before: number; refund_basis_points: number; note: string };
@@ -220,7 +223,13 @@ export type Profile = {
 export type MessagePreferences = { notify_whatsapp: boolean; notify_email: boolean; marketing_opt_in: boolean };
 export type DeletionRequest = { id: string; kind: "DELETION"; status: "REQUESTED" | "IN_PROGRESS" | "COMPLETED" | "REJECTED"; created_at: string; completed_at: string | null };
 
-export type PaymentOrder = { payment: string; order_id: string; amount: string | number; currency: string; key_id: string };
+/** A Cashfree order to pay (POST /payments/cashfree/create-order/). The secret key never leaves the server. */
+export type PaymentSession = { payment: string; order_id: string; payment_session_id: string; amount: string; currency: string; mode: "sandbox" | "production" };
+/** What the server found when it asked Cashfree about an order. */
+export type PaymentOutcome = {
+  status: "paid" | "pending" | "failed" | "cancelled" | "expired"; order_id: string;
+  payment?: string; amount?: string; kind?: PayKind; message?: string; checkout?: string; event_booking?: string;
+};
 export type PayKind = "ADVANCE" | "BALANCE" | "FULL";
 
 export type CartItem = {

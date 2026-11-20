@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { customerApi } from "@/lib/customer/api";
+import { forwardCashfreeReturn } from "@/lib/customer/cashfree";
 import type { Booking, EventBooking } from "@/lib/customer/types";
 import { BookingCard } from "./BookingCard";
 import { EventBookingsList } from "./EventBookingsList";
@@ -33,7 +34,11 @@ export function BookingsView() {
   }, []);
   useEffect(() => { void load(); }, [load]);
   // Separate request: a failure here should not hide trip bookings (and vice versa).
-  useEffect(() => { customerApi.myEventBookings().then(setEventBookings).catch(() => setEventBookings([])); }, []);
+  const loadEvents = useCallback(() => customerApi.myEventBookings().then(setEventBookings).catch(() => setEventBookings([])), []);
+  useEffect(() => { void loadEvents(); }, [loadEvents]);
+
+  // An order opened before payments returned to the thank-you page comes back here: send it on.
+  useEffect(() => { forwardCashfreeReturn(); }, []);
 
   const groups = useMemo(() => {
     const g: Record<Bucket, Booking[]> = { upcoming: [], past: [], cancelled: [] };

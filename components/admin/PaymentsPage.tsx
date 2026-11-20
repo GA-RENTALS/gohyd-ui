@@ -65,10 +65,11 @@ export function PaymentsPage() {
   });
 
   const typeTabs: { key: Kind; label: string }[] = [
-    { key: "trip", label: "Trip payments" },
-    ...(can.events !== false ? [{ key: "event" as const, label: "Event UPI payments" }] : []),
-    ...(can.refunds !== false ? [{ key: "refund" as const, label: "Trip refunds" }] : []),
-    ...(can.event_refunds ? [{ key: "event_refund" as const, label: "Event refunds" }] : []),
+    { key: "trip", label: "Payments" },
+    ...(can.refunds !== false ? [{ key: "refund" as const, label: "Refunds" }] : []),
+    // Event bookings paid by UPI QR before online payment: their screenshots and hand-sent refunds, kept as history.
+    ...(can.events !== false ? [{ key: "event" as const, label: "Old UPI payments" }] : []),
+    ...(can.event_refunds ? [{ key: "event_refund" as const, label: "Old UPI refunds" }] : []),
   ];
   const recorded = () => { setRecording(null); setOpenEventRefund(null); reload(); refreshCounts(); };
 
@@ -153,8 +154,8 @@ function TripPaymentsTable({ rows, loading, canVerify, busy, onOpen, onVerify, o
   const columns: Column<TripPayment>[] = [
     { key: "who", label: "Paid by", render: (p) => <Person name={p.name} sub={p.phone} /> },
     { key: "amount", label: "Amount", align: "end", render: (p) => <strong className="font-semibold">{money(p.amount, 2)}</strong> },
-    { key: "for", label: "For", render: (p) => <Stacked main={p.title || "—"} sub={p.bookings.join(", ")} /> },
-    { key: "how", label: "How", render: (p) => <span className="text-text-secondary">{p.method === "MANUAL" ? "Cash / bank" : "Online"} · {nice(p.kind)}</span> },
+    { key: "for", label: "For", render: (p) => <Stacked main={p.title || "—"} sub={`${p.for === "event" ? "Event" : "Trip"} · ${p.bookings.join(", ")}`} /> },
+    { key: "how", label: "How", render: (p) => <span className="text-text-secondary">{p.method === "MANUAL" ? "Cash / bank" : "Cashfree"} · {nice(p.kind)}</span> },
     { key: "status", label: "Status", render: (p) => <StatusPill status={p.status} label={tripStatusLabel(p.status)} /> },
     { key: "when", label: "Date", render: (p) => <span className="whitespace-nowrap text-text-secondary">{ago(p.created_at)}</span>, hideOnMobile: true },
   ];
@@ -164,7 +165,7 @@ function TripPaymentsTable({ rows, loading, canVerify, busy, onOpen, onVerify, o
         <Button size="small" variant="secondary" onClick={() => onReject(p)}>Reject</Button>
         <Button size="small" variant="primary" leadingIcon={RiCheckLine} disabled={busy === p.id} onClick={() => onVerify(p)}>Verify</Button>
       </> : null}
-      empty={<Empty title="No payments here" sub="Online payments and recorded cash / bank transfers appear here." />} />
+      empty={<Empty title="No payments here" sub="Cashfree payments for trips and events, and recorded cash / bank transfers, appear here." />} />
   );
 }
 
@@ -212,7 +213,7 @@ function RefundsTable({ rows, loading, canApprove, busy, onOpen, onApprove, onRe
         <Button size="small" variant="secondary" disabled={busy === r.id} onClick={() => onReject(r)}>Reject</Button>
         <Button size="small" variant="primary" leadingIcon={RiCheckLine} disabled={busy === r.id} onClick={() => onApprove(r)}>Approve</Button>
       </> : null}
-      empty={<Empty title="No refunds here" sub="Refunds are requested automatically when a paid trip booking is cancelled." />} />
+      empty={<Empty title="No refunds here" sub="Refunds are requested when a paid trip or event booking is cancelled, or issued by finance from a booking." />} />
   );
 }
 
@@ -252,11 +253,15 @@ function PaymentDrawer({ payment: p, canVerify, busy, onClose, onVerify, onRejec
         <div className="flex flex-col gap-4">
           <StatusPill status={p.status} label={p.status === "PENDING_VERIFICATION" ? "Waiting for a second staff member to verify" : tripStatusLabel(p.status)} />
           <Facts items={[
-            ["Trip", p.title || "—"], ["Bookings", p.bookings.join(", ") || "—"], ["Method", p.method === "MANUAL" ? "Cash / bank transfer" : "Online (Razorpay)"],
-            ["Type", nice(p.kind)], ["Reference", p.reference || "—"], ["Date", dateOnly(p.created_at)], ["Phone", p.phone],
+            [p.for === "event" ? "Event" : "Trip", p.title || "—"], ["Bookings", p.bookings.join(", ") || "—"],
+            ["Method", p.method === "MANUAL" ? "Cash / bank transfer" : "Online (Cashfree)"],
+            ["Type", nice(p.kind)], ["Date", dateOnly(p.created_at)], ["Phone", p.phone],
+            ...(p.reference ? [["Reference", p.reference] as [string, string]] : []),
+            ...(p.gateway_order_id ? [["Cashfree order", p.gateway_order_id] as [string, string]] : []),
+            ...(p.gateway_payment_id ? [["Cashfree payment", p.gateway_payment_id] as [string, string]] : []),
             ...(p.failure_reason ? [["Reason", p.failure_reason] as [string, string]] : []),
           ]} />
-          <LinkButtons tripId={p.parent_id} tripTab="payments" customerId={p.customer_id} />
+          <LinkButtons kind={p.for} parentId={p.parent_id} tab="payments" customerId={p.customer_id} />
         </div>
       )}
     </Drawer>
@@ -277,11 +282,12 @@ function RefundDrawer({ refund: r, canApprove, busy, onClose, onApprove, onRejec
         <div className="flex flex-col gap-4">
           <StatusPill status={r.status} label={refundStatusLabel(r.status)} />
           <Facts items={[
-            ["Trip", r.title || "—"], ["Booking", r.booking], ["Reason", r.reason || "—"], ["Requested", dateOnly(r.created_at)],
+            [r.for === "event" ? "Event" : "Trip", r.title || "—"], ["Booking", r.booking], ["Reason", r.reason || "—"], ["Requested", dateOnly(r.created_at)],
+            ...(r.gateway_refund_ids ? [["Cashfree refund", r.gateway_refund_ids] as [string, string]] : []),
             ["Approved by", r.approved_by || "—"], ["Phone", r.phone],
           ]} />
-          {r.status === "REQUESTED" && <p className="text-body-regular text-text-secondary">Approving sends the money back to the customer's original online payment. Cash payments must be returned by hand.</p>}
-          <LinkButtons tripId={r.parent_id} tripTab="bookings" customerId={r.customer_id} />
+          {r.status === "REQUESTED" && <p className="text-body-regular text-text-secondary">Approving sends the money back through Cashfree to the account the customer paid from. Cash payments must be returned by hand.</p>}
+          <LinkButtons kind={r.for} parentId={r.parent_id} tab="bookings" customerId={r.customer_id} />
         </div>
       )}
     </Drawer>
@@ -376,11 +382,11 @@ function UtrCell({ utr, duplicate }: { utr?: string; duplicate?: boolean }) {
   );
 }
 
-function LinkButtons({ tripId, tripTab, customerId }: { tripId: string | null; tripTab: string; customerId: string }) {
+function LinkButtons({ kind, parentId, tab, customerId }: { kind: "trip" | "event"; parentId: string | null; tab: string; customerId: string | null }) {
   return (
     <div className="flex flex-wrap gap-2">
-      {tripId && <Button size="small" variant="secondary" onClick={() => window.location.assign(`/admin/overview/trip/${tripId}?tab=${tripTab}`)}>Open trip</Button>}
-      <Button size="small" variant="secondary" onClick={() => window.location.assign(`/admin/customer/${customerId}`)}>Open customer</Button>
+      {parentId && <Button size="small" variant="secondary" onClick={() => window.location.assign(`/admin/overview/${kind}/${parentId}?tab=${tab}`)}>Open {kind}</Button>}
+      {customerId && <Button size="small" variant="secondary" onClick={() => window.location.assign(`/admin/customer/${customerId}`)}>Open customer</Button>}
     </div>
   );
 }

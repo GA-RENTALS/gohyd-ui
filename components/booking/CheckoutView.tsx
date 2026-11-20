@@ -1,20 +1,21 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { track } from "@/lib/analytics";
 import { customerApi } from "@/lib/customer/api";
 import { longDate, money, statusLabel, time } from "@/lib/customer/format";
-import { payWithRazorpay } from "@/lib/customer/razorpay";
+import { forwardCashfreeReturn, openCashfreeCheckout, THANK_YOU_PATH } from "@/lib/customer/cashfree";
 import type { Checkout, Participant } from "@/lib/customer/types";
 import { useCustomer } from "./CustomerProvider";
 import { blankPerson, ParticipantsForm } from "./ParticipantsForm";
 
 /** Shown when the payment gateway isn't set up: never leak the technical reason to a customer. */
 const PAYMENT_UNAVAILABLE = "Online payment isn't available right now. Your booking is saved. Please message GoHyderabad on Instagram to complete your payment.";
-const friendly = (message: string) => (/razorpay|gateway|not configured/i.test(message) ? PAYMENT_UNAVAILABLE : message);
+const friendly = (message: string) => (/cashfree|gateway|not configured/i.test(message) ? PAYMENT_UNAVAILABLE : message);
 
 export function CheckoutView({ id }: { id: string }) {
   const { user } = useCustomer();
+  const router = useRouter();
   const [order, setOrder] = useState<Checkout | null>(null);
   const [people, setPeople] = useState<Record<string, Participant[]>>({});
   const [activeWaiver, setActiveWaiver] = useState<{ id: string; title: string; version: number; body: string } | null>(null);
@@ -55,7 +56,8 @@ export function CheckoutView({ id }: { id: string }) {
     }
   }, [id, user]);
 
-  useEffect(() => { void load(); }, [load]);
+  // An order opened before payments returned to the thank-you page comes back here: send it on.
+  useEffect(() => { if (!forwardCashfreeReturn()) void load(); }, [load]);
 
   async function pay() {
     if (!order) return;
@@ -73,19 +75,11 @@ export function CheckoutView({ id }: { id: string }) {
       }
       if (Number(order.advance_total) === 0 && Number(order.total_amount) === 0) {
         await customerApi.completeFreeCheckout(order.id);
-      } else {
-        const payment = await customerApi.startPayment(order.id, "ADVANCE");
-        const paid = await payWithRazorpay(payment, { name: user?.full_name, contact: user?.phone_number, email: user?.email ?? undefined }, `Advance for ${order.bookings.map((b) => b.trip_title).join(", ")}`);
-        await customerApi.confirmPayment(order.id, payment.payment, paid.razorpay_payment_id, paid.razorpay_signature);
-        // Only here, never from load(): a reload of the paid page must not count the purchase twice.
-        // The value is the advance paid now, not the full trip price.
-        track("purchase", {
-          transaction_id: order.reference, currency: "INR", value: Number(order.advance_total),
-          items: order.bookings.map((b) => ({ item_id: b.trip_title, item_name: b.trip_title, quantity: b.participant_count })),
-        });
+        router.push(`${THANK_YOU_PATH}?checkout=${order.id}`);
+        return;
       }
-      await load();
-      setState("paid");
+      // Leaves the page for Cashfree, which brings the customer to the thank-you page with ?order_id=….
+      await openCashfreeCheckout(await customerApi.createPaymentOrder({ checkout: order.id }, "ADVANCE"));
     } catch (e: any) {
       if (e?.body?.code === "checkout_expired") { await load(); return; }   // shows the "seats released" screen
       setError(friendly(e.message || "Something went wrong. Please try again."));
@@ -179,7 +173,7 @@ export function CheckoutView({ id }: { id: string }) {
             ? "Confirm free booking" : `Pay ${money(order.advance_total)} to confirm`}
         </button>
         {order.hold_until && <p className="bk-hint" style={{ marginTop: 10 }}>Your seats are held until {time(order.hold_until)}, {longDate(order.hold_until)}. After that they go back on sale.</p>}
-        {Number(order.advance_total) > 0 && <p className="bk-hint" style={{ marginTop: 10 }}>Secure payment by Razorpay (UPI, cards, netbanking).</p>}
+        {Number(order.advance_total) > 0 && <p className="bk-hint" style={{ marginTop: 10 }}>Secure payment by Cashfree (UPI, cards, netbanking).</p>}
         <p className="bk-hint" style={{ marginTop: 10 }}>
           By confirming you agree to the <a href="/terms" target="_blank" rel="noopener">terms</a> and the{" "}
           <a href="/refund-policy" target="_blank" rel="noopener">cancellation and refund policy</a>.

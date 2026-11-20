@@ -33,7 +33,7 @@ export const adminApi = {
   remove: (key: string, id: string) => api(`/admin/resources/${key}/${id}/`, { method: "DELETE" }),
   action: (name: string, json: unknown) => api(`/admin/actions/${name}/`, { method: "POST", json }),
   home: () => api<Home>("/admin/home/"),
-  counts: () => api<Partial<Record<"payments" | "event_bookings" | "enquiries", number>>>("/admin/counts/"),
+  counts: () => api<Partial<Record<"payments" | "enquiries", number>>>("/admin/counts/"),
   search: (q: string) => api<{ results: SearchHit[] }>(`/admin/search/?q=${encodeURIComponent(q)}`),
   bookings: (qs: URLSearchParams) => api<ListPage<BookingRow>>(`/admin/lists/bookings/?${qs}`),
   payments: (qs: URLSearchParams) => api<PaymentsPage>(`/admin/lists/payments/?${qs}`),
@@ -152,13 +152,16 @@ export type BookingRow = {
   departure_exception?: boolean; utr?: string; utr_duplicate?: boolean; note?: string; staff_note?: string; created_at: string;
 };
 
+/** A payment for a trip checkout or an event booking (`for`), online through Cashfree or recorded by staff. */
 export type TripPayment = {
   id: string; amount: string; status: string; kind: string; method: string; reference: string; name: string; phone: string;
-  customer_id: string; bookings: string[]; title: string; parent_id: string | null; failure_reason: string; created_at: string;
+  customer_id: string; for: "trip" | "event"; bookings: string[]; title: string; parent_id: string | null; failure_reason: string; created_at: string;
+  /** Search these in the Cashfree dashboard. */
+  gateway_order_id: string; gateway_payment_id: string;
 };
 export type RefundRow = {
-  id: string; amount: string; status: string; reason: string; booking: string; booking_id: string; name: string; phone: string;
-  customer_id: string; title: string; parent_id: string; approved_by: string; created_at: string; updated_at: string;
+  id: string; amount: string; status: string; reason: string; for: "trip" | "event"; booking: string; booking_id: string; name: string; phone: string;
+  customer_id: string | null; title: string; parent_id: string; approved_by: string; gateway_refund_ids: string; created_at: string; updated_at: string;
 };
 /** Money at a glance on the Payments page. A figure is missing when the staff member can't see its source. */
 /** A refund owed on a cancelled, paid event booking. Staff send it by UPI, then record it here. */
@@ -196,10 +199,9 @@ export type Home = {
   name: string | null; as_of: string;
   kpis: { key: string; label: string; value: string | number; format: "money" | "number"; delta: number | null; hint: string }[];
   todo: {
-    /** Razorpay events still failing after its own retries: a payment may not be recorded yet. */
+    /** Cashfree events still failing after its own retries: a payment may not be recorded yet. */
     failed_payment_events?: { count: number; items: { id: string; event_type: string; error: string; created_at: string }[] };
     verify_payments?: { count: number; items: { id: string; amount: string; payer: string; reference: string; kind: string; created_at: string; title: string; parent_id: string | null }[] };
-    confirm_events?: { count: number; with_proof: number; items: BookingRow[] };
     balance_due?: { count: number; items: BookingRow[] };
     enquiries?: { count: number; items: { id: string; type?: "ordinary" | "corporate"; name: string; phone: string; message: string; created_at: string }[] };
   };

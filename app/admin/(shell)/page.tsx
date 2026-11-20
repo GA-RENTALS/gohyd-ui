@@ -1,18 +1,18 @@
 "use client";
 import {
   RiAddLine, RiAlertLine, RiArrowDownLine, RiArrowRightSLine, RiArrowUpLine, RiCalendarEventLine, RiCheckboxCircleLine, RiCheckLine,
-  RiPhoneLine, RiRoadMapLine, RiTicket2Line, RiWallet3Line,
+  RiPhoneLine, RiRoadMapLine, RiWallet3Line,
 } from "@remixicon/react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { PromptModal } from "@/components/admin/ResourceView";
 import { useAdmin } from "@/components/admin/Shell";
-import { ago, Card, Drawer, Facts, Initials, money, relDay, StatusPill } from "@/components/admin/ui";
+import { ago, Card, Initials, money, relDay, StatusPill } from "@/components/admin/ui";
 import { Button, ButtonLink } from "@/components/base/buttons/button";
 import { toast } from "@/components/base/toast/toast";
 import { useCountUp } from "@/hooks/use-count-up";
-import { adminApi, type BookingRow, type Home } from "@/lib/admin/api";
+import { adminApi, type Home } from "@/lib/admin/api";
 import { cx } from "@/utils/cx";
 
 const greeting = () => { const h = new Date().getHours(); return h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"; };
@@ -21,7 +21,6 @@ export default function Dashboard() {
   const { refreshCounts } = useAdmin();
   const [d, setD] = useState<Home | null>(null);
   const [err, setErr] = useState("");
-  const [proof, setProof] = useState<BookingRow | null>(null);
   const [prompt, setPrompt] = useState<{ title: string; label: string; run: (t: string) => Promise<void> } | null>(null);
   const [busy, setBusy] = useState("");
 
@@ -46,7 +45,7 @@ export default function Dashboard() {
   if (!d) return <DashboardSkeleton />;
 
   const t = d.todo;
-  const waiting = (t.failed_payment_events?.count ?? 0) + (t.verify_payments?.count ?? 0) + (t.confirm_events?.count ?? 0)
+  const waiting = (t.failed_payment_events?.count ?? 0) + (t.verify_payments?.count ?? 0)
     + (t.balance_due?.count ?? 0) + (t.enquiries?.count ?? 0);
   const today = new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" });
 
@@ -94,29 +93,10 @@ export default function Dashboard() {
                 <TodoGroup icon={RiAlertLine} title="Payment updates that failed" count={t.failed_payment_events.count}
                   note="A customer may have paid without it being recorded" href="/admin/audit/gateway-events">
                   {t.failed_payment_events.items.map((e) => (
-                    <TodoRow key={e.id} lead={<RiAlertLine className="size-5 shrink-0 text-rose-600" aria-hidden />} title={e.event_type || "Razorpay event"}
+                    <TodoRow key={e.id} lead={<RiAlertLine className="size-5 shrink-0 text-rose-600" aria-hidden />} title={e.event_type || "Cashfree event"}
                       sub={<>{e.error} · {ago(e.created_at)}</>}
                       actions={<Button size="small" variant="primary" disabled={busy === e.id}
                         onClick={() => quiet(act(e.id, () => adminApi.action("retry-webhook", { event_id: e.id }), "Payment update processed"))}>Retry</Button>} />
-                  ))}
-                </TodoGroup>
-              )}
-              {!!t.confirm_events?.count && (
-                <TodoGroup icon={RiTicket2Line} title="Event bookings to confirm" count={t.confirm_events.count}
-                  note={t.confirm_events.with_proof ? `${t.confirm_events.with_proof} sent a payment screenshot` : undefined} href="/admin/payments?type=event&status=pending">
-                  {t.confirm_events.items.map((r) => (
-                    <TodoRow key={r.id}
-                      lead={<button onClick={() => setProof(r)} className="grid h-11 w-9 shrink-0 place-items-center overflow-hidden rounded-md border border-border-button-default bg-background-secondary-default" aria-label="See payment screenshot">
-                        {r.proof_url ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={r.proof_url} alt="" className="size-full object-cover" /> : <span className="text-[10px] text-text-tertiary">No proof</span>}
-                      </button>}
-                      title={<>{r.name} <span className="text-text-tertiary">× {r.people}</span></>}
-                      sub={<>{r.title} · {ago(r.created_at)}</>}
-                      amount={money(r.total)}
-                      actions={d.can.confirm_event && <>
-                        <Button size="small" variant="secondary" onClick={() => setProof(r)}>Check</Button>
-                        <Button size="small" variant="primary" leadingIcon={RiCheckLine} disabled={busy === r.id}
-                          onClick={() => quiet(act(r.id, () => adminApi.update("event-registrations", r.id, { status: "CONFIRMED" }), `${r.name}'s booking confirmed`))}>Confirm</Button>
-                      </>} />
                   ))}
                 </TodoGroup>
               )}
@@ -247,23 +227,6 @@ export default function Dashboard() {
 
       <p className="mt-6 text-center text-caption-1-medium text-text-tertiary">Updated {ago(d.as_of)} · <button className="underline" onClick={load}>Refresh</button></p>
 
-      {/* payment screenshot check */}
-      <Drawer open={!!proof} onClose={() => setProof(null)} title={proof ? `${proof.name} × ${proof.people}` : ""} sub={proof ? `${proof.reference} · ${proof.title}` : ""}
-        footer={proof && d.can.confirm_event && <>
-          <Button variant="primary" leadingIcon={RiCheckLine} disabled={busy === proof.id}
-            onClick={() => quiet(act(proof.id, () => adminApi.update("event-registrations", proof.id, { status: "CONFIRMED" }), "Booking confirmed").then(() => setProof(null)))}>Confirm booking</Button>
-          <Button variant="secondary" onClick={() => setPrompt({ title: `Cancel ${proof.reference}`, label: "Reason", run: (reason) => act(proof.id, () => adminApi.update("event-registrations", proof.id, { status: "CANCELLED", staff_note: reason }), "Booking cancelled").then(() => setProof(null)) })}>Cancel booking</Button>
-        </>}>
-        {proof && (
-          <div className="flex flex-col gap-4">
-            <Facts items={[["Amount", <strong key="a">{money(proof.total)}</strong>], ["UPI transaction ID", proof.utr || "—"], ["Phone", proof.phone || "—"], ["Event date", relDay(proof.starts_at)], ["Booked", ago(proof.created_at)], ["Status", <StatusPill key="s" status={proof.status} label={proof.status_label} />]]} />
-            {proof.note && <p className="rounded-xl bg-background-secondary-default p-3 text-body-regular text-text-secondary">{proof.note}</p>}
-            {proof.proof_url
-              ? <a href={proof.proof_url} target="_blank" rel="noopener noreferrer">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={proof.proof_url} alt="Payment screenshot" className="w-full rounded-xl border border-border-button-default" /></a>
-              : <p className="rounded-xl border border-dashed border-border-button-default p-6 text-center text-body-regular text-text-tertiary">The customer hasn't uploaded a payment screenshot yet.</p>}
-          </div>
-        )}
-      </Drawer>
       {prompt && <PromptModal {...prompt} onClose={() => setPrompt(null)} />}
     </>
   );

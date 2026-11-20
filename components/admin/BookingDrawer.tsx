@@ -1,11 +1,13 @@
 "use client";
 import { RiArrowRightUpLine, RiCheckLine, RiPhoneLine } from "@remixicon/react";
 import { useState } from "react";
+import { FormModal, useFormSubmit } from "@/components/admin/FormModal";
 import { RecordPaymentModal } from "@/components/admin/Overview";
 import { PromptModal } from "@/components/admin/ResourceView";
 import { useAdmin } from "@/components/admin/Shell";
 import { dateTime, Drawer, Facts, money, relDay, StatusPill } from "@/components/admin/ui";
 import { Button, ButtonLink } from "@/components/base/buttons/button";
+import { Input } from "@/components/base/input/input";
 import { toast } from "@/components/base/toast/toast";
 import { adminApi, type BookingRow } from "@/lib/admin/api";
 
@@ -21,6 +23,7 @@ export function BookingDrawer({ row, onClose, onChanged, can }: {
   const [busy, setBusy] = useState(false);
   const [prompt, setPrompt] = useState<{ title: string; label: string; run: (t: string) => Promise<void> } | null>(null);
   const [paying, setPaying] = useState(false);
+  const [refunding, setRefunding] = useState(false);
 
   async function act(fn: () => Promise<unknown>, ok: string) {
     setBusy(true);
@@ -35,6 +38,8 @@ export function BookingDrawer({ row, onClose, onChanged, can }: {
   // Lets a customer travel although a balance is still due (bookings.services.grant_departure_exception).
   const canExcuseBalance = isTrip && open && Number(row.due) > 0 && !row.departure_exception
     && session.permissions.includes("bookings.grant_departure_exception");
+  // Return all or part of an online (Cashfree) payment outside a cancellation; the server checks what is refundable.
+  const canRefund = Number(row.paid) > 0 && session.permissions.includes("payments.change_refund");
   return (
     <>
       <Drawer open onClose={onClose} title={row.name} sub={<span className="flex flex-wrap items-center gap-2">{row.reference}<StatusPill status={row.status} label={row.status_label} /></span>}
@@ -52,6 +57,7 @@ export function BookingDrawer({ row, onClose, onChanged, can }: {
               run: (reason) => act(() => adminApi.action("departure-exception", { booking_id: row.id, reason }), "Departure exception granted"),
             })}>Allow travel with balance due</Button>
           )}
+          {canRefund && <Button variant="secondary" onClick={() => setRefunding(true)}>Refund…</Button>}
           {can.cancel && open && (
             <Button variant="secondary" onClick={() => setPrompt({
               title: `Cancel ${row.reference}`,
@@ -85,6 +91,10 @@ export function BookingDrawer({ row, onClose, onChanged, can }: {
         </div>
       </Drawer>
       {prompt && <PromptModal {...prompt} onClose={() => setPrompt(null)} />}
+      {refunding && (
+        <IssueRefundModal row={row} onClose={() => setRefunding(false)}
+          onDone={() => { setRefunding(false); toast("Refund sent to Cashfree", { status: "success" }); onChanged(); refreshCounts(); onClose(); }} />
+      )}
       {paying && (
         <RecordPaymentModal
           reg={{ ...row, participants: row.people, outstanding: row.due, status_label: row.status_label, schedule_id: "", advance_due: row.advance_due }}
@@ -98,4 +108,23 @@ export function BookingDrawer({ row, onClose, onChanged, can }: {
 /** Adds a line to the staff note instead of replacing what other staff wrote before. */
 function withNote(existing: string | undefined, line: string): string {
   return [existing?.trim(), line].filter(Boolean).join("\n");
+}
+
+
+/** Finance returns part or all of a booking's online payment through Cashfree (POST /admin/actions/issue-refund/). */
+function IssueRefundModal({ row, onClose, onDone }: { row: BookingRow; onClose: () => void; onDone: () => void }) {
+  const [amount, setAmount] = useState("");
+  const [reason, setReason] = useState("");
+  const { busy, errors, general, submit } = useFormSubmit();
+  const save = async () => {
+    const target = row.type === "trip" ? { booking_id: row.id } : { event_booking_id: row.id };
+    if (await submit(() => adminApi.action("issue-refund", { ...target, amount, reason: reason.trim() }))) onDone();
+  };
+  return (
+    <FormModal title={`Refund ${row.reference}`} description={`Paid: ${money(row.paid)}. The refund goes back through Cashfree to the account the customer paid from; cash payments are returned by hand.`}
+      submitLabel={busy ? "Sending…" : "Send refund"} busy={busy} general={general} canSubmit={Number(amount) > 0 && !!reason.trim()} onSubmit={save} onClose={onClose}>
+      <Input label="Amount (₹)" type="number" inputMode="decimal" value={amount} onChange={setAmount} errorMessage={errors.amount} />
+      <Input label="Reason (the customer may ask)" value={reason} onChange={setReason} maxLength={255} errorMessage={errors.reason} />
+    </FormModal>
+  );
 }

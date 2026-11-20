@@ -2,7 +2,7 @@
 import { createApiClient, type Tokens } from "@/lib/api/client";
 import { API_URL } from "@/lib/config";
 import { clientLang } from "@/lib/lang";
-import type { Booking, CartItem, Checkout, CheckoutLineInput, CouponPreview, DeletionRequest, EventBooking, Invoice, MessagePreferences, Participant, PayKind, PaymentOrder, Profile } from "./types";
+import type { Booking, CartItem, Checkout, CheckoutLineInput, CouponPreview, DeletionRequest, EventBooking, Invoice, MessagePreferences, Participant, PayKind, PaymentOutcome, PaymentSession, Profile } from "./types";
 
 const client = createApiClient({ baseUrl: API_URL, storageKey: "gh_customer_tokens" });
 export const { api, download, tokenStore } = client;
@@ -37,9 +37,9 @@ export const customerApi = {
   submitEventEnquiry: (data: { name: string; phone: string; event?: string; event_schedule?: string; preferred_date?: string; group_size: number; source: string; message: string; consent_to_contact: boolean }) =>
     api<{ status: string }>("/enquiries/", { method: "POST", auth: false, json: data }),
 
-  /** Holds slots on an event date (capacity-checked on the server). Staff confirm it afterwards. */
-  createEventBooking: (data: { event: string; schedule: string; name: string; phone: string; email?: string; participant_count: number; note?: string; coupon?: string; consent_to_contact: boolean }) =>
-    api<EventBooking>("/event-bookings/", { method: "POST", auth: false, json: data }),
+  /** Holds places on an event date for the signed-in customer while the advance is paid (capacity-checked on the server). */
+  createEventBooking: (data: { event: string; schedule: string; name?: string; email?: string; participant_count: number; note?: string; coupon?: string; consent_to_contact: boolean }) =>
+    api<EventBooking>("/event-bookings/", { method: "POST", json: data }),
   /** What a coupon takes off an event booking. Nothing is reserved; the booking checks the coupon again. */
   previewEventCoupon: (data: { event: string; participant_count: number; code: string; phone?: string }) =>
     api<CouponPreview>("/event-bookings/coupon-preview/", { method: "POST", auth: false, json: data }),
@@ -47,17 +47,6 @@ export const customerApi = {
   /** The signed token from a newsletter's unsubscribe link. */
   newsletterUnsubscribe: (token: string) =>
     api<{ status: string; email: string }>("/newsletter/unsubscribe/", { method: "POST", auth: false, json: { token } }),
-  /** Reference + the phone used to book. */
-  eventBookingStatus: (reference: string, phone: string) =>
-    api<EventBooking>(`/event-bookings/${encodeURIComponent(reference.trim().toUpperCase())}/`, { method: "POST", auth: false, json: { phone } }),
-  /** Uploads the UPI payment screenshot for a booking (reference + the phone used to book). */
-  uploadEventPayment: (reference: string, phone: string, screenshot: File, utr = "") => {
-    const form = new FormData();
-    form.append("phone", phone);
-    form.append("screenshot", screenshot);
-    if (utr) form.append("utr", utr);
-    return api<EventBooking>(`/event-bookings/${encodeURIComponent(reference.trim().toUpperCase())}/payment-proof/`, { method: "POST", auth: false, json: form });
-  },
 
   /** One trip date, N people. All-or-nothing; the same idempotency key never creates two checkouts. */
   createCheckout: (schedule: string, participant_count: number, pickup_point: string | null, coupon = "", key = newKey()) =>
@@ -77,12 +66,13 @@ export const customerApi = {
   /** GST invoice for a booking (404 until the booking is paid and the invoice is issued). */
   bookingInvoice: (bookingId: string) => api<Invoice>(`/bookings/${bookingId}/invoice/`),
   checkout: (id: string) => api<Checkout>(`/checkouts/${id}/`),
-  startPayment: (checkoutId: string, kind: PayKind, bookings?: string[]) =>
-    api<PaymentOrder>(`/checkouts/${checkoutId}/pay/`, { method: "POST", json: { kind, ...(bookings ? { bookings } : {}) }, headers: { "Idempotency-Key": newKey() } }),
   completeFreeCheckout: (checkoutId: string) =>
     api<Checkout>(`/checkouts/${checkoutId}/complete-free/`, { method: "POST", json: {} }),
-  confirmPayment: (checkoutId: string, payment: string, razorpay_payment_id: string, razorpay_signature: string) =>
-    api<{ status: string }>(`/checkouts/${checkoutId}/confirm/`, { method: "POST", json: { payment, razorpay_payment_id, razorpay_signature } }),
+  /** A Cashfree order for a trip checkout (advance or balance) or an event booking. The amount is worked out on the server. */
+  createPaymentOrder: (target: { checkout: string; bookings?: string[] } | { event_booking: string }, kind: PayKind) =>
+    api<PaymentSession>("/payments/cashfree/create-order/", { method: "POST", json: { ...target, kind }, headers: { "Idempotency-Key": newKey() } }),
+  /** After Cashfree sends the customer back: the server asks Cashfree and records a real payment. */
+  verifyPayment: async (orderId: string) => ({ ...(await api<Omit<PaymentOutcome, "order_id">>(`/payments/cashfree/verify/${encodeURIComponent(orderId)}/`)), order_id: orderId }),
 
   bookings: async () => results(await api<Booking[] | { results: Booking[] }>("/bookings/")),
   /** Event bookings made while signed in or with this account's phone number. */

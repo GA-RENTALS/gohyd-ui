@@ -13,7 +13,7 @@ export const SECTIONS: { title: string | null; items: Item[] }[] = [
     title: "Sell", items: [
       { key: "trips", label: "Trips", icon: "map", href: "/admin/trips", needs: ["trips", "trips"], match: /^\/admin\/(trips(\/trips)?$|overview\/trip)/ },
       { key: "events", label: "Events", icon: "calendar", href: "/admin/events", needs: ["events", "events"], match: /^\/admin\/(events(\/events)?$|overview\/event)/ },
-      { key: "bookings", label: "Bookings", icon: "ticket", href: "/admin/bookings", needs: ["bookings", "bookings"], badge: "event_bookings", match: /^\/admin\/bookings\/?$/ },
+      { key: "bookings", label: "Bookings", icon: "ticket", href: "/admin/bookings", needs: ["bookings", "bookings"], match: /^\/admin\/bookings\/?$/ },
       { key: "payments", label: "Payments", icon: "wallet", href: "/admin/payments", needs: ["payments", "payments"], badge: "payments", match: /^\/admin\/payments\/?$/ },
       { key: "marketing", label: "Marketing", icon: "megaphone", href: "/admin/marketing", needs: ["marketing", "coupons"], match: /^\/admin\/marketing\/?$/ },
     ],

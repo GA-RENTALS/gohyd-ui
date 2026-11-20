@@ -1,16 +1,15 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { useCustomer } from "@/components/booking/CustomerProvider";
 import { customerApi } from "@/lib/customer/api";
 import { longDate, money, time } from "@/lib/customer/format";
-import { payWithRazorpay } from "@/lib/customer/razorpay";
+import { openCashfreeCheckout } from "@/lib/customer/cashfree";
 import type { Booking } from "@/lib/customer/types";
 import { bucketOf, needsPayment, statusInfo, timeline } from "./booking-model";
 
 const shortDate = (iso: string) => new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" });
 const PAYMENT_DOWN = "Online payment isn't available right now. Please message GoHyderabad on Instagram to pay.";
-const friendly = (m: string) => (/razorpay|gateway|not configured/i.test(m) ? PAYMENT_DOWN : m);
+const friendly = (m: string) => (/cashfree|gateway|not configured/i.test(m) ? PAYMENT_DOWN : m);
 
 function Icon({ d }: { d: string }) {
   return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={d} /></svg>;
@@ -26,7 +25,7 @@ const ICON = {
 };
 
 export function BookingCard({ booking, onChanged }: { booking: Booking; onChanged: () => Promise<void> }) {
-  const { user } = useCustomer();
+  
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -39,14 +38,13 @@ export function BookingCard({ booking, onChanged }: { booking: Booking; onChange
   const unpaid = Number(booking.paid) === 0 && bucket !== "cancelled";
   const canCancel = booking.can_cancel && bucket === "upcoming";
 
+  /** Pays the balance on Cashfree, which then takes the customer to the thank-you page, where the payment is checked. */
   async function payBalance() {
     setBusy(true); setError("");
     try {
-      const order = await customerApi.startPayment(booking.checkout, "BALANCE", [booking.id]);
-      const paid = await payWithRazorpay(order, { name: user?.full_name, contact: user?.phone_number }, `Balance for ${booking.trip_title}`);
-      await customerApi.confirmPayment(booking.checkout, order.payment, paid.razorpay_payment_id, paid.razorpay_signature);
-      await onChanged();
-    } catch (e: any) { setError(friendly(e.message)); } finally { setBusy(false); }
+      const session = await customerApi.createPaymentOrder({ checkout: booking.checkout, bookings: [booking.id] }, "BALANCE");
+      await openCashfreeCheckout(session);
+    } catch (e: any) { setError(friendly(e.message)); setBusy(false); }
   }
 
   async function cancel() {
