@@ -1,12 +1,13 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useCustomer } from "@/components/booking/CustomerProvider";
 import { EventCouponBox } from "@/components/booking/EventCouponBox";
 import { useT } from "@/components/site/LangProvider";
 import { track, trackWhatsApp } from "@/lib/analytics";
 import { customerApi } from "@/lib/customer/api";
-import { openCashfreeCheckout } from "@/lib/customer/cashfree";
+import { openCashfreeCheckout, THANK_YOU_PATH } from "@/lib/customer/cashfree";
 import { longDate, money, time as timeLower } from "@/lib/customer/format";
 import type { CouponPreview, EventBooking, EventRegistrationType, EventSchedule } from "@/lib/customer/types";
 
@@ -90,6 +91,7 @@ export function EventBookingPanel({
 }) {
   const t = useT();
   const { user, loading } = useCustomer();
+  const router = useRouter();
   const minCount = registrationType === "GROUP" ? 2 : 1;
   const [scheduleId, setScheduleId] = useState(schedules[0]?.id ?? "");
   const [count, setCount] = useState(minCount);
@@ -138,7 +140,11 @@ export function EventBookingPanel({
       setSeatsOverride((prev) => ({ ...prev, [selected.id]: made!.seats_left }));
       track("event_booking_request", { currency: "INR", value: total ?? 0, event_slug: slug, participants, has_coupon: Boolean(coupon) });
       if (made.pay_now) {
-        await payOnline(made);     // leaves the page for Cashfree; it brings the customer back to their account
+        await payOnline(made);     // leaves the page for Cashfree, which brings the customer to the thank-you page
+        return;
+      }
+      if (made.status === "CONFIRMED") {
+        router.push(`${THANK_YOU_PATH}?event=${made.reference}`);   // free: nothing to pay, confirmed at once
         return;
       }
       setBooking(made);

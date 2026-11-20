@@ -1,11 +1,10 @@
 "use client";
 /**
  * Cashfree hosted checkout. The server creates the order (POST /payments/cashfree/create-order/) and returns its
- * payment_session_id; this opens Cashfree's page for it. Cashfree then sends the customer back to the page the server
- * chose with ?order_id=…, where `verifyCashfreeReturn` asks the server what happened. The browser is never trusted with
- * the result: the server checks with Cashfree before recording anything.
+ * payment_session_id; this opens Cashfree's page for it. Cashfree then sends the customer to the thank-you page with
+ * ?order_id=…, which asks the server what happened. The browser is never trusted with the result: the server checks
+ * with Cashfree before recording anything.
  */
-import { customerApi } from "./api";
 import type { PaymentOutcome, PaymentSession } from "./types";
 
 const SDK = "https://sdk.cashfree.com/js/v3/cashfree.js";
@@ -33,18 +32,18 @@ export async function openCashfreeCheckout(session: PaymentSession): Promise<voi
   await window.Cashfree({ mode: session.mode }).checkout({ paymentSessionId: session.payment_session_id, redirectTarget: "_self" });
 }
 
-/** On the page Cashfree returns to: the order in the address, checked with the server, then removed from the address. */
-export async function verifyCashfreeReturn(): Promise<PaymentOutcome | null> {
-  const params = new URLSearchParams(window.location.search);
-  const orderId = params.get("order_id");
-  if (!orderId) return null;
-  params.delete("order_id");
-  window.history.replaceState(null, "", `${window.location.pathname}${params.toString() ? `?${params}` : ""}`);
-  try {
-    return await customerApi.verifyPayment(orderId);
-  } catch {
-    return { status: "pending", order_id: orderId, message: "We couldn't check your payment yet. It will show here as soon as Cashfree confirms it." };
-  }
+/** Where Cashfree brings the customer back to (set by the server when it creates the order). */
+export const THANK_YOU_PATH = "/booking/thank-you";
+
+/**
+ * Orders opened before payments returned to the thank-you page came back to the checkout or account page with
+ * ?order_id=…: send those on to the thank-you page, which checks the payment. Returns true when it redirected.
+ */
+export function forwardCashfreeReturn(): boolean {
+  const orderId = new URLSearchParams(window.location.search).get("order_id");
+  if (!orderId) return false;
+  window.location.replace(`${THANK_YOU_PATH}?order_id=${encodeURIComponent(orderId)}`);
+  return true;
 }
 
 /** What to tell the customer for each outcome. */

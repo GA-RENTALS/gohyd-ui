@@ -69,7 +69,7 @@ export const customerApi = {
   completeFreeCheckout: (checkoutId: string) =>
     api<Checkout>(`/checkouts/${checkoutId}/complete-free/`, { method: "POST", json: {} }),
   /** A Cashfree order for a trip checkout (advance or balance) or an event booking. The amount is worked out on the server. */
-  createPaymentOrder: (target: { checkout: string; bookings?: string[]; return_to?: "checkout" | "account" } | { event_booking: string }, kind: PayKind) =>
+  createPaymentOrder: (target: { checkout: string; bookings?: string[] } | { event_booking: string }, kind: PayKind) =>
     api<PaymentSession>("/payments/cashfree/create-order/", { method: "POST", json: { ...target, kind }, headers: { "Idempotency-Key": newKey() } }),
   /** After Cashfree sends the customer back: the server asks Cashfree and records a real payment. */
   verifyPayment: async (orderId: string) => ({ ...(await api<Omit<PaymentOutcome, "order_id">>(`/payments/cashfree/verify/${encodeURIComponent(orderId)}/`)), order_id: orderId }),

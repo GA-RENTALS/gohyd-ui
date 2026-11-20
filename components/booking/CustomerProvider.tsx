@@ -83,7 +83,8 @@ export function RequireCustomer({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [retrying, setRetrying] = useState(false);
   useEffect(() => {
-    if (!loading && !user && !unreachable) router.replace(`/login?next=${encodeURIComponent(pathname)}`);
+    // Keep the query (e.g. the thank-you page's ?order_id=…) so signing in brings the customer back to the same place.
+    if (!loading && !user && !unreachable) router.replace(`/login?next=${encodeURIComponent(pathname + window.location.search)}`);
   }, [loading, user, unreachable, router, pathname]);
 
   if (unreachable && !user) {

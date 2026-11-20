@@ -38,11 +38,11 @@ export function BookingCard({ booking, onChanged }: { booking: Booking; onChange
   const unpaid = Number(booking.paid) === 0 && bucket !== "cancelled";
   const canCancel = booking.can_cancel && bucket === "upcoming";
 
-  /** Pays the balance on Cashfree, which brings the customer back to this page; the payment is checked there. */
+  /** Pays the balance on Cashfree, which then takes the customer to the thank-you page, where the payment is checked. */
   async function payBalance() {
     setBusy(true); setError("");
     try {
-      const session = await customerApi.createPaymentOrder({ checkout: booking.checkout, bookings: [booking.id], return_to: "account" }, "BALANCE");
+      const session = await customerApi.createPaymentOrder({ checkout: booking.checkout, bookings: [booking.id] }, "BALANCE");
       await openCashfreeCheckout(session);
     } catch (e: any) { setError(friendly(e.message)); setBusy(false); }
   }

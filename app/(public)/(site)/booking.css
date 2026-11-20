@@ -281,3 +281,16 @@
 .bk-plan-price span { color: var(--text-soft); font-size: 14px; font-weight: 500; }
 .bk-plan-save { margin: 6px 0 0; color: var(--sand-light); font-size: 14px; }
 
+/* ---- Thank-you page (after paying on Cashfree, or a free booking) ---- */
+.bk-thanks { padding-block: 24px 48px; }
+.bk-thanks .bk-title { margin-top: 6px; }
+.bk-thanks-mark { display: grid; place-items: center; width: 64px; height: 64px; margin-bottom: 18px; border-radius: 50%; background: var(--lime); color: #12130e; animation: bk-thanks-pop .45s cubic-bezier(.2, 1.4, .4, 1) both; }
+.bk-thanks .bk-booking + .bk-booking { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--line); }
+.bk-thanks .bk-booking { margin-top: 14px; }
+.bk-thanks-next { margin: 0; padding-left: 18px; display: grid; gap: 10px; color: var(--text-soft); }
+.bk-thanks-next a { color: inherit; text-decoration: underline; }
+.bk-thanks-actions { display: grid; gap: 10px; margin-top: 24px; }
+@media (min-width: 560px) { .bk-thanks-actions { grid-template-columns: 1fr 1fr; } }
+@keyframes bk-thanks-pop { from { transform: scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .bk-thanks-mark { animation: none; } }
+

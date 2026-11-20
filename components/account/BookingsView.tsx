@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { customerApi } from "@/lib/customer/api";
-import { OUTCOME_TEXT, verifyCashfreeReturn } from "@/lib/customer/cashfree";
+import { forwardCashfreeReturn } from "@/lib/customer/cashfree";
 import type { Booking, EventBooking } from "@/lib/customer/types";
 import { BookingCard } from "./BookingCard";
 import { EventBookingsList } from "./EventBookingsList";
@@ -28,7 +28,6 @@ export function BookingsView() {
   const [error, setError] = useState("");
   const [tab, setTab] = useState<Bucket>("upcoming");
   const [eventBookings, setEventBookings] = useState<EventBooking[]>([]);
-  const [notice, setNotice] = useState<{ ok: boolean; text: string } | null>(null);
 
   const load = useCallback(async () => {
     try { setBookings(await customerApi.bookings()); setError(""); } catch (e: any) { setError(e.message); }
@@ -38,16 +37,8 @@ export function BookingsView() {
   const loadEvents = useCallback(() => customerApi.myEventBookings().then(setEventBookings).catch(() => setEventBookings([])), []);
   useEffect(() => { void loadEvents(); }, [loadEvents]);
 
-  // Back from Cashfree (?order_id=…): the server checks the payment with Cashfree, then both lists reload.
-  useEffect(() => {
-    void (async () => {
-      const outcome = await verifyCashfreeReturn();
-      if (!outcome) return;
-      const text = outcome.status === "failed" && outcome.message ? `${OUTCOME_TEXT.failed} (${outcome.message})` : OUTCOME_TEXT[outcome.status];
-      setNotice({ ok: outcome.status === "paid", text });
-      await Promise.all([load(), loadEvents()]);
-    })();
-  }, [load, loadEvents]);
+  // An order opened before payments returned to the thank-you page comes back here: send it on.
+  useEffect(() => { forwardCashfreeReturn(); }, []);
 
   const groups = useMemo(() => {
     const g: Record<Bucket, Booking[]> = { upcoming: [], past: [], cancelled: [] };
@@ -79,8 +70,6 @@ export function BookingsView() {
         </div>
         <div className="ac-callout"><strong>Your next weekend is closer than you think</strong><span>Meet · Explore · Experience</span></div>
       </section>
-
-      {notice && <p className={notice.ok ? "ac-ok" : "ac-error"} role="status" style={{ marginBottom: 16 }}>{notice.text}</p>}
 
       <section className="ac-stats" aria-label="Summary">
         <Stat value={groups.upcoming.length} label="Upcoming trips" icon="M3 5h18v16H3zM16 3v4M8 3v4M3 10h18" />

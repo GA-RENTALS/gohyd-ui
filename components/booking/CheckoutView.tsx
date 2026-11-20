@@ -1,10 +1,10 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { track } from "@/lib/analytics";
 import { customerApi } from "@/lib/customer/api";
 import { longDate, money, statusLabel, time } from "@/lib/customer/format";
-import { OUTCOME_TEXT, openCashfreeCheckout, verifyCashfreeReturn } from "@/lib/customer/cashfree";
+import { forwardCashfreeReturn, openCashfreeCheckout, THANK_YOU_PATH } from "@/lib/customer/cashfree";
 import type { Checkout, Participant } from "@/lib/customer/types";
 import { useCustomer } from "./CustomerProvider";
 import { blankPerson, ParticipantsForm } from "./ParticipantsForm";
@@ -13,18 +13,9 @@ import { blankPerson, ParticipantsForm } from "./ParticipantsForm";
 const PAYMENT_UNAVAILABLE = "Online payment isn't available right now. Your booking is saved. Please message GoHyderabad on Instagram to complete your payment.";
 const friendly = (message: string) => (/cashfree|gateway|not configured/i.test(message) ? PAYMENT_UNAVAILABLE : message);
 
-/** GA4 purchase, once per Cashfree order (a reload of the return page must not count it twice). Value = the advance paid. */
-function trackPurchase(order: Checkout, orderId: string) {
-  const key = `gh_purchase_${orderId}`;
-  try { if (sessionStorage.getItem(key)) return; sessionStorage.setItem(key, "1"); } catch { /* storage blocked: still count it once here */ }
-  track("purchase", {
-    transaction_id: order.reference, currency: "INR", value: Number(order.advance_total),
-    items: order.bookings.map((b) => ({ item_id: b.trip_title, item_name: b.trip_title, quantity: b.participant_count })),
-  });
-}
-
 export function CheckoutView({ id }: { id: string }) {
   const { user } = useCustomer();
+  const router = useRouter();
   const [order, setOrder] = useState<Checkout | null>(null);
   const [people, setPeople] = useState<Record<string, Participant[]>>({});
   const [activeWaiver, setActiveWaiver] = useState<{ id: string; title: string; version: number; body: string } | null>(null);
@@ -32,7 +23,6 @@ export function CheckoutView({ id }: { id: string }) {
   const [waiver, setWaiver] = useState(false);
   const [state, setState] = useState<"loading" | "ready" | "working" | "paid">("loading");
   const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
 
   const load = useCallback(async () => {
     try {
@@ -66,22 +56,8 @@ export function CheckoutView({ id }: { id: string }) {
     }
   }, [id, user]);
 
-  useEffect(() => { void load(); }, [load]);
-
-  // Back from Cashfree (?order_id=…): the server asks Cashfree and records the payment, then the page reloads it.
-  useEffect(() => {
-    void (async () => {
-      const outcome = await verifyCashfreeReturn();
-      if (!outcome) return;
-      if (outcome.status === "paid") {
-        const co = await customerApi.checkout(id).catch(() => null);
-        if (co) trackPurchase(co, outcome.order_id);
-      } else {
-        setNotice(outcome.message && outcome.status === "failed" ? `${OUTCOME_TEXT.failed} (${outcome.message})` : OUTCOME_TEXT[outcome.status]);
-      }
-      await load();
-    })();
-  }, [id, load]);
+  // An order opened before payments returned to the thank-you page comes back here: send it on.
+  useEffect(() => { if (!forwardCashfreeReturn()) void load(); }, [load]);
 
   async function pay() {
     if (!order) return;
@@ -99,11 +75,10 @@ export function CheckoutView({ id }: { id: string }) {
       }
       if (Number(order.advance_total) === 0 && Number(order.total_amount) === 0) {
         await customerApi.completeFreeCheckout(order.id);
-        await load();
-        setState("paid");
+        router.push(`${THANK_YOU_PATH}?checkout=${order.id}`);
         return;
       }
-      // Leaves the page for Cashfree, which brings the customer back here with ?order_id=… (handled above).
+      // Leaves the page for Cashfree, which brings the customer to the thank-you page with ?order_id=….
       await openCashfreeCheckout(await customerApi.createPaymentOrder({ checkout: order.id }, "ADVANCE"));
     } catch (e: any) {
       if (e?.body?.code === "checkout_expired") { await load(); return; }   // shows the "seats released" screen
@@ -192,14 +167,13 @@ export function CheckoutView({ id }: { id: string }) {
         {Number(order.discount_total) > 0 && <div className="bk-total" style={{ borderTop: 0, margin: 0 }}><span>Coupon {order.coupon_code}</span><span>− {money(order.discount_total)}</span></div>}
         <div className="bk-total"><span>Total</span><strong>{money(order.total_amount)}</strong></div>
         <div className="bk-total" style={{ borderTop: 0, margin: "0 0 16px" }}><span>Due now (advance)</span><strong>{money(order.advance_total)}</strong></div>
-        {notice && <p className="bk-note" role="status">{notice}</p>}
         {error && <p className="bk-error" role="alert">{error}</p>}
         <button type="button" className="btn" disabled={state === "working" || !activeWaiver} onClick={pay} style={{ marginTop: 12 }}>
           {state === "working" ? "Please wait…" : Number(order.advance_total) === 0 && Number(order.total_amount) === 0
             ? "Confirm free booking" : `Pay ${money(order.advance_total)} to confirm`}
         </button>
         {order.hold_until && <p className="bk-hint" style={{ marginTop: 10 }}>Your seats are held until {time(order.hold_until)}, {longDate(order.hold_until)}. After that they go back on sale.</p>}
-        {Number(order.advance_total) > 0 && <p className="bk-hint" style={{ marginTop: 10 }}>Secure payment by Cashfree (UPI, cards, netbanking). You'll come back here once you've paid.</p>}
+        {Number(order.advance_total) > 0 && <p className="bk-hint" style={{ marginTop: 10 }}>Secure payment by Cashfree (UPI, cards, netbanking).</p>}
         <p className="bk-hint" style={{ marginTop: 10 }}>
           By confirming you agree to the <a href="/terms" target="_blank" rel="noopener">terms</a> and the{" "}
           <a href="/refund-policy" target="_blank" rel="noopener">cancellation and refund policy</a>.

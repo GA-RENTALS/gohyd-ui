@@ -54,7 +54,7 @@ function caption(b: EventBooking) {
   return "";
 }
 
-/** Pay the advance (to confirm) or the balance on Cashfree; it brings the customer back here, where the payment is checked. */
+/** Pay the advance (to confirm) or the balance on Cashfree, which then takes the customer to the thank-you page. */
 function PayNow({ booking: b }: { booking: EventBooking }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
