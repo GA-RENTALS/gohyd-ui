@@ -304,7 +304,9 @@
     .credits ol { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 40px; padding-bottom: 26px; color: var(--text-soft); font-size: 12.5px; line-height: 1.55; list-style: decimal inside; }
     .credits a { color: var(--ivory); text-decoration: underline; text-underline-offset: 3px; }
     .credits .intro-note { grid-column: 1 / -1; list-style: none; }
-    .foot-bottom { display: flex; justify-content: space-between; gap: 16px; padding-block: 24px; border-top: 1px solid var(--line); color: var(--text-soft); font-size: 13px; }
+    .foot-bottom { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-block: 24px; border-top: 1px solid var(--line); color: var(--text-soft); font-size: 13px; }
+    .foot-bottom a { transition: color .2s; }
+    .foot-bottom a:hover { color: var(--sand-light); }
 
     /* Analytics consent */
     .gh-consent { position: fixed; z-index: 150; inset: auto 20px calc(20px + env(safe-area-inset-bottom)); display: flex; align-items: center; justify-content: space-between; gap: 28px; width: min(100% - 40px, 940px); margin-inline: auto; padding: 20px 22px; border: 1px solid rgba(243,238,226,.22); background: rgba(18,19,14,.97); box-shadow: 0 18px 56px rgba(0,0,0,.5); }

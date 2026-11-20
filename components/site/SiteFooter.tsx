@@ -69,9 +69,10 @@ export async function SiteFooter() {
             · Meet. Explore. Experience.
           </span>
           <span>
-            Made for weekends in Hyderabad. · Made by Saipavan Siripuram ·
-            {" "}
-            <a href="https://x.com/saipavan__" target="_blank" rel="noopener noreferrer">X</a>
+            Made for weekends in Hyderabad.
+          </span>
+          <span>
+            <Link href="/privacy">{t("Privacy choices")}</Link>
           </span>
         </div>
       </div>
